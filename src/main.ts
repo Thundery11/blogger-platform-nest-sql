@@ -1,9 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './infrastucture/exception-filters/exception.filter';
-// import { applyAppSettings, setAppPipes } from './settings/apply.app.settings';
-import cookieParser from 'cookie-parser';
 import { appSettings } from './settings/app-settings';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +17,6 @@ async function bootstrap() {
 
   // somewhere in your initialization file
   appSettings(app);
-  await app.listen(3000);
+  await app.listen(5000);
 }
 bootstrap();
