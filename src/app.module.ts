@@ -59,6 +59,8 @@ import {
   SecurityDevices,
   SecurityDevicesSchema,
 } from './features/security-devices/domain/security-devices-entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TestWalletsModule } from './test-wallets/test-wallets.module';
 
 const useCases = [
   CreateBlogUseCase,
@@ -85,7 +87,16 @@ const useCases = [
     AuthModule,
     UsersModule,
     CqrsModule,
-
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5000,
+      username: 'nodejs',
+      password: 'nodejs',
+      database: 'BankSystem',
+      autoLoadEntities: false,
+      synchronize: false,
+    }),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
     MongooseModule.forFeature([
       {
@@ -118,6 +129,7 @@ const useCases = [
     MongooseModule.forRoot(process.env.MONGO_URL!, {
       dbName: 'blogger-platform-nest',
     }),
+    TestWalletsModule,
   ],
   controllers: [
     TestingAllDataController,
@@ -145,4 +157,3 @@ const useCases = [
   ],
 })
 export class AppModule {}
-//ss

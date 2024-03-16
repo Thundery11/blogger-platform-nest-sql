@@ -4,7 +4,6 @@ import { Posts } from '../domain/posts.entity';
 import { Model, Types } from 'mongoose';
 import {
   PostOutputModel,
-  postsOutputMapper,
   postsOutputMapperFinally,
 } from '../api/models/output/post-output.model';
 

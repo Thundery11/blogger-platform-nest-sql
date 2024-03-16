@@ -17,6 +17,8 @@ async function bootstrap() {
 
   // somewhere in your initialization file
   appSettings(app);
-  await app.listen(5000);
+  const port = 3000;
+  await app.listen(port);
+  console.log('app listen at port :', port);
 }
 bootstrap();
