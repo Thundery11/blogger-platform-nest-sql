@@ -39,16 +39,16 @@ const useCases = [
     CqrsModule,
     UsersModule,
     PassportModule,
-    ThrottlerModule.forRoot([
-      {
-        ttl: 10000,
-        limit: 5,
-      },
-    ]),
+    // ThrottlerModule.forRoot([
+    //   {
+    //     ttl: 10000,
+    //     limit: 5,
+    //   },
+    // ]),
     JwtModule.register({
       global: false,
       secret: jwtConstants.JWT_SECRET,
-      signOptions: { expiresIn: tokensLivesConstants['10sec'] },
+      signOptions: { expiresIn: tokensLivesConstants['1hour'] },
     }),
     MongooseModule.forFeature([
       {
@@ -66,10 +66,10 @@ const useCases = [
     ...useCases,
     JwtStrategy,
     BasicStrategy,
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
   ],
   controllers: [AuthController, SecurityDevicesController],
   exports: [AuthService],

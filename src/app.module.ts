@@ -82,6 +82,7 @@ const useCases = [
   UpdateLikeStatusForPostsUseCase,
   FindPostUseCase,
 ];
+let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 @Module({
   imports: [
     AuthModule,
@@ -89,14 +90,15 @@ const useCases = [
     CqrsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: PGHOST,
+      database: PGDATABASE,
+      username: PGUSER,
+      password: PGPASSWORD,
       port: 5000,
-      username: 'nodejs',
-      password: 'nodejs',
-      database: 'BankSystem',
       autoLoadEntities: false,
       synchronize: false,
     }),
+    // ConfigModule.forRoot(),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
     MongooseModule.forFeature([
       {

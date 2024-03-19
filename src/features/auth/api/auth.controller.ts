@@ -63,8 +63,8 @@ export class AuthController {
       .send(accesAndRefreshTokens.accessToken);
   }
 
+  // @SkipThrottle()
   @UseGuards(JwtAuthGuard)
-  @SkipThrottle()
   @Get('me')
   async getProfile(
     @CurrentUserId() currentUserId: string,

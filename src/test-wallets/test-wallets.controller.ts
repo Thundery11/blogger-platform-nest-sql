@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TestWalletsService } from './test-wallets.service';
 import { CreateTestWalletDto } from './dto/create-test-wallet.dto';
 import { UpdateTestWalletDto } from './dto/update-test-wallet.dto';
@@ -16,6 +24,10 @@ export class TestWalletsController {
   findAll() {
     return this.testWalletsService.findAll();
   }
+  @Get('withWallets')
+  withWallets() {
+    return this.testWalletsService.findUsersWithWallets();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -23,7 +35,10 @@ export class TestWalletsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTestWalletDto: UpdateTestWalletDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTestWalletDto: UpdateTestWalletDto,
+  ) {
     return this.testWalletsService.update(+id, updateTestWalletDto);
   }
 
