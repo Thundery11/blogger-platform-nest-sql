@@ -83,6 +83,17 @@ const useCases = [
   FindPostUseCase,
 ];
 let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
+
+// TypeOrmModule.forRoot({
+//   type: 'postgres',
+//   host: 'localhost',
+//   port: 5000,
+//   username: 'nodejs',
+//   password: 'nodejs',
+//   database: 'BankSystem',
+//   autoLoadEntities: false,
+//   synchronize: false,
+// }),
 @Module({
   imports: [
     AuthModule,
@@ -94,9 +105,11 @@ let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
       database: PGDATABASE,
       username: PGUSER,
       password: PGPASSWORD,
-      port: 5000,
+      port: 5432,
       autoLoadEntities: false,
       synchronize: false,
+      // sslmode: "require",
+      ssl: true,
     }),
     // ConfigModule.forRoot(),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
