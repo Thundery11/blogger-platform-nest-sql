@@ -19,13 +19,12 @@ export class TestWalletsService {
   create(createTestWalletDto: CreateTestWalletDto) {
     return 'This action adds a new testWallet';
   }
-
+  // `SELECT w.*, u."FirstName" || ' ' || u."LastName" as "FullName"
+  // FROM public."Wallets" w
+  // LEFT JOIN public."Users" u
+  // ON u.id = w."OwnerId";`
   async findAll() {
-    const userWallets = await this.dataSource
-      .query(`SELECT w.*, u."FirstName" || ' ' || u."LastName" as "FullName"
-      FROM public."Wallets" w
-      LEFT JOIN public."Users" u
-      ON u.id = w."OwnerId";`);
+    const userWallets = await this.dataSource.query(`SELECT * from "ilya"`);
     const result = userWallets.map((w) => ({
       wallet: {
         id: w.id,
@@ -38,7 +37,7 @@ export class TestWalletsService {
         fullname: w.FullName,
       },
     }));
-    return result;
+    return userWallets;
   }
   async findUsersWithWallets(): Promise<UserWithWalletsType[]> {
     const query = `SELECT ru.*, w."Title" ,w."id" as "WalletId" 
