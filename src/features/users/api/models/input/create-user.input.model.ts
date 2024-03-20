@@ -23,3 +23,14 @@ export class UserData {
   userId: string;
   userLogin: string;
 }
+
+export class UserCreateDto {
+  login: string;
+  email: string;
+  passwordHash: string;
+  passwordSalt: string;
+  createdAt: string;
+  confirmationCode: string;
+  expirationDate: string;
+  isConfirmed: boolean;
+}

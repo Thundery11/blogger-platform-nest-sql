@@ -8,13 +8,31 @@ import {
   allUsersOutputMapper,
   userInfoAboutHimselfMapper,
 } from '../api/models/output/user-output.model';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { UserCreateDto } from '../api/models/input/create-user.input.model';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectModel(Users.name) private usersModel: Model<Users>) {}
-  async createSuperadminUser(user: Users): Promise<UsersDocument> {
-    const createdUser = new this.usersModel(user);
-    return createdUser.save();
+  constructor(
+    @InjectModel(Users.name) private usersModel: Model<Users>,
+    @InjectDataSource() private dataSource: DataSource,
+  ) {}
+  async createSuperadminUser(userCreateDto: UserCreateDto) {
+    const insertQuery = `INSERT INTO public."Users"(
+      login, email, "passwordHash", "passwordSalt", "createdAt",
+       "confirmationCode", "expirationDate", "isConfirmed")
+      VALUES ('${userCreateDto.login}', '${userCreateDto.email}', 
+        '${userCreateDto.passwordHash}', '${userCreateDto.passwordSalt}', '${userCreateDto.createdAt}', '${userCreateDto.confirmationCode}',
+         '${userCreateDto.expirationDate}', '${userCreateDto.isConfirmed}') RETURNING id`;
+
+    const newUser = await this.dataSource.query(insertQuery);
+    const userId = newUser[0].id;
+    // const us = await this.dataSource.query(`SELECT * FROM public."Users";`);
+
+    // console.log({ createdUser: createdUser });
+    // return us[0];
+    return userId;
   }
   public async getAllUsers(
     sortBy: string,
@@ -37,6 +55,7 @@ export class UsersRepository {
       .sort({ [`accountData.${sortBy}`]: sortDirection === 'asc' ? 1 : -1 })
       .skip(skip)
       .limit(Number(pageSize));
+    // const userss = await this.dataSource.query(`SELECT * FROM public."Users"`)
     return allUsersOutputMapper(users);
   }
 

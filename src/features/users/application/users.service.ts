@@ -2,7 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { Users, UsersDocument, UsersModelType } from '../domain/users.entity';
 import bcrypt from 'bcrypt';
-import { UserCreateModel } from '../api/models/input/create-user.input.model';
+import {
+  UserCreateDto,
+  UserCreateModel,
+} from '../api/models/input/create-user.input.model';
 import {
   AllUsersOutputModel,
   UserInfoAboutHimselfModel,
@@ -13,102 +16,109 @@ import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
 import { EmailResendingInputModel } from '../../auth/api/models/input/email-resending.model';
 import { EmailsManager } from '../../../infrastucture/managers/emails-manager';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
     private usersRepository: UsersRepository,
     private emailsManager: EmailsManager,
+
     @InjectModel(Users.name) private usersModel: UsersModelType,
   ) {}
 
-  async createSuperadminUser(
-    userCreateModel: UserCreateModel,
-  ): Promise<UsersDocument> {
+  async createSuperadminUser(userCreateModel: UserCreateModel) {
     const createdAt = new Date().toISOString();
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(
       userCreateModel.password,
       passwordSalt,
     );
-    const emailConfirmationAndInfo = {
-      confirmationCode: uuidv4(),
-      expirationDate: add(new Date(), {
-        hours: 3,
-        minutes: 3,
-      }),
-      isConfirmed: false,
-      createdAt,
-      passwordSalt,
-      passwordHash,
-    };
-    const user = this.usersModel.createUser(
-      userCreateModel,
-      emailConfirmationAndInfo,
-    );
-    return await this.usersRepository.createSuperadminUser(user);
+    const confirmationCode = uuidv4();
+    const expirationDate = add(new Date(), {
+      hours: 3,
+      minutes: 3,
+    }).toISOString();
+    const isConfirmed = false;
+
+    const userCreateDto = new UserCreateDto();
+    userCreateDto.login = userCreateModel.login;
+    userCreateDto.email = userCreateModel.email;
+    userCreateDto.passwordHash = passwordHash;
+    userCreateDto.passwordSalt = passwordSalt;
+    userCreateDto.createdAt = createdAt;
+    userCreateDto.confirmationCode = confirmationCode;
+    userCreateDto.expirationDate = expirationDate;
+    userCreateDto.isConfirmed = isConfirmed;
+
+    console.log({ user: userCreateDto });
+    const user = await this.usersRepository.createSuperadminUser(userCreateDto);
+    console.log({ user: user });
+
+    return user;
   }
 
-  async createUser(
-    userCreateModel: UserCreateModel,
-  ): Promise<UsersDocument | null> {
-    const createdAt = new Date().toISOString();
-    const passwordSalt = await bcrypt.genSalt(10);
-    const passwordHash = await this._generateHash(
-      userCreateModel.password,
-      passwordSalt,
-    );
-    const emailConfirmationAndInfo = {
-      confirmationCode: uuidv4(),
-      expirationDate: add(new Date(), {
-        hours: 3,
-        minutes: 3,
-      }),
-      isConfirmed: false,
-      createdAt,
-      passwordSalt,
-      passwordHash,
-    };
-    console.log(
-      'Confirmation code: ',
-      emailConfirmationAndInfo.confirmationCode,
-    );
-    const isLoginExists = await this.usersRepository.findUserByLogin(
-      userCreateModel.login,
-    );
+  // async createUser(
+  //   userCreateModel: UserCreateModel,
+  // ): Promise<UsersDocument | null> {
+  //   const createdAt = new Date().toISOString();
+  //   const passwordSalt = await bcrypt.genSalt(10);
+  //   const passwordHash = await this._generateHash(
+  //     userCreateModel.password,
+  //     passwordSalt,
+  //   );
+  //   const emailConfirmationAndInfo = {
+  //     confirmationCode: uuidv4(),
+  //     expirationDate: add(new Date(), {
+  //       hours: 3,
+  //       minutes: 3,
+  //     }),
+  //     isConfirmed: false,
+  //     createdAt,
+  //     passwordSalt,
+  //     passwordHash,
+  //   };
+  //   console.log(
+  //     'Confirmation code: ',
+  //     emailConfirmationAndInfo.confirmationCode,
+  //   );
+  //   const isLoginExists = await this.usersRepository.findUserByLogin(
+  //     userCreateModel.login,
+  //   );
 
-    if (isLoginExists) {
-      throw new BadRequestException({
-        message: [
-          {
-            message: 'login exists',
-            field: 'login',
-          },
-        ],
-      });
-    }
-    const isEmailExists = await this.usersRepository.findUserByLogin(
-      userCreateModel.email,
-    );
-    if (isEmailExists) {
-      throw new BadRequestException({
-        message: [
-          {
-            message: 'email exists',
-            field: 'email',
-          },
-        ],
-      });
-    }
+  //   if (isLoginExists) {
+  //     throw new BadRequestException({
+  //       message: [
+  //         {
+  //           message: 'login exists',
+  //           field: 'login',
+  //         },
+  //       ],
+  //     });
+  //   }
+  //   const isEmailExists = await this.usersRepository.findUserByLogin(
+  //     userCreateModel.email,
+  //   );
+  //   if (isEmailExists) {
+  //     throw new BadRequestException({
+  //       message: [
+  //         {
+  //           message: 'email exists',
+  //           field: 'email',
+  //         },
+  //       ],
+  //     });
+  //   }
 
-    const user = this.usersModel.createUser(
-      userCreateModel,
-      emailConfirmationAndInfo,
-    );
+  //   const user = this.usersModel.createUser(
+  //     userCreateModel,
+  //     emailConfirmationAndInfo,
+  //   );
 
-    await this.emailsManager.sendEmailConfirmationMessage(user);
-    return await this.usersRepository.createSuperadminUser(user);
-  }
+  //   await this.emailsManager.sendEmailConfirmationMessage(user);
+  //   return await this.usersRepository.createSuperadminUser(user);
+  // }
   async resendEmailConfirmationCode(
     emailResendingInputModel: EmailResendingInputModel,
   ): Promise<UsersDocument | null> {
