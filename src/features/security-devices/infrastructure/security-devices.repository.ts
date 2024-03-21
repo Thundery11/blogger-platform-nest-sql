@@ -97,7 +97,6 @@ export class SecurityDevicesRepository {
     WHERE "deviceId" = $1`,
       [deviceId],
     );
-
     return res[1] === 1 ? true : false;
   }
 }
