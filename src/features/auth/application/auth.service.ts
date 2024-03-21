@@ -25,7 +25,7 @@ export class AuthService {
       return null;
     }
 
-    const password = bcrypt.compareSync(pass, user?.accountData.passwordHash);
+    const password = bcrypt.compareSync(pass, user?.passwordHash);
     if (!password) {
       return null;
     }

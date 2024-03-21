@@ -8,6 +8,8 @@ import {
 } from '../api/models/input/create-user.input.model';
 import {
   AllUsersOutputModel,
+  UserFomDb,
+  UserId,
   UserInfoAboutHimselfModel,
 } from '../api/models/output/user-output.model';
 import { SortingQueryParamsForUsers } from '../api/models/query/query-for-sorting';
@@ -28,7 +30,9 @@ export class UsersService {
     @InjectModel(Users.name) private usersModel: UsersModelType,
   ) {}
 
-  async createSuperadminUser(userCreateModel: UserCreateModel) {
+  async createSuperadminUser(
+    userCreateModel: UserCreateModel,
+  ): Promise<number | null> {
     const createdAt = new Date().toISOString();
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(
@@ -52,82 +56,75 @@ export class UsersService {
     userCreateDto.expirationDate = expirationDate;
     userCreateDto.isConfirmed = isConfirmed;
 
-    console.log({ user: userCreateDto });
     const user = await this.usersRepository.createSuperadminUser(userCreateDto);
     console.log({ user: user });
 
     return user;
   }
 
-  // async createUser(
-  //   userCreateModel: UserCreateModel,
-  // ): Promise<UsersDocument | null> {
-  //   const createdAt = new Date().toISOString();
-  //   const passwordSalt = await bcrypt.genSalt(10);
-  //   const passwordHash = await this._generateHash(
-  //     userCreateModel.password,
-  //     passwordSalt,
-  //   );
-  //   const emailConfirmationAndInfo = {
-  //     confirmationCode: uuidv4(),
-  //     expirationDate: add(new Date(), {
-  //       hours: 3,
-  //       minutes: 3,
-  //     }),
-  //     isConfirmed: false,
-  //     createdAt,
-  //     passwordSalt,
-  //     passwordHash,
-  //   };
-  //   console.log(
-  //     'Confirmation code: ',
-  //     emailConfirmationAndInfo.confirmationCode,
-  //   );
-  //   const isLoginExists = await this.usersRepository.findUserByLogin(
-  //     userCreateModel.login,
-  //   );
+  async createUser(userCreateModel: UserCreateModel): Promise<number | null> {
+    const createdAt = new Date().toISOString();
+    const passwordSalt = await bcrypt.genSalt(10);
+    const passwordHash = await this._generateHash(
+      userCreateModel.password,
+      passwordSalt,
+    );
+    const confirmationCode = uuidv4();
+    const expirationDate = add(new Date(), {
+      hours: 3,
+      minutes: 3,
+    }).toISOString();
+    const isConfirmed = false;
+    const isLoginExists = await this.usersRepository.findUserByLogin(
+      userCreateModel.login,
+    );
 
-  //   if (isLoginExists) {
-  //     throw new BadRequestException({
-  //       message: [
-  //         {
-  //           message: 'login exists',
-  //           field: 'login',
-  //         },
-  //       ],
-  //     });
-  //   }
-  //   const isEmailExists = await this.usersRepository.findUserByLogin(
-  //     userCreateModel.email,
-  //   );
-  //   if (isEmailExists) {
-  //     throw new BadRequestException({
-  //       message: [
-  //         {
-  //           message: 'email exists',
-  //           field: 'email',
-  //         },
-  //       ],
-  //     });
-  //   }
+    if (isLoginExists) {
+      throw new BadRequestException({
+        message: [
+          {
+            message: 'login exists',
+            field: 'login',
+          },
+        ],
+      });
+    }
+    const isEmailExists = await this.usersRepository.findUserByLogin(
+      userCreateModel.email,
+    );
+    if (isEmailExists) {
+      throw new BadRequestException({
+        message: [
+          {
+            message: 'email exists',
+            field: 'email',
+          },
+        ],
+      });
+    }
 
-  //   const user = this.usersModel.createUser(
-  //     userCreateModel,
-  //     emailConfirmationAndInfo,
-  //   );
+    const userCreateDto = new UserCreateDto();
+    userCreateDto.login = userCreateModel.login;
+    userCreateDto.email = userCreateModel.email;
+    userCreateDto.passwordHash = passwordHash;
+    userCreateDto.passwordSalt = passwordSalt;
+    userCreateDto.createdAt = createdAt;
+    userCreateDto.confirmationCode = confirmationCode;
+    userCreateDto.expirationDate = expirationDate;
+    userCreateDto.isConfirmed = isConfirmed;
 
-  //   await this.emailsManager.sendEmailConfirmationMessage(user);
-  //   return await this.usersRepository.createSuperadminUser(user);
-  // }
+    await this.emailsManager.sendEmailConfirmationMessage(userCreateDto);
+    return await this.usersRepository.createSuperadminUser(userCreateDto);
+  }
   async resendEmailConfirmationCode(
     emailResendingInputModel: EmailResendingInputModel,
-  ): Promise<UsersDocument | null> {
+  ): Promise<UserFomDb | null> {
     const user = await this.usersRepository.findUserByLogin(
       emailResendingInputModel.email,
     );
     if (!user) return null;
-    if (user.emailConfirmation.isConfirmed === true) return null;
-    if (user.emailConfirmation.isConfirmed === false) {
+    if (user.isConfirmed === true) return null;
+    if (user.isConfirmed === false) {
       const newConfirmationCode = uuidv4();
       const updateConfirmationCode =
         await this.usersRepository.updateConfirmationCode(
@@ -185,7 +182,7 @@ export class UsersService {
   }
   async findUserByLoginOrEmail(
     loginOrEmail: string,
-  ): Promise<UsersDocument | null> {
+  ): Promise<UserFomDb | null> {
     return await this.usersRepository.findUserByLogin(loginOrEmail);
   }
   async deleteUser(id: string): Promise<boolean> {

@@ -12,6 +12,9 @@ export class UserFomDb {
   expirationDate: string;
   isConfirmed: boolean;
 }
+export type UserId = {
+  id: number;
+};
 export class UsersOutputModel {
   id: string;
   login: string;

@@ -3,6 +3,7 @@ import { Users, UsersDocument } from '../domain/users.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
+  UserFomDb,
   UserInfoAboutHimselfModel,
   UsersOutputModel,
   allUsersOutputMapper,
@@ -29,10 +30,6 @@ export class UsersRepository {
 
     const newUser = await this.dataSource.query(insertQuery);
     const userId = newUser[0].id;
-    // const us = await this.dataSource.query(`SELECT * FROM public."Users";`);
-
-    // console.log({ createdUser: createdUser });
-    // return us[0];
     return userId;
   }
   public async getAllUsers(
@@ -54,35 +51,12 @@ export class UsersRepository {
       `%${searchEmailTerm}%`,
     ]);
     return allUsersOutputMapper(users);
-
-    // const users = await this.usersModel
-    //   .find(
-    //     {
-    //       $or: [
-    //         { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
-    //         { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
-    //       ],
-    //     },
-    //     { __v: false, passwordHash: false, passwordSalt: false },
-    //   )
-    //   .sort({ [`accountData.${sortBy}`]: sortDirection === 'asc' ? 1 : -1 })
-    //   .skip(skip)
-    //   .limit(Number(pageSize));
-    // // const userss = await this.dataSource.query(`SELECT * FROM public."Users"`)
-    // return allUsersOutputMapper(users);
   }
 
   public async countDocuments(
     searchLoginTerm: string,
     searchEmailTerm: string,
   ): Promise<number> {
-    // return await this.usersModel.countDocuments({
-    //   $or: [
-    //     { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
-    //     { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
-    //   ],
-    // });
-
     const selectQuery = `SELECT COUNT(*) FROM public."Users" u
     WHERE u."login" ILIKE $1 OR u."email" ILIKE $2;`;
     const result = await this.dataSource.query(selectQuery, [
@@ -93,23 +67,23 @@ export class UsersRepository {
     return totalCount;
     // ``
   }
+
   public async deleteUser(id: string): Promise<boolean> {
     const result = await this.dataSource.query(`DELETE FROM public."Users"
     WHERE "id" = ${id}
     RETURNING "id";`);
     return result[1] === 1 ? true : false;
   }
-  async findUserByLogin(loginOrEmail: string): Promise<UsersDocument | null> {
-    const user = await this.usersModel.findOne({
-      $or: [
-        { 'accountData.login': loginOrEmail },
-        { 'accountData.email': loginOrEmail },
-      ],
-    });
-    if (!user) {
+  async findUserByLogin(loginOrEmail: string): Promise<UserFomDb | null> {
+    const user = await this.dataSource.query(
+      `SELECT * FROM public."Users" u
+    WHERE u."login" LIKE $1 OR u."email" LIKE $1;`,
+      [loginOrEmail],
+    );
+    if (!user[0]) {
       return null;
     }
-    return user;
+    return user[0];
   }
   async findUserById(
     currentUserId: string,
@@ -140,14 +114,15 @@ export class UsersRepository {
     return user;
   }
   async updateConfirmationCode(
-    id: string,
+    id: number,
     confirmationCode: string,
   ): Promise<boolean> {
-    const result = await this.usersModel.updateOne(
-      { _id: new Types.ObjectId(id) },
-      { 'emailConfirmation.confirmationCode': confirmationCode },
+    const result = await this.dataSource.query(
+      `UPDATE public."Users" 
+    SET "confirmationCode" = '${confirmationCode}'
+    WHERE "id" = ${id};`,
     );
-    return result.modifiedCount === 1;
+    return result[1] === 1 ? true : false;
   }
   async findUserByConfirmationCode(
     code: string,
