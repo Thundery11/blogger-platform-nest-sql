@@ -64,18 +64,24 @@ export class SecurityDevicesRepository {
   }
 
   async deleteRefreshTokenWhenLogout(deviceId: string): Promise<boolean> {
-    const result = await this.securityDevicesModel.deleteOne({
-      deviceId,
-    });
-    return result.deletedCount ? true : false;
+    const result = await this.dataSource.query(
+      `DELETE FROM public."Devices"
+    WHERE "deviceId" = $1 RETURNING "deviceId";`,
+      [deviceId],
+    );
+    return result[1] === 1 ? true : false;
   }
 
   async isValidRefreshToken(
     isOkLastactiveDate: string,
   ): Promise<SecurityDevicesDocument | null> {
-    return await this.securityDevicesModel.findOne({
-      lastActiveDate: isOkLastactiveDate,
-    });
+    const token = await this.dataSource.query(
+      `SELECT * FROM public."Devices" d
+    WHERE d."lastActiveDate" = $1;`,
+      [isOkLastactiveDate],
+    );
+    if (!token[0]) return null;
+    return token[0];
   }
   async isValidRefreshTokenwithDevice(
     isOkLastactiveDate: string,

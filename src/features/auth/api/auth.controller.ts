@@ -68,7 +68,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(
-    @CurrentUserId() currentUserId: any,
+    @CurrentUserId() currentUserId: number,
   ): Promise<UserInfoAboutHimselfModel | null> {
     const user = await this.usersService.findUserById(currentUserId);
     if (!user) {
@@ -122,6 +122,7 @@ export class AuthController {
     return true;
   }
 
+  @SkipThrottle()
   @Post('/refresh-token')
   @HttpCode(HttpStatus.OK)
   async refreshToken(@Request() req, @Res() res: Response) {
@@ -139,6 +140,7 @@ export class AuthController {
       })
       .send(tokens.accessToken);
   }
+  @SkipThrottle()
   @Post('/logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Request() req): Promise<boolean> {
