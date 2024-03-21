@@ -152,7 +152,7 @@ export class UsersService {
   ): Promise<AllUsersOutputModel> {
     const {
       sortBy = 'createdAt',
-      sortDirection = 'asc',
+      sortDirection = 'desc',
       pageNumber = 1,
       pageSize = 10,
       searchLoginTerm = '',
