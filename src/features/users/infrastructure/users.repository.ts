@@ -69,9 +69,12 @@ export class UsersRepository {
   }
 
   public async deleteUser(id: string): Promise<boolean> {
-    const result = await this.dataSource.query(`DELETE FROM public."Users"
-    WHERE "id" = ${id}
-    RETURNING "id";`);
+    const result = await this.dataSource.query(
+      `DELETE FROM public."Users"
+    WHERE "id" = $1
+    RETURNING "id";`,
+      [id],
+    );
     return result[1] === 1 ? true : false;
   }
   async findUserByLogin(loginOrEmail: string): Promise<UserFomDb | null> {
@@ -122,19 +125,22 @@ export class UsersRepository {
     const result = await this.dataSource.query(
       `UPDATE public."Users" 
     SET "confirmationCode" = '${confirmationCode}'
-    WHERE "id" = ${id};`,
+    WHERE "id" = $1;`,
+      [id],
     );
     return result[1] === 1 ? true : false;
   }
   async findUserByConfirmationCode(code: string): Promise<UserFomDb | null> {
     const res = await this.dataSource.query(
-      `SELECT * FROM public."Users" WHERE "confirmationCode" = '${code}'`,
+      `SELECT * FROM public."Users" WHERE "confirmationCode" = $1`,
+      [code],
     );
     return res[0];
   }
   async updateConfirmation(id: number): Promise<boolean> {
     const res = await this.dataSource.query(
-      `UPDATE public."Users" SET "isConfirmed" = 'true' WHERE "id" = ${id}`,
+      `UPDATE public."Users" SET "isConfirmed" = 'true' WHERE "id" = $1`,
+      [id],
     );
 
     return res[1] === 1 ? true : false;

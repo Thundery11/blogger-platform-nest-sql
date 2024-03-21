@@ -66,10 +66,10 @@ const useCases = [
     ...useCases,
     JwtStrategy,
     BasicStrategy,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
   controllers: [AuthController, SecurityDevicesController],
   exports: [AuthService],
