@@ -53,13 +53,11 @@ export const usersOutputMapper1 = (user: UsersDocument): UsersOutputModel => {
   outputModel.createdAt = user.accountData.createdAt;
   return outputModel;
 };
-export const userInfoAboutHimselfMapper = (
-  user: UsersDocument,
-): UserInfoAboutHimselfModel => {
+export const userInfoAboutHimselfMapper = (user): UserInfoAboutHimselfModel => {
   const outputModel = new UserInfoAboutHimselfModel();
-  outputModel.email = user.accountData.email;
-  outputModel.login = user.accountData.login;
-  outputModel.userId = user._id.toString();
+  outputModel.email = user.email;
+  outputModel.login = user.login;
+  outputModel.userId = user.id.toString();
   return outputModel;
 };
 

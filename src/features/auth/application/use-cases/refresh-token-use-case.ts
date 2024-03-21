@@ -21,6 +21,7 @@ export class RefreshTokenUseCase
     const payload = await this.authServise.verifyRefreshToken(
       command.refreshToken,
     );
+    console.log('🚀 ~ execute ~ payload:', payload);
     if (!payload) {
       throw new UnauthorizedException();
     }

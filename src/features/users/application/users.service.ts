@@ -199,7 +199,7 @@ export class UsersService {
     return hash;
   }
   async findUserById(
-    currentUserId: string,
+    currentUserId: any,
   ): Promise<UserInfoAboutHimselfModel | null> {
     return await this.usersRepository.findUserById(currentUserId);
   }

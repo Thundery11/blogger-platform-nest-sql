@@ -86,32 +86,34 @@ export class UsersRepository {
     return user[0];
   }
   async findUserById(
-    currentUserId: string,
+    currentUserId: number,
   ): Promise<UserInfoAboutHimselfModel | null> {
-    const user = await this.usersModel.findById(
-      new Types.ObjectId(currentUserId),
-      {
-        _v: false,
-      },
+    const user = await this.dataSource.query(
+      `SELECT "email", "login", "id" 
+    FROM public."Users" u
+    WHERE u."id" = $1`,
+      [currentUserId],
     );
     if (!user) {
       return null;
     }
-    return userInfoAboutHimselfMapper(user);
+    return userInfoAboutHimselfMapper(user[0]);
   }
   async findUserByIdForRefreshTokens(
-    currentUserId: string,
-  ): Promise<UsersDocument | null> {
-    const user = await this.usersModel.findById(
-      new Types.ObjectId(currentUserId),
-      {
-        _v: false,
-      },
+    currentUserId: number,
+  ): Promise<UserFomDb | null> {
+    console.log('🚀 ~ UsersRepository ~ currentUserId:', currentUserId);
+    const user = await this.dataSource.query(
+      `SELECT *
+    FROM public."Users" u
+    WHERE u."id" = $1`,
+      [currentUserId],
     );
+    console.log('🚀 ~ UsersRepository ~ user:', user[0]);
     if (!user) {
       return null;
     }
-    return user;
+    return user[0];
   }
   async updateConfirmationCode(
     id: number,

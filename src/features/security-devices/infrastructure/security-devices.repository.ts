@@ -27,9 +27,6 @@ export class SecurityDevicesRepository {
     const newDevice = await this.dataSource.query(insertQuery);
     const deviceId = newDevice[0].id;
     return deviceId;
-    //  const addedDevice = new this.securityDevicesModel(device);
-    //   addedDevice.save();
-    //   return addedDevice;
   }
   async getDevices(
     userId: string,
@@ -84,23 +81,23 @@ export class SecurityDevicesRepository {
     isOkLastactiveDate: string,
     deviceId1: string,
   ): Promise<SecurityDevicesDocument | null> {
-    return await this.securityDevicesModel.findOne({
-      $and: [
-        {
-          lastActiveDate: isOkLastactiveDate,
-        },
-        { deviceId: deviceId1 },
-      ],
-    });
+    const isValidToken = await this.dataSource
+      .query(`SELECT * FROM public."Devices" d
+    WHERE d."lastActiveDate" = '${isOkLastactiveDate}' AND d."deviceId" = '${deviceId1}'`);
+    if (!isValidToken[0]) return null;
+    return isValidToken[0];
   }
   async updateLastActiveDate(
     deviceId: string,
     lastActiveDate: string,
   ): Promise<boolean> {
-    const result = await this.securityDevicesModel.updateOne(
-      { deviceId },
-      { lastActiveDate },
+    const res = await this.dataSource.query(
+      `UPDATE public."Devices"
+    SET "lastActiveDate" = '${lastActiveDate}' 
+    WHERE "deviceId" = $1`,
+      [deviceId],
     );
-    return result.matchedCount === 1;
+
+    return res[1] === 1 ? true : false;
   }
 }

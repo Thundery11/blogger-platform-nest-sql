@@ -64,11 +64,11 @@ export class AuthController {
       .send(accesAndRefreshTokens.accessToken);
   }
 
-  // @SkipThrottle()
+  @SkipThrottle()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getProfile(
-    @CurrentUserId() currentUserId: string,
+    @CurrentUserId() currentUserId: any,
   ): Promise<UserInfoAboutHimselfModel | null> {
     const user = await this.usersService.findUserById(currentUserId);
     if (!user) {
