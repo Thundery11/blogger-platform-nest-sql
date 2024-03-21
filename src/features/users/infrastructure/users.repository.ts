@@ -12,6 +12,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { UserCreateDto } from '../api/models/input/create-user.input.model';
 
+// const selectUsersConstant = ['login', 'email', 'createdAt', 'expirationDate'];
 @Injectable()
 export class UsersRepository {
   constructor(
@@ -42,33 +43,55 @@ export class UsersRepository {
     searchLoginTerm: string,
     searchEmailTerm: string,
   ): Promise<UsersOutputModel[]> {
-    const users = await this.usersModel
-      .find(
-        {
-          $or: [
-            { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
-            { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
-          ],
-        },
-        { __v: false, passwordHash: false, passwordSalt: false },
-      )
-      .sort({ [`accountData.${sortBy}`]: sortDirection === 'asc' ? 1 : -1 })
-      .skip(skip)
-      .limit(Number(pageSize));
-    // const userss = await this.dataSource.query(`SELECT * FROM public."Users"`)
+    const selectQuery = `SELECT "id", "login", "email", "createdAt",
+    "expirationDate" FROM public."Users" u
+    WHERE u."login" ILIKE $1 OR u."email" ILIKE $2
+     ORDER BY u."${sortBy}" ${sortDirection} 
+     LIMIT ${pageSize} OFFSET ${skip};
+     `;
+    const users = await this.dataSource.query(selectQuery, [
+      `%${searchLoginTerm}%`,
+      `%${searchEmailTerm}%`,
+    ]);
     return allUsersOutputMapper(users);
+
+    // const users = await this.usersModel
+    //   .find(
+    //     {
+    //       $or: [
+    //         { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
+    //         { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
+    //       ],
+    //     },
+    //     { __v: false, passwordHash: false, passwordSalt: false },
+    //   )
+    //   .sort({ [`accountData.${sortBy}`]: sortDirection === 'asc' ? 1 : -1 })
+    //   .skip(skip)
+    //   .limit(Number(pageSize));
+    // // const userss = await this.dataSource.query(`SELECT * FROM public."Users"`)
+    // return allUsersOutputMapper(users);
   }
 
   public async countDocuments(
     searchLoginTerm: string,
     searchEmailTerm: string,
   ): Promise<number> {
-    return await this.usersModel.countDocuments({
-      $or: [
-        { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
-        { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
-      ],
-    });
+    // return await this.usersModel.countDocuments({
+    //   $or: [
+    //     { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
+    //     { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
+    //   ],
+    // });
+
+    const selectQuery = `SELECT COUNT(*) FROM public."Users" u
+    WHERE u."login" ILIKE $1 OR u."email" ILIKE $2;`;
+    const result = await this.dataSource.query(selectQuery, [
+      `%${searchLoginTerm}%`,
+      `%${searchEmailTerm}%`,
+    ]);
+    const totalCount = Number(result[0].count);
+    return totalCount;
+    // ``
   }
   public async deleteUser(id: string): Promise<boolean> {
     const result = await this.usersModel.deleteOne({

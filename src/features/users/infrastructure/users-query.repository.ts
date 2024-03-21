@@ -27,7 +27,8 @@ export class UsersQueryRepository {
   }
   async getUser(userId: number) {
     const user = await this.dataSource.query(
-      `SELECT * FROM public."Users" WHERE "id" = $1;`,
+      `SELECT "id", "login", "email", "createdAt",
+      "expirationDate" FROM public."Users" WHERE "id" = $1;`,
       [userId],
     );
 

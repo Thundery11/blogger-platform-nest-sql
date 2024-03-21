@@ -17,7 +17,7 @@ import { UsersQueryRepository } from '../infrastructure/users-query.repository';
 import { SortingQueryParamsForUsers } from './models/query/query-for-sorting';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 
-@Controller('users')
+@Controller('sa/users')
 export class UsersController {
   constructor(
     private usersService: UsersService,

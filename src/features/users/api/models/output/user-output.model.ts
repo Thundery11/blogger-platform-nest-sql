@@ -61,13 +61,13 @@ export const userInfoAboutHimselfMapper = (
 };
 
 export const allUsersOutputMapper = (
-  users: UsersDocument[],
+  users: UserFomDb[],
 ): UsersOutputModel[] => {
   const allUsersOutput = users.map((user) => ({
-    id: '10',
-    login: user.accountData.login,
-    email: user.accountData.email,
-    createdAt: user.accountData.createdAt,
+    id: user.id.toString(),
+    login: user.login,
+    email: user.email,
+    createdAt: user.createdAt,
   }));
   return allUsersOutput;
 };
