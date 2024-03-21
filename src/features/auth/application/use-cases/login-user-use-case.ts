@@ -31,7 +31,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     device.ip = loginUserWithDeviceDto.ip;
     device.lastActiveDate = lastActiveDate;
     device.title = loginUserWithDeviceDto.title;
-    device.userId = loginUserWithDeviceDto.user._id.toString();
+    device.userId = loginUserWithDeviceDto.user.id;
     await this.securityDevicesService.addDevice(device);
     const accesAndRefreshTokens = { refreshToken, accessToken };
     return accesAndRefreshTokens;

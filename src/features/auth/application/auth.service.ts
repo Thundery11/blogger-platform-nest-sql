@@ -11,6 +11,7 @@ import { UsersRepository } from '../../users/infrastructure/users.repository';
 import { jwtConstants, tokensLivesConstants } from '../constants/constants';
 import { v4 as uuidv4, v4 } from 'uuid';
 import { UsersDocument } from '../../users/domain/users.entity';
+import { UserFomDb } from '../../users/api/models/output/user-output.model';
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,8 +34,8 @@ export class AuthService {
     return user;
   }
 
-  async login(user: UsersDocument) {
-    const payload = { login: user.accountData.login, sub: user._id.toString() };
+  async login(user: any) {
+    const payload = { login: user.login, sub: user.id };
 
     return {
       accessToken: await this.jwtService.signAsync(payload, {
@@ -43,8 +44,8 @@ export class AuthService {
       }),
     };
   }
-  async createRefreshToken(user: UsersDocument, deviceId: string) {
-    const payload = { sub: user._id.toString(), deviceId: deviceId };
+  async createRefreshToken(user: any, deviceId: string) {
+    const payload = { sub: user.id, deviceId: deviceId };
     return await this.jwtService.signAsync(payload, {
       secret: jwtConstants.REFRESH_TOKEN_SECRET,
       expiresIn: tokensLivesConstants['1hour'],
@@ -69,12 +70,10 @@ export class AuthService {
   async confirmEmail(code: string): Promise<boolean> {
     const user = await this.usersRepository.findUserByConfirmationCode(code);
     if (!user) return false;
-    if (user.emailConfirmation.expirationDate < new Date()) return false;
-    if (user.emailConfirmation.confirmationCode !== code) return false;
-    if (user.emailConfirmation.isConfirmed === true) return false;
-    const result = await this.usersRepository.updateConfirmation(
-      user._id.toString(),
-    );
+    if (user.expirationDate < new Date().toISOString()) return false;
+    if (user.confirmationCode !== code) return false;
+    if (user.isConfirmed === true) return false;
+    const result = await this.usersRepository.updateConfirmation(user.id);
     return result;
   }
 

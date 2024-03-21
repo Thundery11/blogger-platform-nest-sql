@@ -70,6 +70,10 @@ export class UsersService {
       passwordSalt,
     );
     const confirmationCode = uuidv4();
+    console.log(
+      '🚀 ~ UsersService ~ createUser ~ confirmationCode:',
+      confirmationCode,
+    );
     const expirationDate = add(new Date(), {
       hours: 3,
       minutes: 3,
@@ -122,6 +126,7 @@ export class UsersService {
     const user = await this.usersRepository.findUserByLogin(
       emailResendingInputModel.email,
     );
+    console.log('🚀 ~ UsersService ~ user:', user);
     if (!user) return null;
     if (user.isConfirmed === true) return null;
     if (user.isConfirmed === false) {

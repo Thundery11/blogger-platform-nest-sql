@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 @Schema()
 export class SecurityDevices {
   @Prop({ required: true })
-  userId: string;
+  userId: number;
   @Prop({ required: true })
   ip: string;
   @Prop({ required: true })

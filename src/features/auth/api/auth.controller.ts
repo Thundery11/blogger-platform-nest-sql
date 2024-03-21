@@ -50,6 +50,7 @@ export class AuthController {
     }
     const title = req.headers['user-agent'] || 'Mozilla';
     const user = req.user;
+    console.log('🚀 ~ AuthController ~ login ~ user:', user);
     const loginUserWithDeviceDto = new LoginUserWithDeviceDto(user, ip, title);
     const accesAndRefreshTokens = await this.commandBus.execute(
       new LoginUserCommand(loginUserWithDeviceDto),

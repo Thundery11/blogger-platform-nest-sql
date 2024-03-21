@@ -124,18 +124,17 @@ export class UsersRepository {
     );
     return result[1] === 1 ? true : false;
   }
-  async findUserByConfirmationCode(
-    code: string,
-  ): Promise<UsersDocument | null> {
-    return await this.usersModel.findOne({
-      'emailConfirmation.confirmationCode': code,
-    });
-  }
-  async updateConfirmation(id: string): Promise<boolean> {
-    const result = await this.usersModel.updateOne(
-      { _id: new Types.ObjectId(id) },
-      { 'emailConfirmation.isConfirmed': true },
+  async findUserByConfirmationCode(code: string): Promise<UserFomDb | null> {
+    const res = await this.dataSource.query(
+      `SELECT * FROM public."Users" WHERE "confirmationCode" = '${code}'`,
     );
-    return result.modifiedCount === 1;
+    return res[0];
+  }
+  async updateConfirmation(id: number): Promise<boolean> {
+    const res = await this.dataSource.query(
+      `UPDATE public."Users" SET "isConfirmed" = 'true' WHERE "id" = ${id}`,
+    );
+
+    return res[1] === 1 ? true : false;
   }
 }

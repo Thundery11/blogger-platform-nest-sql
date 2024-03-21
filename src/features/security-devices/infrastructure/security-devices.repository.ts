@@ -10,18 +10,26 @@ import {
   allSecurityDevicesMapper,
   securityDevicesMapper,
 } from '../api/models/output/security-devices-output-model';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class SecurityDevicesRepository {
   constructor(
     @InjectModel(SecurityDevices.name)
     private securityDevicesModel: Model<SecurityDevices>,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
 
   async addDevice(device: SecurityDevices): Promise<SecurityDevicesDocument> {
-    const addedDevice = new this.securityDevicesModel(device);
-    addedDevice.save();
-    return addedDevice;
+    const insertQuery = `INSERT INTO public."Devices"("deviceId", "userId", "ip", "title", "lastActiveDate")
+   VALUES ('${device.deviceId}', '${device.userId}', '${device.ip}', '${device.title}', '${device.lastActiveDate}') RETURNING "deviceId";`;
+    const newDevice = await this.dataSource.query(insertQuery);
+    const deviceId = newDevice[0].id;
+    return deviceId;
+    //  const addedDevice = new this.securityDevicesModel(device);
+    //   addedDevice.save();
+    //   return addedDevice;
   }
   async getDevices(
     userId: string,
