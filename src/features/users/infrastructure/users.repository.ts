@@ -94,10 +94,10 @@ export class UsersRepository {
     // ``
   }
   public async deleteUser(id: string): Promise<boolean> {
-    const result = await this.usersModel.deleteOne({
-      _id: new Types.ObjectId(id),
-    });
-    return result.deletedCount ? true : false;
+    const result = await this.dataSource.query(`DELETE FROM public."Users"
+    WHERE "id" = ${id}
+    RETURNING "id";`);
+    return result[1] === 1 ? true : false;
   }
   async findUserByLogin(loginOrEmail: string): Promise<UsersDocument | null> {
     const user = await this.usersModel.findOne({

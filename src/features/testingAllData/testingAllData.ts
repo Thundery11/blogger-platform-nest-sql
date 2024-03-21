@@ -7,10 +7,13 @@ import { Users } from '../users/domain/users.entity';
 import { Comments } from '../comments/domain/comments.entity';
 import { LastLikedDbModel, LikesDbModel } from '../likes/domain/likes.entity';
 import { SecurityDevices } from '../security-devices/domain/security-devices-entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {
   constructor(
+    @InjectDataSource() private dataSource: DataSource,
     @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
     @InjectModel(Posts.name) private postsModel: Model<Posts>,
     @InjectModel(Users.name) private usersModel: Model<Users>,
@@ -25,6 +28,7 @@ export class TestingAllDataController {
   @Delete()
   @HttpCode(204)
   async deleteAll() {
+    await this.dataSource.query('TRUNCATE public."Users"');
     await this.postsModel.deleteMany({});
     await this.blogsModel.deleteMany({});
     await this.usersModel.deleteMany({});
