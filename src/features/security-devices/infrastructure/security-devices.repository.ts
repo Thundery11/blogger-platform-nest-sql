@@ -48,7 +48,7 @@ export class SecurityDevicesRepository {
   }
   async terminateOtherSessions(deviceId: string): Promise<boolean> {
     const result = await this.dataSource.query(
-      `DELETE FROM public."Devices
+      `DELETE FROM public."Devices"
     WHERE NOT "deviceId" = $1;`,
       [deviceId],
     );
@@ -118,6 +118,8 @@ export class SecurityDevicesRepository {
     WHERE "deviceId" = $1`,
       [deviceId],
     );
+    console.log('🚀 ~ SecurityDevicesRepository ~ res:', res[0]);
+
     return res[1] === 1 ? true : false;
   }
 }
