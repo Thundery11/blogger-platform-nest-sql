@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Users, UsersDocument } from '../domain/users.entity';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
 import {
   UserFomDb,
   UserInfoAboutHimselfModel,
@@ -16,10 +13,7 @@ import { UserCreateDto } from '../api/models/input/create-user.input.model';
 // const selectUsersConstant = ['login', 'email', 'createdAt', 'expirationDate'];
 @Injectable()
 export class UsersRepository {
-  constructor(
-    @InjectModel(Users.name) private usersModel: Model<Users>,
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
   async createSuperadminUser(userCreateDto: UserCreateDto) {
     const insertQuery = `INSERT INTO public."Users"(
       login, email, "passwordHash", "passwordSalt", "createdAt",

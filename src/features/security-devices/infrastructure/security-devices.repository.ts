@@ -4,11 +4,9 @@ import {
   SecurityDevices,
   SecurityDevicesDocument,
 } from '../domain/security-devices-entity';
-import { Model } from 'mongoose';
 import {
   SecurityDevicesOutputModel,
   allSecurityDevicesMapper,
-  securityDevicesMapper,
 } from '../api/models/output/security-devices-output-model';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -17,8 +15,8 @@ import { DataSource } from 'typeorm';
 export class SecurityDevicesRepository {
   constructor(
     @InjectModel(SecurityDevices.name)
-    private securityDevicesModel: Model<SecurityDevices>,
-    @InjectDataSource() private dataSource: DataSource,
+    @InjectDataSource()
+    private dataSource: DataSource,
   ) {}
 
   async addDevice(device: SecurityDevices): Promise<SecurityDevicesDocument> {
@@ -31,36 +29,47 @@ export class SecurityDevicesRepository {
   async getDevices(
     userId: string,
   ): Promise<SecurityDevicesOutputModel[] | null> {
-    const securityDevices = await this.securityDevicesModel.find({ userId });
+    const securityDevices = await this.dataSource.query(
+      `SELECT * FROM public."Devices" 
+    WHERE "userId" = $1`,
+      [userId],
+    );
+
     if (!securityDevices) {
       return null;
     }
     return allSecurityDevicesMapper(securityDevices);
   }
   async terminateOtherSessions(deviceId: string): Promise<boolean> {
-    const result = await this.securityDevicesModel.deleteMany({
-      deviceId: { $ne: deviceId },
-    });
-    return result.deletedCount >= 1;
+    const result = await this.dataSource.query(
+      `DELETE FROM public."Devices
+    WHERE NOT "deviceId" = $1;`,
+      [deviceId],
+    );
+    return result[1] === 1 ? true : false;
   }
 
   async getCurrentSession(
     deviceId: string,
   ): Promise<SecurityDevicesDocument | null> {
-    const currentSession = await this.securityDevicesModel.findOne({
-      deviceId: deviceId,
-    });
+    const currentSession = await this.dataSource.query(
+      `SELECT * FROM public."Devices" 
+    WHERE "deviceId" = $1;`,
+      [deviceId],
+    );
     if (!currentSession) {
       return null;
     }
-    return currentSession;
+    return currentSession[0];
   }
 
   async deleteCurrentSession(deviceId: string): Promise<boolean> {
-    const result = await this.securityDevicesModel.deleteOne({
-      deviceId: deviceId,
-    });
-    return result.deletedCount ? true : false;
+    const result = await this.dataSource.query(
+      `DELETE FROM public."Devices"
+    WHERE "deviceId" = $1;`,
+      [deviceId],
+    );
+    return result[1] === 1 ? true : false;
   }
 
   async deleteRefreshTokenWhenLogout(deviceId: string): Promise<boolean> {

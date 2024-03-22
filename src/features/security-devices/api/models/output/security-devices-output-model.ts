@@ -6,6 +6,13 @@ export class SecurityDevicesOutputModel {
   lastActiveDate: string;
   deviceId: string;
 }
+export class SecurityDevicesFromDb {
+  deviceId: string;
+  userId: number;
+  ip: string;
+  title: string;
+  lastActiveDate: string;
+}
 
 export const securityDevicesMapper = (
   securityDevice: SecurityDevicesDocument,
@@ -19,7 +26,7 @@ export const securityDevicesMapper = (
 };
 
 export const allSecurityDevicesMapper = (
-  securityDevices: SecurityDevicesDocument[],
+  securityDevices: SecurityDevicesFromDb[],
 ): SecurityDevicesOutputModel[] => {
   const outputModel = securityDevices.map((device) => ({
     ip: device.ip,
