@@ -6,6 +6,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseUUIDPipe,
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,6 +16,9 @@ import { SecurityDevicesOutputModel } from './models/output/security-devices-out
 import { DeleteAllSessionsExceptCurentCommand } from '../application/use-cases/delete-all-sessions-except-current-use-case';
 import { DeleteSpecialSessionCommand } from '../application/use-cases/delete-special-session-use-case';
 import { SkipThrottle } from '@nestjs/throttler';
+import { ArticleParamDTO } from './models/input/delete-model';
+import { UuidValidationPipe } from '../../../infrastucture/decorators/validate/uuid-validation.pipe';
+import { UUID } from 'crypto';
 
 @Controller('security/devices')
 export class SecurityDevicesController {
@@ -56,7 +60,7 @@ export class SecurityDevicesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteSpecialSession(
     @Req() req,
-    @Param('deviceId') deviceId: string,
+    @Param('deviceId', UuidValidationPipe) deviceId: string,
   ): Promise<boolean> {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import {
   SecurityDevices,
   SecurityDevicesDocument,
@@ -10,6 +9,8 @@ import {
 } from '../api/models/output/security-devices-output-model';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { ArticleParamDTO } from '../api/models/input/delete-model';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
 @Injectable()
 export class SecurityDevicesRepository {

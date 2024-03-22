@@ -7,6 +7,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { SecurityDevicesService } from '../security-devices.service';
+import { UUID } from 'crypto';
+import { ArticleParamDTO } from '../../api/models/input/delete-model';
 export class DeleteSpecialSessionCommand {
   constructor(
     public refreshToken: string,
