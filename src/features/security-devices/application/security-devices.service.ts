@@ -4,7 +4,6 @@ import {
   SecurityDevices,
   SecurityDevicesDocument,
 } from '../domain/security-devices-entity';
-import { ArticleParamDTO } from '../api/models/input/delete-model';
 
 @Injectable()
 export class SecurityDevicesService {
