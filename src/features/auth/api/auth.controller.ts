@@ -55,6 +55,14 @@ export class AuthController {
     const accesAndRefreshTokens = await this.commandBus.execute(
       new LoginUserCommand(loginUserWithDeviceDto),
     );
+    console.log(
+      '🚀 ~ AuthController ~ login ~ accesAndRefreshTokens:',
+      accesAndRefreshTokens.accessToken,
+    );
+    console.log(
+      '🚀 ~ AuthController ~ login ~ accesAndRefreshTokens:',
+      accesAndRefreshTokens.refreshToken,
+    );
 
     return response
       .cookie('refreshToken', accesAndRefreshTokens.refreshToken, {

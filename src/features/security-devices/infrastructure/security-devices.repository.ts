@@ -14,15 +14,20 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class SecurityDevicesRepository {
   constructor(
-    @InjectModel(SecurityDevices.name)
     @InjectDataSource()
     private dataSource: DataSource,
   ) {}
 
-  async addDevice(device: SecurityDevices): Promise<SecurityDevicesDocument> {
+  async addDevice(device: SecurityDevices): Promise<string> {
     const insertQuery = `INSERT INTO public."Devices"("deviceId", "userId", "ip", "title", "lastActiveDate")
    VALUES ('${device.deviceId}', '${device.userId}', '${device.ip}', '${device.title}', '${device.lastActiveDate}') RETURNING "deviceId";`;
+
     const newDevice = await this.dataSource.query(insertQuery);
+
+    console.log(
+      '🚀 ~ SecurityDevicesRepository ~ addDevice ~ newDevice:',
+      newDevice,
+    );
     const deviceId = newDevice[0].id;
     return deviceId;
   }

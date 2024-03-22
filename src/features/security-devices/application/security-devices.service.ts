@@ -9,7 +9,7 @@ import {
 export class SecurityDevicesService {
   constructor(private securityDevicesRepository: SecurityDevicesRepository) {}
 
-  async addDevice(device: SecurityDevices): Promise<SecurityDevicesDocument> {
+  async addDevice(device: SecurityDevices): Promise<string> {
     return await this.securityDevicesRepository.addDevice(device);
   }
 
