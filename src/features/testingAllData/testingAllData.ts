@@ -25,7 +25,9 @@ export class TestingAllDataController {
   @Delete()
   @HttpCode(204)
   async deleteAll() {
-    await this.dataSource.query('TRUNCATE public."Users", "Devices"');
+    await this.dataSource.query(
+      'TRUNCATE public."Users", public."Devices", public."Blogs"',
+    );
     await this.postsModel.deleteMany({});
     await this.blogsModel.deleteMany({});
     await this.commentsModel.deleteMany({});

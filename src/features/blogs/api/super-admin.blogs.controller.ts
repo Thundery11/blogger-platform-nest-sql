@@ -95,7 +95,7 @@ export class SuperAdminBlogsController {
   @Put(':id')
   @HttpCode(204)
   async updateBlog(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() blogsUpdateModel: BlogsCreateModel,
   ): Promise<boolean> {
     const result = await this.commandBus.execute(
@@ -110,7 +110,7 @@ export class SuperAdminBlogsController {
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
-  async deleteBlog(@Param('id') id: string): Promise<boolean> {
+  async deleteBlog(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
     const result = await this.commandBus.execute(new DeleteBlogCommand(id));
     if (!result) {
       throw new NotFoundException();

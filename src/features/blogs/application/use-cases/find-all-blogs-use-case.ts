@@ -19,7 +19,6 @@ export class FindAllBlogsUseCase
     const pageNumber = command.blogsQueryParams.pageNumber ?? 1;
     const pageSize = command.blogsQueryParams.pageSize ?? 10;
 
-    const query = { name: new RegExp(searchNameTerm, 'i') };
     const skip = (pageNumber - 1) * pageSize;
     const countedDocuments =
       await this.blogsRepository.countDocuments(searchNameTerm);

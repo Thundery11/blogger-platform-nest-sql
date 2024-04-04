@@ -5,7 +5,7 @@ import { BlogsRepository } from '../../infrastructure/blogs.repository';
 export class UpdateBlogCommand {
   constructor(
     public blogsUpdateModel: BlogsCreateModel,
-    public id: string,
+    public id: number,
   ) {}
 }
 @CommandHandler(UpdateBlogCommand)

@@ -7,6 +7,7 @@ import {
   HttpCode,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -70,8 +71,10 @@ export class BlogsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findBlog(@Param('id') id: string): Promise<BlogsOutputModel> {
-    const blog = await this.blogsQueryRepository.getBlogById(Number(id));
+  async findBlog(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<BlogsOutputModel> {
+    const blog = await this.blogsQueryRepository.getBlogById(id);
     if (!blog) {
       throw new NotFoundException();
     }
@@ -92,7 +95,7 @@ export class BlogsController {
   @Put(':id')
   @HttpCode(204)
   async updateBlog(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() blogsUpdateModel: BlogsCreateModel,
   ): Promise<boolean> {
     const result = await this.commandBus.execute(
@@ -107,7 +110,7 @@ export class BlogsController {
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
-  async deleteBlog(@Param('id') id: string): Promise<boolean> {
+  async deleteBlog(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
     const result = await this.commandBus.execute(new DeleteBlogCommand(id));
     if (!result) {
       throw new NotFoundException();

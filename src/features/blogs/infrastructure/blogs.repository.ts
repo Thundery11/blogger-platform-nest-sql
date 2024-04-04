@@ -64,22 +64,29 @@ export class BlogsRepository {
   }
 
   public async updateBlog(
-    id: string,
+    id: number,
     blogsUpdateModel: BlogsCreateModel,
   ): Promise<boolean> {
-    const result = await this.blogsModel.updateOne(
-      { _id: new Types.ObjectId(id) },
-      blogsUpdateModel,
+    const result = await this.dataSource.query(
+      `UPDATE public."Blogs"
+    SET "name" = '${blogsUpdateModel.name}', 
+    "description" = '${blogsUpdateModel.description}',
+    "websiteUrl" = '${blogsUpdateModel.websiteUrl}'
+    WHERE "id"= $1;`,
+      [id],
     );
+    console.log('🚀 ~ BlogsRepository ~ result:', result);
 
-    return result.matchedCount === 1 ? true : false;
+    return result[1] === 1 ? true : false;
   }
 
-  public async deleteBlog(id: string): Promise<boolean> {
-    const result = await this.blogsModel.deleteOne({
-      _id: new Types.ObjectId(id),
-    });
-
-    return result.deletedCount ? true : false;
+  public async deleteBlog(id: number): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE FROM public."Blogs"
+    WHERE "id" = $1
+    RETURNING "id";`,
+      [id],
+    );
+    return result[1] === 1 ? true : false;
   }
 }
