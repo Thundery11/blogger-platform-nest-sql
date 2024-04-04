@@ -1,21 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Posts, PostsDocument } from '../domain/posts.entity';
+import { CreatePostDto, Posts, PostsDocument } from '../domain/posts.entity';
 import { Model, Types } from 'mongoose';
 import {
   PostOutputModel,
   allPostsOutputMapper,
 } from '../api/models/output/post-output.model';
 import { PostUpdateModel } from '../api/models/input/create-post.input.model';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsRepository {
-  constructor(@InjectModel(Posts.name) private postsModel: Model<Posts>) {}
+  constructor(
+    @InjectModel(Posts.name) private postsModel: Model<Posts>,
+    @InjectDataSource() private dataSource: DataSource,
+  ) {}
 
-  public async createPost(newPost: Posts): Promise<PostsDocument> {
-    const createdPost = new this.postsModel(newPost);
-
-    return createdPost.save();
+  public async createPost(newPost: CreatePostDto): Promise<number | null> {
+    const insertQuery = `INSERT INTO public."Posts"(
+     "title", "shortDescription", "content", "blogId", "blogName", "createdAt")
+      VALUES ('${newPost.title}', '${newPost.shortDescription}','${newPost.content}',
+      '${newPost.blogId}','${newPost.blogName}','${newPost.createdAt}') RETURNING id;`;
+    const createdPost = await this.dataSource.query(insertQuery);
+    const postId = createdPost[0].id;
+    return postId;
   }
   public async countDocuments(query: object): Promise<number> {
     return await this.postsModel.countDocuments(query);

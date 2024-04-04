@@ -122,16 +122,16 @@ export class SuperAdminBlogsController {
   @Post(':blogId/posts')
   @HttpCode(201)
   async createPostForSpecificBlog(
-    @Param('blogId') blogId: string,
+    @Param('blogId', ParseIntPipe) blogId: number,
     @Body() postCreateModel: PostCreateModel,
   ): Promise<PostOutputModel | null> {
-    const result = await this.commandBus.execute(
+    const postId = await this.commandBus.execute(
       new CreatePostForSpecificBlogCommand(postCreateModel, blogId),
     );
-    if (!result) {
+    if (!postId) {
       throw new NotFoundException();
     }
-    return await this.postsQueryRepository.getPostById(result._id);
+    return await this.postsQueryRepository.getPostById(postId);
   }
 
   @Get(':blogId/posts')

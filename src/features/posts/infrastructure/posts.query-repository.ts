@@ -6,15 +6,19 @@ import {
   PostOutputModel,
   postsOutputMapperFinally,
 } from '../api/models/output/post-output.model';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor(@InjectModel(Posts.name) private postsModel: Model<Posts>) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
-  public async getPostById(postId: Types.ObjectId): Promise<PostOutputModel> {
-    const post = await this.postsModel.findById(postId, {
-      _v: false,
-    });
+  public async getPostById(postId: number): Promise<PostOutputModel> {
+    const post = await this.dataSource.query(
+      `SELECT id, title, "shortDescription", content, "blogId", "blogName", "createdAt"
+    FROM public."Posts" WHERE "id" = $1;`,
+      [postId],
+    );
     if (!post) {
       throw new NotFoundException();
     }

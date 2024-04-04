@@ -30,7 +30,7 @@ export class FindAllCommentsUseCase
     command: FindAllCommentsCommand,
   ): Promise<AllCommentsOutputModel | null> {
     const isExistPost = await this.postsQueryRepository.getPostById(
-      new Types.ObjectId(command.postId),
+      Number(command.postId),
     );
     if (!isExistPost) {
       throw new NotFoundException();

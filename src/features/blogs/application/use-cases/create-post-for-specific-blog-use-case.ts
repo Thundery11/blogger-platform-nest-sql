@@ -2,7 +2,9 @@ import { Types } from 'mongoose';
 import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
 import { BlogsQueryRepository } from '../../infrastructure/blogs.query-repository';
 import {
+  CreatePostDto,
   ExtendedLikesInfo,
+  ExtendedLikesInfoo,
   Posts,
   PostsDocument,
 } from '../../../posts/domain/posts.entity';
@@ -12,7 +14,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 export class CreatePostForSpecificBlogCommand {
   constructor(
     public postCreateModel: PostCreateModel,
-    public blogId: string,
+    public blogId: number,
   ) {}
 }
 @CommandHandler(CreatePostForSpecificBlogCommand)
@@ -25,11 +27,10 @@ export class CreatePostForSpecificBlogUseCase
   ) {}
   async execute(
     command: CreatePostForSpecificBlogCommand,
-  ): Promise<PostsDocument | null> {
+  ): Promise<number | null> {
     const { postCreateModel, blogId } = command;
-    const isBlogExist = await this.blogsQueryRepository.getBlogById(
-      Number(blogId),
-    );
+    const isBlogExist = await this.blogsQueryRepository.getBlogById(blogId);
+    console.log('🚀 ~ isBlogExist:', isBlogExist);
     if (!isBlogExist) {
       return null;
     }
@@ -37,20 +38,16 @@ export class CreatePostForSpecificBlogUseCase
     const { title, shortDescription, content } = postCreateModel;
     const createdAt = new Date().toISOString();
 
-    const extendedLikesInfo = new ExtendedLikesInfo();
-    extendedLikesInfo.likesCount = 0;
-    extendedLikesInfo.dislikesCount = 0;
-    extendedLikesInfo.myStatus = 'None';
-    extendedLikesInfo.newestLikes = [];
+    const extendedLikesInfo = new ExtendedLikesInfoo(0, 0, 'None', []);
 
-    const newPost = new Posts();
-    newPost.title = title;
-    newPost.shortDescription = shortDescription;
-    newPost.content = content;
-    newPost.blogId = isBlogExist.id;
-    newPost.blogName = isBlogExist.name;
-    newPost.createdAt = createdAt;
-    newPost.extendedLikesInfo = extendedLikesInfo;
+    const newPost = new CreatePostDto(
+      title,
+      shortDescription,
+      content,
+      Number(isBlogExist.id),
+      isBlogExist.name,
+      createdAt,
+    );
 
     return this.postsRepository.createPost(newPost);
   }

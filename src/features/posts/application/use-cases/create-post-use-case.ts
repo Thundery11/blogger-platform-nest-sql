@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import { BlogsQueryRepository } from '../../../blogs/infrastructure/blogs.query-repository';
 import { PostCreateModelWithBlogId } from '../../api/models/input/create-post.input.model';
 import {
+  CreatePostDto,
   ExtendedLikesInfo,
   Posts,
   PostsDocument,
@@ -18,7 +19,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
     private blogsQueryRepository: BlogsQueryRepository,
     private postsRepository: PostsRepository,
   ) {}
-  async execute(command: CreatePostCommand): Promise<PostsDocument | null> {
+  async execute(command: CreatePostCommand): Promise<number | null> {
     const { title, shortDescription, content, blogId } =
       command.postCreateModelWithBlogId;
 
@@ -36,14 +37,14 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
     extendedLikesInfo.myStatus = 'None';
     extendedLikesInfo.newestLikes = [];
 
-    const newPost = new Posts();
-    newPost.title = title;
-    newPost.shortDescription = shortDescription;
-    newPost.content = content;
-    newPost.blogId = isBlogExist.id;
-    newPost.blogName = isBlogExist.name;
-    newPost.createdAt = createdAt;
-    newPost.extendedLikesInfo = extendedLikesInfo;
+    const newPost = new CreatePostDto(
+      title,
+      shortDescription,
+      content,
+      Number(isBlogExist.id),
+      isBlogExist.name,
+      createdAt,
+    );
 
     return this.postsRepository.createPost(newPost);
   }

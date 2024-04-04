@@ -24,7 +24,7 @@ export class FindPostUseCase implements ICommandHandler<FindPostCommand> {
     );
 
     const post = await this.postsQueryRepository.getPostById(
-      new Types.ObjectId(command.postId),
+      Number(command.postId),
     );
     if (!post) {
       return null;

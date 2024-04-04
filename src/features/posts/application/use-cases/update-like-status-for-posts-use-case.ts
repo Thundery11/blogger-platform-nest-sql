@@ -21,7 +21,7 @@ export class UpdateLikeStatusForPostsUseCase
   ) {}
   async execute(command: UpdateLikeStatusForPostsCommand): Promise<any> {
     const isPostExist = await this.postsQueryRepository.getPostById(
-      new Types.ObjectId(command.updatePostLikesDto.postId),
+      Number(command.updatePostLikesDto.postId),
     );
     console.log('post, that i found at use-case likeStatus: ', isPostExist);
     if (!isPostExist) {

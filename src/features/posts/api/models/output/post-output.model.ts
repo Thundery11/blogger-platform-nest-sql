@@ -1,5 +1,17 @@
+import { MyStatus } from '../../../../likes/domain/likes.entity';
 import { PostsDocument } from '../../../domain/posts.entity';
 
+export class PostFromDb {
+  constructor(
+    public id: number,
+    public title: string,
+    public shortDescription: string,
+    public content: string,
+    public blogId: string,
+    public blogName: string,
+    public createdAt: string,
+  ) {}
+}
 class NewestLikes {
   addedAt: string;
 
@@ -32,28 +44,31 @@ export class PostOutputModel {
     public extendedLikesInfo: ExtendedLikesInfo,
   ) {}
 }
-export const postsOutputMapper = (post: PostsDocument | null) => {
-  if (!post) {
-    return null;
-  }
-  return postsOutputMapperFinally(post);
-};
+// export const postsOutputMapper = (post: PostsDocument | null) => {
+//   if (!post) {
+//     return null;
+//   }
+//   return postsOutputMapperFinally(post);
+// };
 
 export const postsOutputMapperFinally = (
-  post: PostsDocument,
+  post: PostFromDb[],
 ): PostOutputModel => {
-  console.log(post);
-
-  const outputModel = new PostOutputModel(
-    (post.id = post._id.toString()),
-    post.title,
-    post.shortDescription,
-    post.content,
-    post.blogId,
-    post.blogName,
-    post.createdAt,
-    ExtendedLikesInfo.getDefault(),
-  );
+  const outputModel = post.map((p) => ({
+    id: p.id.toString(),
+    title: p.title,
+    shortDescription: p.shortDescription,
+    content: p.content,
+    blogId: p.blogId,
+    blogName: p.blogName,
+    createdAt: p.createdAt,
+    extendedLikesInfo: {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: MyStatus.None,
+      newestLikes: [],
+    },
+  }))[0];
 
   return outputModel;
 };

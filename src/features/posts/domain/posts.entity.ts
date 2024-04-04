@@ -35,6 +35,14 @@ const NewestLikesSchema = SchemaFactory.createForClass(NewestLikes);
 //   @Prop()
 //   newestLikes: NewestLikes[];
 // }
+export class ExtendedLikesInfoo {
+  constructor(
+    public likesCount: number,
+    public dislikesCount: number,
+    public myStatus: string,
+    public newestLikes: [],
+  ) {}
+}
 @Schema({ _id: false })
 export class ExtendedLikesInfo {
   @Prop({ required: true })
@@ -47,6 +55,17 @@ export class ExtendedLikesInfo {
   newestLikes: NewestLikes[];
 }
 const ExtendedLikesInfoSchema = SchemaFactory.createForClass(ExtendedLikesInfo);
+
+export class CreatePostDto {
+  constructor(
+    public title: string,
+    public shortDescription: string,
+    public content: string,
+    public blogId: number,
+    public blogName: string,
+    public createdAt: string,
+  ) {}
+}
 
 @Schema()
 export class Posts {

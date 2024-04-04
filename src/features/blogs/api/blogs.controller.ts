@@ -29,7 +29,6 @@ import {
   AllPostsOutputModel,
   PostOutputModel,
 } from '../../posts/api/models/output/post-output.model';
-import { Types } from 'mongoose';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../application/use-cases/create-blog-use-case';
@@ -46,9 +45,7 @@ import { AuthService } from '../../auth/application/auth.service';
 export class BlogsController {
   constructor(
     private commandBus: CommandBus,
-    private blogsService: BlogsService,
     private blogsQueryRepository: BlogsQueryRepository,
-    private postsService: PostsService,
     private postsQueryRepository: PostsQueryRepository,
     private authService: AuthService,
   ) {}
@@ -122,7 +119,7 @@ export class BlogsController {
   @Post(':blogId/posts')
   @HttpCode(201)
   async createPostForSpecificBlog(
-    @Param('blogId') blogId: string,
+    @Param('blogId', ParseIntPipe) blogId: number,
     @Body() postCreateModel: PostCreateModel,
   ): Promise<PostOutputModel | null> {
     const result = await this.commandBus.execute(
