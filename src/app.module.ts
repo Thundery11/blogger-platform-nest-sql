@@ -61,6 +61,7 @@ import {
 } from './features/security-devices/domain/security-devices-entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TestWalletsModule } from './test-wallets/test-wallets.module';
+import { SuperAdminBlogsController } from './features/blogs/api/super-admin.blogs.controller';
 
 const useCases = [
   CreateBlogUseCase,
@@ -152,6 +153,7 @@ let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
     BlogsController,
     PostsController,
     CommentsController,
+    SuperAdminBlogsController,
   ],
 
   providers: [

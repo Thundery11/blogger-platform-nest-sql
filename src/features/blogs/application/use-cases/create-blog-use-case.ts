@@ -1,5 +1,8 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { BlogsCreateModel } from '../../api/models/input/create-blog.input.model';
+import {
+  BlogsCreateDto,
+  BlogsCreateModel,
+} from '../../api/models/input/create-blog.input.model';
 import {
   Blogs,
   BlogsDocument,
@@ -18,15 +21,17 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
     @InjectModel(Blogs.name) private blogsModel: BlogsModelType,
   ) {}
 
-  async execute(command: CreateBlogCommand): Promise<BlogsDocument> {
+  async execute(command: CreateBlogCommand): Promise<number | null> {
     const createdAt = new Date().toISOString();
     const isMembership = false;
-    const newBlog = this.blogsModel.createBlog(
-      command.blogsCreateModel,
+    const blogsCreateDto = new BlogsCreateDto(
+      command.blogsCreateModel.name,
+      command.blogsCreateModel.description,
+      command.blogsCreateModel.websiteUrl,
       createdAt,
       isMembership,
     );
 
-    return await this.blogsRepository.createBlog(newBlog);
+    return await this.blogsRepository.createBlog(blogsCreateDto);
   }
 }

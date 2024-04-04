@@ -35,7 +35,7 @@ export class FindAllPostsForCurrentBlogUseCase
     // const query = {};
 
     const isBlogExist = await this.blogsQueryRepository.getBlogById(
-      new Types.ObjectId(blogId),
+      Number(blogId),
     );
     if (!isBlogExist) {
       return null;

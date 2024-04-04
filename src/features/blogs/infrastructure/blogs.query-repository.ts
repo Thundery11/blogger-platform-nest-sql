@@ -6,33 +6,27 @@ import {
   BlogsOutputMapper,
   BlogsOutputModel,
 } from '../api/models/output/blog.output.model';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class BlogsQueryRepository {
-  constructor(@InjectModel(Blogs.name) private blogsModel: Model<Blogs>) {}
-  public async getBlogById(
-    blogId: Types.ObjectId,
-  ): Promise<BlogsOutputModel | null> {
-    const blog = await this.blogsModel.findById(blogId, {
-      _v: false,
-    });
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
+  ) {}
+  public async getBlogById(blogId: number): Promise<BlogsOutputModel | null> {
+    const blog = await this.dataSource.query(
+      `SELECT 
+    "id", "name", "description",
+     "websiteUrl", "createdAt", "isMembership"
+     FROM public."Blogs" WHERE "id" = $1;`,
+      [blogId],
+    );
+
     if (!blog) {
-      // throw new NotFoundException();
       return null;
     }
     return BlogsOutputMapper(blog);
   }
-
-  // public async getCurrentBlogById(id: string): Promise<BlogsOutputModel> {
-  //   const blog = await this.blogsModel.findOne(
-  //     { id },
-  //     {
-  //       _v: false,
-  //     },
-  //   );
-  //   if (!blog) {
-  //     throw new NotFoundException();
-  //   }
-  //   return BlogsOutputMapper(blog);
-  // }
 }

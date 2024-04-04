@@ -29,9 +29,7 @@ export function IsBlogAlreadyExist(
 export class IsBlogExistConstraint implements ValidatorConstraintInterface {
   constructor(private blogsQueryRepository: BlogsQueryRepository) {}
   async validate(value: any, args: ValidationArguments) {
-    const blog = await this.blogsQueryRepository.getBlogById(
-      new Types.ObjectId(value),
-    );
+    const blog = await this.blogsQueryRepository.getBlogById(Number(value));
     console.log('blog', blog);
     if (!blog) return false;
     return true;

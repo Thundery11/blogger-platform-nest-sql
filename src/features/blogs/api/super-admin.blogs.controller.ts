@@ -7,6 +7,7 @@ import {
   HttpCode,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -41,8 +42,8 @@ import { AuthService } from '../../auth/application/auth.service';
 
 @ApiTags('Blogs')
 // @UseGuards(AuthGuard)
-@Controller('blogs')
-export class BlogsController {
+@Controller('sa/blogs')
+export class SuperAdminBlogsController {
   constructor(
     private commandBus: CommandBus,
     private blogsService: BlogsService,
@@ -58,10 +59,10 @@ export class BlogsController {
   async createBlog(
     @Body() blogsCreateModel: BlogsCreateModel,
   ): Promise<BlogsOutputModel> {
-    const result = await this.commandBus.execute(
+    const blogId = await this.commandBus.execute(
       new CreateBlogCommand(blogsCreateModel),
     );
-    const blog = await this.blogsQueryRepository.getBlogById(result._id);
+    const blog = await this.blogsQueryRepository.getBlogById(blogId);
     if (!blog) {
       throw new NotFoundException();
     }
@@ -70,8 +71,10 @@ export class BlogsController {
 
   @Get(':id')
   @HttpCode(200)
-  async findBlog(@Param('id') id: string): Promise<BlogsOutputModel> {
-    const blog = await this.blogsQueryRepository.getBlogById(Number(id));
+  async findBlog(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<BlogsOutputModel> {
+    const blog = await this.blogsQueryRepository.getBlogById(id);
     if (!blog) {
       throw new NotFoundException();
     }

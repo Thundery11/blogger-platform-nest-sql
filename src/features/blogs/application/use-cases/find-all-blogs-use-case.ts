@@ -21,10 +21,11 @@ export class FindAllBlogsUseCase
 
     const query = { name: new RegExp(searchNameTerm, 'i') };
     const skip = (pageNumber - 1) * pageSize;
-    const countedDocuments = await this.blogsRepository.countDocuments(query);
+    const countedDocuments =
+      await this.blogsRepository.countDocuments(searchNameTerm);
     const pagesCount: number = Math.ceil(countedDocuments / pageSize);
     const allBlogs = await this.blogsRepository.getAllBlogs(
-      query,
+      searchNameTerm,
       sortBy,
       sortDirection,
       pageSize,

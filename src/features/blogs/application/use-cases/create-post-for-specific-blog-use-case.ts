@@ -28,7 +28,7 @@ export class CreatePostForSpecificBlogUseCase
   ): Promise<PostsDocument | null> {
     const { postCreateModel, blogId } = command;
     const isBlogExist = await this.blogsQueryRepository.getBlogById(
-      new Types.ObjectId(blogId),
+      Number(blogId),
     );
     if (!isBlogExist) {
       return null;

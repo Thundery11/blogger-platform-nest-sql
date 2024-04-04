@@ -139,6 +139,8 @@ export class AuthController {
       })
       .send(tokens.accessToken);
   }
+
+  
   @SkipThrottle()
   @Post('/logout')
   @HttpCode(HttpStatus.NO_CONTENT)

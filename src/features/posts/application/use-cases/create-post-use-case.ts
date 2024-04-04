@@ -23,7 +23,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
       command.postCreateModelWithBlogId;
 
     const isBlogExist = await this.blogsQueryRepository.getBlogById(
-      new Types.ObjectId(blogId),
+      Number(blogId),
     );
     if (!isBlogExist) {
       return null;

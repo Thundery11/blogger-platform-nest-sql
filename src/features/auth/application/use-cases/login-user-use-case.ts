@@ -32,7 +32,9 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     device.lastActiveDate = lastActiveDate;
     device.title = loginUserWithDeviceDto.title;
     device.userId = loginUserWithDeviceDto.user.id;
+
     await this.securityDevicesService.addDevice(device);
+
     const accesAndRefreshTokens = { refreshToken, accessToken };
     return accesAndRefreshTokens;
   }

@@ -21,3 +21,13 @@ export class BlogsCreateModel {
   @Matches('^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$')
   websiteUrl: string;
 }
+
+export class BlogsCreateDto {
+  constructor(
+    public name: string,
+    public description: string,
+    public websiteUrl: string,
+    public createdAt: string,
+    public isMembership: boolean,
+  ) {}
+}
