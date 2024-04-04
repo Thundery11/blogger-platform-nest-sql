@@ -41,8 +41,8 @@ const useCases = [
     PassportModule,
     ThrottlerModule.forRoot([
       {
-        ttl: 10000,
-        limit: 5,
+        ttl: 100000,
+        limit: 500,
       },
     ]),
     JwtModule.register({
