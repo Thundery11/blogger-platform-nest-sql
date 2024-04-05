@@ -166,16 +166,16 @@ export class PostsController {
   //   return result;
   // }
 
-  @UseGuards(BasicAuthGuard)
-  @Delete(':id')
-  @HttpCode(204)
-  async deletePost(@Param('id') id: string): Promise<boolean> {
-    const result = await this.commandBus.execute(new DeletePostCommand(id));
-    if (!result) {
-      throw new NotFoundException();
-    }
-    return result;
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Delete(':id')
+  // @HttpCode(204)
+  // async deletePost(@Param('id') id: string): Promise<boolean> {
+  //   const result = await this.commandBus.execute(new DeletePostCommand(id));
+  //   if (!result) {
+  //     throw new NotFoundException();
+  //   }
+  //   return result;
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Post(':postId/comments')

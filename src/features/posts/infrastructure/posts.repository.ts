@@ -128,10 +128,13 @@ export class PostsRepository {
     await post.save();
   }
 
-  public async deletePost(id: string): Promise<boolean> {
-    const result = await this.postsModel.deleteOne({
-      _id: new Types.ObjectId(id),
-    });
-    return result.deletedCount ? true : false;
+  public async deletePost(blogId: number, postId: number): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `DELETE FROM public."Posts"
+    WHERE "id" = $1 AND "blogId" = $2
+    RETURNING "id";`,
+      [postId, blogId],
+    );
+    return result[1] === 1 ? true : false;
   }
 }

@@ -44,6 +44,7 @@ import { CreatePostForSpecificBlogCommand } from '../application/use-cases/creat
 import { FindAllPostsForCurrentBlogCommand } from '../../posts/application/use-cases/find-all-posts-for-current-blog-use-case';
 import { AuthService } from '../../auth/application/auth.service';
 import { UpdatePostCommand } from '../../posts/application/use-cases/update-post-use-case';
+import { DeletePostCommand } from '../../posts/application/delete-post-use-case';
 
 @ApiTags('Blogs')
 // @UseGuards(AuthGuard)
@@ -168,6 +169,22 @@ export class SuperAdminBlogsController {
     }
     const result = await this.commandBus.execute(
       new UpdatePostCommand(postUpdateModel, blogId, postId),
+    );
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @Delete(':blogId/posts/:postId')
+  @HttpCode(204)
+  async deletePost(
+    @Param('blogId', ParseIntPipe) blogId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+  ): Promise<boolean> {
+    const result = await this.commandBus.execute(
+      new DeletePostCommand(blogId, postId),
     );
     if (!result) {
       throw new NotFoundException();
