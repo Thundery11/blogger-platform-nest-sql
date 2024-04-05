@@ -40,7 +40,10 @@ export class PostsRepository {
     return countedPosts;
   }
   async countAllDocuments(): Promise<number> {
-    return await this.postsModel.countDocuments({});
+    const result = await this.dataSource.query(`SELECT COUNT(*) FROM 
+    public."Posts"`);
+    console.log('🚀 ~ PostsRepository ~ countAllDocuments ~ result:', result);
+    return Number(result[0].count);
   }
   public async getAllPostsForCurrentBlog(
     blogId: number,
@@ -104,25 +107,20 @@ export class PostsRepository {
     pageSize: number,
     skip: number,
   ): Promise<PostOutputModel[]> {
-    const selectQuery = `SELECT p."id", p."title", p."shortDescription", p."content", p."createdAt", p."blogId"
+    const selectQuery = `SELECT p."id", p."title",
+    p."shortDescription", p."content", p."createdAt",
+    p."blogId", b."name" as "blogName"
     FROM public."Posts" p
     LEFT JOIN "Blogs" b
     ON b.id = p."blogId"
-    WHERE p."id" = $1
     ORDER BY p."${sortBy}" ${sortDirection}
        LIMIT ${pageSize} OFFSET ${skip};`;
+    console.log('🚀 ~ PostsRepository ~ selectQuery:', selectQuery);
     const posts = await this.dataSource.query(selectQuery);
     console.log('🚀 ~ PostsRepository ~ posts:', posts);
 
     return allPostsOutputMapper(posts);
   }
-  // public async updatePost(
-  //   id: string,
-  //   postUpdateModel: PostUpdateModel,
-  // ): Promise<boolean> {
-  //   const result = await this.postsModel.updateOne({ id }, postUpdateModel);
-  //   return result.matchedCount ? true : false;
-  // }
 
   public async save(post: PostsDocument) {
     await post.save();

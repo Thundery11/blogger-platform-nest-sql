@@ -27,7 +27,6 @@ export class FindAllPostsUseCase
       pageNumber = 1,
       pageSize = 10,
     } = command.sortingQueryParams;
-    // const query = {};
     const skip = (pageNumber - 1) * pageSize;
     const countedDocuments = await this.postsRepository.countAllDocuments();
     const pagesCount: number = Math.ceil(countedDocuments / pageSize);
@@ -38,39 +37,39 @@ export class FindAllPostsUseCase
       pageSize,
       skip,
     );
-    if (command.userId === null) {
-      const result = await Promise.all(
-        allPosts.map(
-          async (post) => (
-            (post.extendedLikesInfo.likesCount =
-              await this.likesRepository.countLikes(post.id.toString())),
-            (post.extendedLikesInfo.dislikesCount =
-              await this.likesRepository.countDislikes(post.id.toString())),
-            (post.extendedLikesInfo.myStatus = MyStatus.None),
-            (post.extendedLikesInfo.newestLikes =
-              await this.likesRepository.getLastLikes(post.id))
-          ),
-        ),
-      );
-    } else if (typeof command.userId === 'string') {
-      const result = await Promise.all(
-        allPosts.map(
-          async (post) => (
-            (post.extendedLikesInfo.likesCount =
-              await this.likesRepository.countLikes(post.id.toString())),
-            (post.extendedLikesInfo.dislikesCount =
-              await this.likesRepository.countDislikes(post.id.toString())),
-            (post.extendedLikesInfo.myStatus =
-              await this.likesRepository.whatIsMyStatus(
-                command.userId!,
-                post.id,
-              )),
-            (post.extendedLikesInfo.newestLikes =
-              await this.likesRepository.getLastLikes(post.id))
-          ),
-        ),
-      );
-    }
+    // if (command.userId === null) {
+    //   const result = await Promise.all(
+    //     allPosts.map(
+    //       async (post) => (
+    //         (post.extendedLikesInfo.likesCount =
+    //           await this.likesRepository.countLikes(post.id.toString())),
+    //         (post.extendedLikesInfo.dislikesCount =
+    //           await this.likesRepository.countDislikes(post.id.toString())),
+    //         (post.extendedLikesInfo.myStatus = MyStatus.None),
+    //         (post.extendedLikesInfo.newestLikes =
+    //           await this.likesRepository.getLastLikes(post.id))
+    //       ),
+    //     ),
+    //   );
+    // } else if (typeof command.userId === 'string') {
+    //   const result = await Promise.all(
+    //     allPosts.map(
+    //       async (post) => (
+    //         (post.extendedLikesInfo.likesCount =
+    //           await this.likesRepository.countLikes(post.id.toString())),
+    //         (post.extendedLikesInfo.dislikesCount =
+    //           await this.likesRepository.countDislikes(post.id.toString())),
+    //         (post.extendedLikesInfo.myStatus =
+    //           await this.likesRepository.whatIsMyStatus(
+    //             command.userId!,
+    //             post.id,
+    //           )),
+    //         (post.extendedLikesInfo.newestLikes =
+    //           await this.likesRepository.getLastLikes(post.id))
+    //       ),
+    //     ),
+    //   );
+    // }
 
     const presentationalAllPosts = {
       pagesCount,
