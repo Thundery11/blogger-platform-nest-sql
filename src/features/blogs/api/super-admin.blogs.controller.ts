@@ -74,7 +74,7 @@ export class SuperAdminBlogsController {
     }
     return blog;
   }
-
+  @UseGuards(BasicAuthGuard)
   @Get(':id')
   @HttpCode(200)
   async findBlog(
@@ -86,7 +86,7 @@ export class SuperAdminBlogsController {
     }
     return blog;
   }
-
+  @UseGuards(BasicAuthGuard)
   @Get()
   @HttpCode(200)
   async findAllBlogs(
