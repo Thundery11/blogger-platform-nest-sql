@@ -150,21 +150,21 @@ export class PostsController {
     return await this.postsQueryRepository.getPostById(result._id);
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(204)
-  async updatePost(
-    @Param('id') id: string,
-    @Body() postUpdateModel: PostUpdateModel,
-  ): Promise<boolean> {
-    const result = await this.commandBus.execute(
-      new UpdatePostCommand(postUpdateModel, id),
-    );
-    if (!result) {
-      throw new NotFoundException();
-    }
-    return result;
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Put(':id')
+  // @HttpCode(204)
+  // async updatePost(
+  //   @Param('id') id: string,
+  //   @Body() postUpdateModel: PostUpdateModel,
+  // ): Promise<boolean> {
+  //   const result = await this.commandBus.execute(
+  //     new UpdatePostCommand(postUpdateModel, id),
+  //   );
+  //   if (!result) {
+  //     throw new NotFoundException();
+  //   }
+  //   return result;
+  // }
 
   @UseGuards(BasicAuthGuard)
   @Delete(':id')

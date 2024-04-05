@@ -6,18 +6,21 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 export class UpdatePostCommand {
   constructor(
     public postUpdateModel: PostUpdateModel,
-    public id: string,
+    public blogId: number,
+    public postId: number,
   ) {}
 }
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostUseCase implements ICommandHandler<UpdatePostCommand> {
   constructor(private postsRepository: PostsRepository) {}
   async execute(command: UpdatePostCommand): Promise<boolean> {
-    const post = await this.postsRepository.getPostById(
-      new Types.ObjectId(command.id),
+    const { blogId, postId, postUpdateModel } = command;
+    const post = await this.postsRepository.getPostForBlogById(postId, blogId);
+
+    return await this.postsRepository.updatePostForCurrentBlog(
+      postId,
+      blogId,
+      postUpdateModel,
     );
-    post.updatePost(command.postUpdateModel);
-    await this.postsRepository.save(post);
-    return true;
   }
 }

@@ -5,6 +5,7 @@ import {
   Get,
   Headers,
   HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   ParseIntPipe,
@@ -24,7 +25,10 @@ import {
 import { SortingQueryParams } from './models/query/query-for-sorting';
 import { PostsService } from '../../posts/application/posts.service';
 import { PostsQueryRepository } from '../../posts/infrastructure/posts.query-repository';
-import { PostCreateModel } from '../../posts/api/models/input/create-post.input.model';
+import {
+  PostCreateModel,
+  PostUpdateModel,
+} from '../../posts/api/models/input/create-post.input.model';
 import {
   AllPostsOutputModel,
   PostOutputModel,
@@ -39,6 +43,7 @@ import { DeleteBlogCommand } from '../application/use-cases/delete-blog-use-case
 import { CreatePostForSpecificBlogCommand } from '../application/use-cases/create-post-for-specific-blog-use-case';
 import { FindAllPostsForCurrentBlogCommand } from '../../posts/application/use-cases/find-all-posts-for-current-blog-use-case';
 import { AuthService } from '../../auth/application/auth.service';
+import { UpdatePostCommand } from '../../posts/application/use-cases/update-post-use-case';
 
 @ApiTags('Blogs')
 // @UseGuards(AuthGuard)
@@ -145,6 +150,26 @@ export class SuperAdminBlogsController {
       new FindAllPostsForCurrentBlogCommand(sortingQueryParams, blogid, userId),
     );
     if (result === null) {
+      throw new NotFoundException();
+    }
+    return result;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @Put(':blogId/posts/:postId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updatePost(
+    @Param('blogId', ParseIntPipe) blogId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+    @Body() postUpdateModel: PostUpdateModel,
+  ): Promise<boolean> {
+    if (isNaN(postId) || isNaN(blogId)) {
+      throw new Error('Invalid postId or blogId');
+    }
+    const result = await this.commandBus.execute(
+      new UpdatePostCommand(postUpdateModel, blogId, postId),
+    );
+    if (!result) {
       throw new NotFoundException();
     }
     return result;

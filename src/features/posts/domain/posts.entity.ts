@@ -100,7 +100,7 @@ export class Posts {
     }
     this.title = postUpdateModel.title;
 
-    this.blogId = postUpdateModel.blogId;
+    // this.blogId = postUpdateModel.blogId;
   }
 }
 // extendedLikesInfo :{

@@ -65,9 +65,4 @@ export class PostUpdateModel {
   @MaxLength(1000)
   @IsNotEmpty()
   content: string;
-
-  @IsString()
-  // @Validate(IsBlogExistConstraint)
-  @IsBlogAlreadyExist('blogId doesnt exist')
-  blogId: string;
 }

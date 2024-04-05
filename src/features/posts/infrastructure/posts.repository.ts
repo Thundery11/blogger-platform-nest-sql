@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreatePostDto, Posts, PostsDocument } from '../domain/posts.entity';
 import { Model, Types } from 'mongoose';
 import {
+  PostFromDb,
   PostOutputModel,
   allPostsOutputMapper,
 } from '../api/models/output/post-output.model';
@@ -60,14 +61,42 @@ export class PostsRepository {
     const posts = await this.dataSource.query(selectQuery, [blogId]);
     return allPostsOutputMapper(posts);
   }
-  public async getPostById(postId: Types.ObjectId): Promise<PostsDocument> {
-    const post = await this.postsModel.findById(postId, {
-      _v: false,
-    });
-    if (!post) {
+  public async getPostById(postId) {
+    return 'id';
+  }
+  public async getPostForBlogById(
+    postId: number,
+    blogId: number,
+  ): Promise<PostFromDb> {
+    const selectQuery = `SELECT p."id", p."title",
+    p."shortDescription", p."content", p."createdAt",
+    p."blogId", b."name" as "blogName"
+    FROM public."Posts" p
+    LEFT JOIN "Blogs" b
+    ON b.id = p."blogId"
+    WHERE b."id" = $1 AND p."id" = $2`;
+    const post = await this.dataSource.query(selectQuery, [blogId, postId]);
+    console.log('🚀 ~ PostsRepository ~ post:', post);
+    if (!post[0]) {
       throw new NotFoundException();
     }
-    return post;
+    return post[0];
+  }
+
+  public async updatePostForCurrentBlog(
+    postId: number,
+    blogId: number,
+    postUpdateModel: PostUpdateModel,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `UPDATE public."Posts"
+    SET "title" = '${postUpdateModel.title}', 
+    "shortDescription" = '${postUpdateModel.shortDescription}',
+    "content" = '${postUpdateModel.content}'
+    WHERE "id" = $1 AND "blogId" = $2;`,
+      [postId, blogId],
+    );
+    return result[1] === 1 ? true : false;
   }
   public async getAllPosts(
     sortBy: string,
