@@ -113,7 +113,7 @@ export class PostsRepository {
     FROM public."Posts" p
     LEFT JOIN "Blogs" b
     ON b.id = p."blogId"
-    ORDER BY p."${sortBy}" ${sortDirection}
+    ORDER BY b."${sortBy}" ${sortDirection}
        LIMIT ${pageSize} OFFSET ${skip};`;
     console.log('🚀 ~ PostsRepository ~ selectQuery:', selectQuery);
     const posts = await this.dataSource.query(selectQuery);
