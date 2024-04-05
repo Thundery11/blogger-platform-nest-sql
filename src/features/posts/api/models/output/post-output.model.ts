@@ -59,7 +59,7 @@ export const postsOutputMapperFinally = (
     title: p.title,
     shortDescription: p.shortDescription,
     content: p.content,
-    blogId: p.blogId,
+    blogId: p.blogId.toString(),
     blogName: p.blogName,
     createdAt: p.createdAt,
     extendedLikesInfo: {
