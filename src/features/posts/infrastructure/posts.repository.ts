@@ -24,10 +24,6 @@ export class PostsRepository {
    '${newPost.createdAt}','${newPost.blogId}') RETURNING id;`;
 
     const createdPost = await this.dataSource.query(insertQuery);
-    console.log(
-      '🚀 ~ PostsRepository ~ createPost ~ createdPost:',
-      createdPost,
-    );
     const postId = createdPost[0].id;
     return postId;
   }
@@ -35,7 +31,12 @@ export class PostsRepository {
     return await this.postsModel.countDocuments(query);
   }
   async countAllDocumentsForCurrentBlog(blogId: number): Promise<number> {
-    return await this.postsModel.countDocuments({ blogId: blogId });
+    const selectQuery = `SELECT COUNT(*) FROM
+    public."Posts" p
+    WHERE p."blogId" = $1`;
+    const result = await this.dataSource.query(selectQuery, [blogId]);
+    const countedPosts = Number(result[0].count);
+    return countedPosts;
   }
   async countAllDocuments(): Promise<number> {
     return await this.postsModel.countDocuments({});
@@ -47,11 +48,16 @@ export class PostsRepository {
     pageSize: number,
     skip: number,
   ): Promise<PostOutputModel[]> {
-    const posts = await this.postsModel
-      .find({ blogId }, { __v: false })
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
-      .skip(skip)
-      .limit(Number(pageSize));
+    const selectQuery = `SELECT p."id", p."title",
+    p."shortDescription", p."content", p."createdAt",
+    p."blogId", b."name" as "blogName"
+    FROM public."Posts" p
+    LEFT JOIN "Blogs" b
+    ON b.id = p."blogId"
+    WHERE b."id" = $1
+    ORDER BY p."${sortBy}" ${sortDirection}
+       LIMIT ${pageSize} OFFSET ${skip};`;
+    const posts = await this.dataSource.query(selectQuery, [blogId]);
     return allPostsOutputMapper(posts);
   }
   public async getPostById(postId: Types.ObjectId): Promise<PostsDocument> {
@@ -69,11 +75,15 @@ export class PostsRepository {
     pageSize: number,
     skip: number,
   ): Promise<PostOutputModel[]> {
-    const posts = await this.postsModel
-      .find({}, { __v: false })
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
-      .skip(skip)
-      .limit(Number(pageSize));
+    const selectQuery = `SELECT p."id", p."title", p."shortDescription", p."content", p."createdAt", p."blogId"
+    FROM public."Posts" p
+    LEFT JOIN "Blogs" b
+    ON b.id = p."blogId"
+    WHERE p."id" = $1
+    ORDER BY p."${sortBy}" ${sortDirection}
+       LIMIT ${pageSize} OFFSET ${skip};`;
+    const posts = await this.dataSource.query(selectQuery);
+    console.log('🚀 ~ PostsRepository ~ posts:', posts);
 
     return allPostsOutputMapper(posts);
   }

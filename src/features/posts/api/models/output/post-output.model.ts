@@ -82,10 +82,10 @@ export class AllPostsOutputModel {
 }
 
 export const allPostsOutputMapper = (
-  posts: PostsDocument[],
+  posts: PostFromDb[],
 ): PostOutputModel[] => {
   const allPostsOutput = posts.map((post) => ({
-    id: post._id.toString(),
+    id: post.id.toString(),
     title: post.title,
     shortDescription: post.shortDescription,
     content: post.content,
@@ -93,10 +93,10 @@ export const allPostsOutputMapper = (
     blogName: post.blogName,
     createdAt: post.createdAt,
     extendedLikesInfo: {
-      likesCount: post.extendedLikesInfo.likesCount,
-      dislikesCount: post.extendedLikesInfo.dislikesCount,
-      myStatus: post.extendedLikesInfo.myStatus,
-      newestLikes: post.extendedLikesInfo.newestLikes,
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: MyStatus.None,
+      newestLikes: [],
     },
   }));
   return allPostsOutput;

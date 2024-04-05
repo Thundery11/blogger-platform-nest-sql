@@ -133,21 +133,14 @@ export class SuperAdminBlogsController {
     }
     return await this.postsQueryRepository.getPostById(postId);
   }
-
+  @UseGuards(BasicAuthGuard)
   @Get(':blogId/posts')
   @HttpCode(200)
   async findAllPostsforScpecificBlog(
-    @Headers() headers,
     @Param('blogId', ParseIntPipe) blogid: number,
     @Query() sortingQueryParams: SortingQueryParams,
   ): Promise<AllPostsOutputModel | null> {
-    let userId: string | null;
-    if (!headers.authorization) {
-      userId = null;
-    } else {
-      const token = headers.authorization.split(' ')[1];
-      userId = await this.authService.getUserByToken(token);
-    }
+    const userId = null;
     const result = await this.commandBus.execute(
       new FindAllPostsForCurrentBlogCommand(sortingQueryParams, blogid, userId),
     );
