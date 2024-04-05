@@ -138,7 +138,7 @@ export class SuperAdminBlogsController {
   @HttpCode(200)
   async findAllPostsforScpecificBlog(
     @Headers() headers,
-    @Param('blogId') blogid: string,
+    @Param('blogId', ParseIntPipe) blogid: number,
     @Query() sortingQueryParams: SortingQueryParams,
   ): Promise<AllPostsOutputModel | null> {
     let userId: string | null;

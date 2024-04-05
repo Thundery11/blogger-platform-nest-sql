@@ -9,7 +9,7 @@ import { MyStatus } from '../../../likes/domain/likes.entity';
 export class FindAllPostsForCurrentBlogCommand {
   constructor(
     public sortingQueryParams: SortingQueryParams,
-    public blogId: string,
+    public blogId: number,
     public userId: string | null,
   ) {}
 }
@@ -53,7 +53,7 @@ export class FindAllPostsForCurrentBlogUseCase
       skip,
     );
 
-    if (command.userId === null) {
+    if (userId === null) {
       const result = await Promise.all(
         allPosts.map(
           async (post) => (

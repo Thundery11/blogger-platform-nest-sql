@@ -19,24 +19,29 @@ export class PostsRepository {
 
   public async createPost(newPost: CreatePostDto): Promise<number | null> {
     const insertQuery = `INSERT INTO public."Posts"(
-     "title", "shortDescription", "content", "blogId", "blogName", "createdAt")
-      VALUES ('${newPost.title}', '${newPost.shortDescription}','${newPost.content}',
-      '${newPost.blogId}','${newPost.blogName}','${newPost.createdAt}') RETURNING id;`;
+  "title", "shortDescription", "content","createdAt", "blogId")
+   VALUES ('${newPost.title}', '${newPost.shortDescription}','${newPost.content}',
+   '${newPost.createdAt}','${newPost.blogId}') RETURNING id;`;
+
     const createdPost = await this.dataSource.query(insertQuery);
+    console.log(
+      '🚀 ~ PostsRepository ~ createPost ~ createdPost:',
+      createdPost,
+    );
     const postId = createdPost[0].id;
     return postId;
   }
   public async countDocuments(query: object): Promise<number> {
     return await this.postsModel.countDocuments(query);
   }
-  async countAllDocumentsForCurrentBlog(blogId: string): Promise<number> {
+  async countAllDocumentsForCurrentBlog(blogId: number): Promise<number> {
     return await this.postsModel.countDocuments({ blogId: blogId });
   }
   async countAllDocuments(): Promise<number> {
     return await this.postsModel.countDocuments({});
   }
   public async getAllPostsForCurrentBlog(
-    blogId: string,
+    blogId: number,
     sortBy: string,
     sortDirection: string,
     pageSize: number,
