@@ -8,6 +8,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -181,26 +182,22 @@ export class PostsController {
   @Post(':postId/comments')
   @HttpCode(HttpStatus.CREATED)
   async createCommentForSpecificPost(
-    @Param('postId') postId: string,
+    @Param('postId', ParseIntPipe) postId: number,
     @Body() createCommentModel: CreateCommentInputModel,
     @CurrentUserId() currentUserId,
   ): Promise<CommentsOutputModel | null> {
     const userId = currentUserId;
-    const user = await this.usersQueryRepository.getUserById(
-      new Types.ObjectId(userId),
-    );
-    const userLogin = user.login;
-    const userData: UserData = { userId, userLogin };
+    // const user = await this.usersQueryRepository.getUser(userId);
+    // const userLogin = user.login;
+    // const userData: UserData = { userId, userLogin };
     const result = await this.commandBus.execute(
       new CreateCommentForSpecificPostCommand(
         createCommentModel,
-        userData,
+        userId,
         postId,
       ),
     );
-    const comment = await this.commentsQueryRepository.getCommentById(
-      result._id,
-    );
+    const comment = await this.commentsQueryRepository.getCommentById(result);
     if (!comment) {
       throw new NotFoundException();
     }
@@ -211,8 +208,8 @@ export class PostsController {
   @Put(':postId/like-status')
   @HttpCode(HttpStatus.NO_CONTENT)
   async likeStatus(
-    @CurrentUserId() currentUserId: string,
-    @Param('postId') postId: string,
+    @CurrentUserId() currentUserId: number,
+    @Param('postId', ParseIntPipe) postId: number,
     @Body() likeStatusModel: LikeStatus,
   ): Promise<boolean> {
     const updatePostLikesDto = new UpdateLikeForPostsDto(

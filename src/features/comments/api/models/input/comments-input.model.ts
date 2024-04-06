@@ -7,3 +7,12 @@ export class CreateCommentInputModel {
   @Length(20, 300)
   content: string;
 }
+
+export class CreateCommentDto {
+  constructor(
+    public userId: number,
+    public postId: number,
+    public createdAt: string,
+    public content: string,
+  ) {}
+}

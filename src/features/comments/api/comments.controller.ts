@@ -14,6 +14,7 @@ import {
   ForbiddenException,
   Body,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { LikesService } from '../../likes/application/likes.service';
@@ -37,7 +38,6 @@ import { UpdateLikeStatusCommand } from '../application/use-cases/update-like-st
 export class CommentsController {
   constructor(
     private commandBus: CommandBus,
-    private likesService: LikesService,
     private authService: AuthService,
     private commentsQueryRepository: CommentsQueryRepository,
   ) {}
@@ -71,17 +71,16 @@ export class CommentsController {
   @Put(':commentId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateComment(
-    @CurrentUserId() currentUserId: string,
-    @Param('commentId') commentId: string,
+    @CurrentUserId() currentUserId: number,
+    @Param('commentId', ParseIntPipe) commentId: number,
     @Body() content: CreateCommentInputModel,
   ) {
-    const comment = await this.commentsQueryRepository.getCommentById(
-      new Types.ObjectId(commentId),
-    );
+    const comment =
+      await this.commentsQueryRepository.getCommentById(commentId);
     if (!comment) {
       throw new NotFoundException();
     }
-    if (comment.commentatorInfo.userId !== currentUserId) {
+    if (Number(comment.commentatorInfo.userId) !== currentUserId) {
       throw new ForbiddenException();
     }
     const result = await this.commandBus.execute(
@@ -97,16 +96,15 @@ export class CommentsController {
   @Delete(':commentId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteComment(
-    @Param('commentId') commentId: string,
-    @CurrentUserId() currentUserId: string,
+    @Param('commentId', ParseIntPipe) commentId: number,
+    @CurrentUserId() currentUserId: number,
   ): Promise<boolean> {
-    const comment = await this.commentsQueryRepository.getCommentById(
-      new Types.ObjectId(commentId),
-    );
+    const comment =
+      await this.commentsQueryRepository.getCommentById(commentId);
     if (!comment) {
       throw new NotFoundException();
     }
-    if (comment.commentatorInfo.userId !== currentUserId) {
+    if (Number(comment.commentatorInfo.userId) !== currentUserId) {
       throw new ForbiddenException();
     }
     const result = await this.commandBus.execute(
@@ -122,8 +120,8 @@ export class CommentsController {
   @Put(':commentId/like-status')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateLikeStatus(
-    @Param('commentId') commentId: string,
-    @CurrentUserId() currentUserId: string,
+    @Param('commentId', ParseIntPipe) commentId: number,
+    @CurrentUserId() currentUserId: number,
     @Body() likeStatus: LikeStatus,
   ): Promise<boolean> {
     const updateLikeDto = new UpdateLikeDto(

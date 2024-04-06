@@ -7,8 +7,8 @@ import { MyStatus } from '../../../likes/domain/likes.entity';
 
 export class FindPostCommand {
   constructor(
-    public userId: string | null,
-    public postId: string,
+    public userId: number | null,
+    public postId: number,
   ) {}
 }
 @CommandHandler(FindPostCommand)
@@ -35,7 +35,9 @@ export class FindPostUseCase implements ICommandHandler<FindPostCommand> {
           command.postId,
         )
       : MyStatus.None;
-    const lastLiked = await this.likesRepository.getLastLikes(command.postId);
+    const lastLiked = await this.likesRepository.getLastLikes(
+      Number(command.postId),
+    );
 
     post.extendedLikesInfo.dislikesCount = dislikesCount;
     post.extendedLikesInfo.likesCount = likesCount;

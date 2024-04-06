@@ -26,8 +26,8 @@ export class LikesRepository {
     private lastLikedModel: Model<LastLikedDbModel>,
   ) {}
   async isLikeExist(
-    userId: string,
-    _parentId: string,
+    userId: number,
+    _parentId: number,
   ): Promise<LikesDocument | null> {
     return await this.likesModel.findOne(
       { userId: userId, parentId: _parentId },
@@ -42,8 +42,8 @@ export class LikesRepository {
   }
 
   async updateLike(
-    userId: string,
-    _parentId: string,
+    userId: number,
+    _parentId: number,
     _myStatus: MyStatus,
   ): Promise<boolean> {
     const result = await this.likesModel.updateOne(
@@ -53,20 +53,20 @@ export class LikesRepository {
     return result.modifiedCount === 1;
   }
 
-  async countLikes(_parentId: string): Promise<number> {
+  async countLikes(_parentId: number): Promise<number> {
     return await this.likesModel.countDocuments({
       parentId: _parentId,
       myStatus: MyStatus.Like,
     });
   }
-  async countDislikes(_parentId: string): Promise<number> {
+  async countDislikes(_parentId: number): Promise<number> {
     return await this.likesModel.countDocuments({
       parentId: _parentId,
       myStatus: MyStatus.Dislike,
     });
   }
 
-  async whatIsMyStatus(userId: string, _parentId: string): Promise<string> {
+  async whatIsMyStatus(userId: number, _parentId: number): Promise<string> {
     const whatIsMyStatus = await this.likesModel.findOne({
       userId: userId,
       parentId: _parentId,
@@ -83,7 +83,7 @@ export class LikesRepository {
     lastLikedEntity.save();
     return lastLikedEntity;
   }
-  async deleteLastLiked(userId: string, postId: string): Promise<boolean> {
+  async deleteLastLiked(userId: number, postId: number): Promise<boolean> {
     const result = await this.lastLikedModel.deleteOne({
       userId: userId,
       postId: postId,
@@ -91,13 +91,13 @@ export class LikesRepository {
     return result.deletedCount === 1;
   }
   async isItFirstLike(
-    userId: string,
-    postId: string,
+    userId: number,
+    postId: number,
   ): Promise<LastLikedDocument | null> {
     return await this.lastLikedModel.findOne({ userId, postId });
   }
 
-  async getLastLikes(postId: string): Promise<LastLikedOutputType[]> {
+  async getLastLikes(postId: number): Promise<LastLikedOutputType[]> {
     return await this.lastLikedModel
       .find({ postId }, { _id: 0, __v: 0, postId: 0 })
       .sort({ addedAt: -1 })

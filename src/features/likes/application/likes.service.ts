@@ -11,7 +11,7 @@ import { LastLikedOutputType } from '../api/models/likes-output-models';
 export class LikesService {
   constructor(protected likesRepository: LikesRepository) {}
 
-  async isLikeExist(userId: string, _parentId: string): Promise<boolean> {
+  async isLikeExist(userId: number, _parentId: number): Promise<boolean> {
     const result = await this.likesRepository.isLikeExist(userId, _parentId);
     if (!result) return false;
 
@@ -19,8 +19,8 @@ export class LikesService {
   }
 
   async addLike(
-    userId: string,
-    _parentId: string,
+    userId: number,
+    _parentId: number,
     _myStatus: MyStatus,
   ): Promise<boolean> {
     const like = new LikesDbType(
@@ -33,8 +33,8 @@ export class LikesService {
     return await this.likesRepository.addLike(like);
   }
   async updateLike(
-    userId: string,
-    _parentId: string,
+    userId: number,
+    _parentId: number,
     _myStatus: MyStatus,
   ): Promise<boolean> {
     const like = await this.likesRepository.isLikeExist(userId, _parentId);
@@ -49,9 +49,9 @@ export class LikesService {
   }
 
   async lastLiked(
-    userId: string,
+    userId: number,
     login: string,
-    postId: string,
+    postId: number,
   ): Promise<LastLikedDocument | null> {
     const addedAt = new Date().toISOString();
     const lastLiked = new LastLikedType(addedAt, userId, login, postId);
@@ -63,10 +63,10 @@ export class LikesService {
     }
     return null;
   }
-  async deleteLastLiked(userId: string, postId: string): Promise<boolean> {
+  async deleteLastLiked(userId: number, postId: number): Promise<boolean> {
     return await this.likesRepository.deleteLastLiked(userId, postId);
   }
-  async getLastLikes(postId: string): Promise<LastLikedOutputType[]> {
+  async getLastLikes(postId: number): Promise<LastLikedOutputType[]> {
     return await this.likesRepository.getLastLikes(postId);
   }
 }

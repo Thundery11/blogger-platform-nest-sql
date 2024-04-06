@@ -18,7 +18,7 @@ export class UpdateCommentsLikeStatusUseCase
   ) {}
   async execute(command: UpdateLikeStatusCommand): Promise<any> {
     const comment = await this.commentsQueryRepository.getCommentById(
-      new Types.ObjectId(command.updateLikeDto.commentId),
+      command.updateLikeDto.commentId,
     );
     if (!comment) {
       throw new NotFoundException();

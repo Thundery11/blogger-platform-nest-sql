@@ -9,8 +9,8 @@ import { CommentsOutputModel } from '../../api/models/output/comments-model.outp
 
 export class FindCommentCommand {
   constructor(
-    public userId: string | null,
-    public commentId: string,
+    public userId: number | null,
+    public commentId: number,
   ) {}
 }
 @CommandHandler(FindCommentCommand)
@@ -28,7 +28,7 @@ export class FindCommentUseCase implements ICommandHandler<FindCommentCommand> {
     );
     const likesCount = await this.likesRepository.countLikes(command.commentId);
     const comment = await this.commentsQueryRepository.getCommentById(
-      new Types.ObjectId(command.commentId),
+      command.commentId,
     );
     const reaction = command.userId
       ? await this.likesRepository.whatIsMyStatus(

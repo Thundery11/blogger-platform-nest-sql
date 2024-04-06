@@ -2,20 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comments, CommentsDocument } from '../domain/comments.entity';
 import { Model, Types } from 'mongoose';
-import { CreateCommentInputModel } from '../api/models/input/comments-input.model';
+import {
+  CreateCommentDto,
+  CreateCommentInputModel,
+} from '../api/models/input/comments-input.model';
 import {
   AllCommentsOutputMapper,
   CommentsOutputModel,
 } from '../api/models/output/comments-model.output';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsRepository {
   constructor(
+    @InjectDataSource() private dataSource: DataSource,
     @InjectModel(Comments.name) private commentsModel: Model<Comments>,
   ) {}
-  async createComment(comment: Comments): Promise<CommentsDocument> {
-    const createdComment = new this.commentsModel(comment);
-    return createdComment.save();
+  async createComment(comment: CreateCommentDto): Promise<number> {
+    const insertQuery = `INSERT INTO public."Comments"(
+      "postId", "content", "userId", "createdAt")
+       VALUES (${comment.postId}, $1, 
+       ${comment.userId}, '${comment.createdAt}') RETURNING id;`;
+
+    const createdComment = await this.dataSource.query(insertQuery, [
+      comment.content,
+    ]);
+    return createdComment[0].id;
   }
   async updateComment(
     content: CreateCommentInputModel,
@@ -38,7 +51,7 @@ export class CommentsRepository {
     // return result.matchedCount === 1 ? true : false;
   }
 
-  async deleteComment(commentId: string): Promise<boolean> {
+  async deleteComment(commentId: number): Promise<boolean> {
     const result = await this.commentsModel.deleteOne({
       _id: new Types.ObjectId(commentId),
     });

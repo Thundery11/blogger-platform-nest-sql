@@ -64,8 +64,11 @@ export class PostsRepository {
     const posts = await this.dataSource.query(selectQuery, [blogId]);
     return allPostsOutputMapper(posts);
   }
-  public async getPostById(postId) {
-    return 'id';
+  public async getPostById(postId): Promise<number | null> {
+    const selectQuery = `SELECT  "id" FROM public."Posts" 
+    WHERE "id" = $1`;
+    const result = await this.dataSource.query(selectQuery, [postId]);
+    return result[0];
   }
   public async getPostForBlogById(
     postId: number,

@@ -19,6 +19,14 @@ class CommentatorInfo {
   ) {}
 }
 
+export class CommentFromDb {
+  id: number;
+  content: string;
+  userId: number;
+  userLogin: string;
+  createdAt: string;
+}
+
 export class CommentsOutputModel {
   constructor(
     public id: string,
@@ -37,19 +45,22 @@ export class AllCommentsOutputModel {
 }
 
 export const commentsOutputQueryMapper = (
-  comment: CommentsDocument,
+  comment: CommentFromDb[],
 ): CommentsOutputModel => {
-  const commentatorInfo = new CommentatorInfo(
-    comment.commentatorInfo.userId,
-    comment.commentatorInfo.userLogin,
-  );
-  const outputModel = new CommentsOutputModel(
-    (comment.id = comment._id.toString()),
-    comment.content,
-    commentatorInfo,
-    comment.createdAt,
-    LikesInfo.getDefault(),
-  );
+  const outputModel = comment.map((c) => ({
+    id: c.id.toString(),
+    content: c.content,
+    commentatorInfo: {
+      userId: c.userId.toString(),
+      userLogin: c.userLogin,
+    },
+    createdAt: c.createdAt,
+    likesInfo: {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: MyStatus.None,
+    },
+  }))[0];
   return outputModel;
 };
 

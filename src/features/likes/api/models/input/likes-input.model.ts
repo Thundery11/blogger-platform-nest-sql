@@ -3,8 +3,8 @@ import { MyStatus } from '../../../domain/likes.entity';
 
 export class LikesDbType {
   constructor(
-    public userId: string,
-    public parentId: string,
+    public userId: number,
+    public parentId: number,
     public createdAt: string,
     public myStatus: MyStatus,
   ) {}
@@ -13,9 +13,9 @@ export class LikesDbType {
 export class LastLikedType {
   constructor(
     public addedAt: string,
-    public userId: string,
+    public userId: number,
     public login: string,
-    public postId: string,
+    public postId: number,
   ) {}
 }
 
@@ -27,15 +27,15 @@ export class LikeStatus {
 
 export class UpdateLikeDto {
   constructor(
-    public commentId: string,
-    public currentUserId: string,
+    public commentId: number,
+    public currentUserId: number,
     public likeStatus: MyStatus,
   ) {}
 }
 export class UpdateLikeForPostsDto {
   constructor(
-    public postId: string,
-    public currentUserId: string,
+    public postId: number,
+    public currentUserId: number,
     public likeStatusModel: MyStatus,
   ) {}
 }
