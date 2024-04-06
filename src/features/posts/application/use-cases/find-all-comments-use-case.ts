@@ -61,9 +61,13 @@ export class FindAllCommentsUseCase
         allComments.map(
           async (comment) => (
             (comment.likesInfo.likesCount =
-              await this.likesRepository.countLikes(comment.id)),
+              await this.likesRepository.countLikesComments(
+                Number(comment.id),
+              )),
             (comment.likesInfo.dislikesCount =
-              await this.likesRepository.countDislikes(comment.id)),
+              await this.likesRepository.countDislikesComments(
+                Number(comment.id),
+              )),
             (comment.likesInfo.myStatus = MyStatus.None)
           ),
         ),
@@ -73,14 +77,18 @@ export class FindAllCommentsUseCase
         allComments.map(
           async (comment) => (
             (comment.likesInfo.myStatus =
-              await this.likesRepository.whatIsMyStatus(
+              await this.likesRepository.whatIsMyStatusComments(
                 command.userId!,
-                comment.id,
+                Number(comment.id),
               )),
             (comment.likesInfo.likesCount =
-              await this.likesRepository.countLikes(comment.id)),
+              await this.likesRepository.countLikesComments(
+                Number(comment.id),
+              )),
             (comment.likesInfo.dislikesCount =
-              await this.likesRepository.countDislikes(comment.id))
+              await this.likesRepository.countDislikesComments(
+                Number(comment.id),
+              ))
           ),
         ),
       );

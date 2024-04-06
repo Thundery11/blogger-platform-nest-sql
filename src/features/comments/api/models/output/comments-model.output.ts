@@ -65,20 +65,20 @@ export const commentsOutputQueryMapper = (
 };
 
 export const AllCommentsOutputMapper = (
-  comments: CommentsDocument[],
+  comments: CommentFromDb[],
 ): CommentsOutputModel[] => {
   const allCommentsOutput = comments.map((comment) => ({
-    id: comment._id.toString(),
+    id: comment.id.toString(),
     content: comment.content,
     commentatorInfo: {
-      userId: comment.commentatorInfo.userId,
-      userLogin: comment.commentatorInfo.userLogin,
+      userId: comment.userId.toString(),
+      userLogin: comment.userLogin,
     },
     createdAt: comment.createdAt,
     likesInfo: {
-      likesCount: comment.likesInfo.likesCount,
-      dislikesCount: comment.likesInfo.dislikesCount,
-      myStatus: comment.likesInfo.myStatus,
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: MyStatus.None,
     },
   }));
   return allCommentsOutput;

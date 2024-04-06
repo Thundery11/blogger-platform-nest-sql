@@ -59,15 +59,26 @@ export class CommentsRepository {
     skip: number,
     postId: number,
   ): Promise<CommentsOutputModel[]> {
-    const comments = await this.commentsModel
-      .find({ postId: postId }, { id: 0, __v: 0 })
-      .sort({ [sortBy]: sortDirection === 'asc' ? 1 : -1 })
-      .skip(skip)
-      .limit(Number(pageSize));
-    console.log('repoComments: ', comments);
+    const selectQuery = `SELECT c."id", c."content", c."userId", c."createdAt", u."login" as "userLogin"
+    FROM public."Comments" c
+    LEFT JOIN "Users" u
+    ON u."id" = c."userId"
+    WHERE "postId" = $1
+    ORDER BY "${sortBy}" ${sortDirection}
+       LIMIT ${pageSize} OFFSET ${skip}
+  ;`;
+    const comments = await this.dataSource.query(selectQuery, [postId]);
+    console.log('🚀 ~ CommentsRepository ~ comments:', comments);
+
     return AllCommentsOutputMapper(comments);
   }
   async countAllDocumentsForCurrentPost(postId: number): Promise<number> {
-    return await this.commentsModel.countDocuments({ postId: postId });
+    const result = await this.dataSource.query(
+      `SELECT COUNT(*) 
+   FROM public."Comments" 
+   WHERE "postId" = $1;`,
+      [postId],
+    );
+    return Number(result[0].count);
   }
 }
