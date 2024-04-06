@@ -36,12 +36,12 @@ export class UpdateLikeStatusForPostsUseCase
 
     const login = user.login;
     console.log('userLogin:', login);
-    const isLikeExist = await this.likesService.isLikeExist(
+    const isLikeExist = await this.likesService.isLikeExistPosts(
       command.updatePostLikesDto.currentUserId,
       command.updatePostLikesDto.postId,
     );
     if (!isLikeExist) {
-      const newLike = await this.likesService.addLike(
+      const newLike = await this.likesService.addLikePosts(
         command.updatePostLikesDto.currentUserId,
         command.updatePostLikesDto.postId,
         command.updatePostLikesDto.likeStatusModel,
@@ -57,7 +57,7 @@ export class UpdateLikeStatusForPostsUseCase
       }
       return true;
     }
-    const result = await this.likesService.updateLike(
+    const result = await this.likesService.updateLikePosts(
       command.updatePostLikesDto.currentUserId,
       command.updatePostLikesDto.postId,
       command.updatePostLikesDto.likeStatusModel,

@@ -11,35 +11,40 @@ import { LastLikedOutputType } from '../api/models/likes-output-models';
 export class LikesService {
   constructor(protected likesRepository: LikesRepository) {}
 
-  async isLikeExist(userId: number, _parentId: number): Promise<boolean> {
-    const result = await this.likesRepository.isLikeExist(userId, _parentId);
+  async isLikeExistComments(
+    userId: number,
+    _parentId: number,
+  ): Promise<boolean> {
+    const result = await this.likesRepository.isLikeExistComments(
+      userId,
+      _parentId,
+    );
     if (!result) return false;
 
     return true;
   }
 
-  async addLike(
+  async addLikeComments(
     userId: number,
     _parentId: number,
     _myStatus: MyStatus,
   ): Promise<boolean> {
-    const like = new LikesDbType(
+    const createdAt = new Date().toISOString();
+    const like = new LikesDbType(userId, _parentId, createdAt, _myStatus);
+
+    return await this.likesRepository.addLikeComments(like);
+  }
+  async updateLikeComments(
+    userId: number,
+    _parentId: number,
+    _myStatus: MyStatus,
+  ): Promise<boolean> {
+    const like = await this.likesRepository.isLikeExistComments(
       userId,
       _parentId,
-      new Date().toISOString(),
-      _myStatus,
     );
-
-    return await this.likesRepository.addLike(like);
-  }
-  async updateLike(
-    userId: number,
-    _parentId: number,
-    _myStatus: MyStatus,
-  ): Promise<boolean> {
-    const like = await this.likesRepository.isLikeExist(userId, _parentId);
     if (like!.myStatus !== _myStatus) {
-      return await this.likesRepository.updateLike(
+      return await this.likesRepository.updateLikeComments(
         userId,
         _parentId,
         _myStatus,
@@ -47,7 +52,44 @@ export class LikesService {
     }
     return true;
   }
+  async isLikeExistPosts(userId: number, _parentId: number): Promise<boolean> {
+    const result = await this.likesRepository.isLikeExistPosts(
+      userId,
+      _parentId,
+    );
+    if (!result) return false;
 
+    return true;
+  }
+
+  async addLikePosts(
+    userId: number,
+    _parentId: number,
+    _myStatus: MyStatus,
+  ): Promise<boolean> {
+    const createdAt = new Date().toISOString();
+    const like = new LikesDbType(userId, _parentId, createdAt, _myStatus);
+
+    return await this.likesRepository.addLikePosts(like);
+  }
+  async updateLikePosts(
+    userId: number,
+    _parentId: number,
+    _myStatus: MyStatus,
+  ): Promise<boolean> {
+    const like = await this.likesRepository.isLikeExistComments(
+      userId,
+      _parentId,
+    );
+    if (like!.myStatus !== _myStatus) {
+      return await this.likesRepository.updateLikePosts(
+        userId,
+        _parentId,
+        _myStatus,
+      );
+    }
+    return true;
+  }
   async lastLiked(
     userId: number,
     login: string,

@@ -18,8 +18,10 @@ export class FindPostUseCase implements ICommandHandler<FindPostCommand> {
     private likesRepository: LikesRepository,
   ) {}
   async execute(command: FindPostCommand): Promise<PostOutputModel | null> {
-    const likesCount = await this.likesRepository.countLikes(command.postId);
-    const dislikesCount = await this.likesRepository.countDislikes(
+    const likesCount = await this.likesRepository.countLikesPosts(
+      command.postId,
+    );
+    const dislikesCount = await this.likesRepository.countDislikesPosts(
       command.postId,
     );
 
@@ -30,7 +32,7 @@ export class FindPostUseCase implements ICommandHandler<FindPostCommand> {
       return null;
     }
     const reaction = command.userId
-      ? await this.likesRepository.whatIsMyStatus(
+      ? await this.likesRepository.whatIsMyStatusPosts(
           command.userId,
           command.postId,
         )

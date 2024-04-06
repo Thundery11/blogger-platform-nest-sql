@@ -6,7 +6,7 @@ import { CommentsDocument } from '../../domain/comments.entity';
 export class UpdateCommentCommand {
   constructor(
     public content: CreateCommentInputModel,
-    public commentId: string,
+    public commentId: number,
   ) {}
 }
 
@@ -15,9 +15,7 @@ export class UpdateCommentUseCase
   implements ICommandHandler<UpdateCommentCommand>
 {
   constructor(private commentsRepository: CommentsRepository) {}
-  async execute(
-    command: UpdateCommentCommand,
-  ): Promise<CommentsDocument | null> {
+  async execute(command: UpdateCommentCommand): Promise<boolean> {
     return await this.commentsRepository.updateComment(
       command.content,
       command.commentId,

@@ -66,7 +66,7 @@ export class PostsController {
   @Get(':id')
   @HttpCode(200)
   async findPost(
-    @Param('id') postId: string,
+    @Param('id', ParseIntPipe) postId: number,
     @Headers() headers,
   ): Promise<PostOutputModel | null> {
     if (!headers.authorization) {
@@ -116,10 +116,10 @@ export class PostsController {
   @HttpCode(HttpStatus.OK)
   async findAllComments(
     @Query() sortingQueryParams: SortingQueryParamsForPosts,
-    @Param('postId') postId: string,
+    @Param('postId', ParseIntPipe) postId: number,
     @Headers() headers,
   ) {
-    let userId: string | null;
+    let userId: number | null;
     if (!headers.authorization) {
       userId = null;
     } else {

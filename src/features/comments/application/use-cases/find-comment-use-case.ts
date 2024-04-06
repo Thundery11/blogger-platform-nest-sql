@@ -23,15 +23,17 @@ export class FindCommentUseCase implements ICommandHandler<FindCommentCommand> {
   async execute(
     command: FindCommentCommand,
   ): Promise<CommentsOutputModel | null> {
-    const dislikesCount = await this.likesRepository.countDislikes(
+    const dislikesCount = await this.likesRepository.countDislikesComments(
       command.commentId,
     );
-    const likesCount = await this.likesRepository.countLikes(command.commentId);
+    const likesCount = await this.likesRepository.countLikesComments(
+      command.commentId,
+    );
     const comment = await this.commentsQueryRepository.getCommentById(
       command.commentId,
     );
     const reaction = command.userId
-      ? await this.likesRepository.whatIsMyStatus(
+      ? await this.likesRepository.whatIsMyStatusComments(
           command.userId,
           command.commentId,
         )

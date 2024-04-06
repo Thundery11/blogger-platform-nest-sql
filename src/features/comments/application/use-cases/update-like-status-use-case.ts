@@ -23,18 +23,18 @@ export class UpdateCommentsLikeStatusUseCase
     if (!comment) {
       throw new NotFoundException();
     }
-    const isLikeExist = await this.likesService.isLikeExist(
+    const isLikeExist = await this.likesService.isLikeExistComments(
       command.updateLikeDto.currentUserId,
       command.updateLikeDto.commentId,
     );
     if (!isLikeExist) {
-      return await this.likesService.addLike(
+      return await this.likesService.addLikeComments(
         command.updateLikeDto.currentUserId,
         command.updateLikeDto.commentId,
         command.updateLikeDto.likeStatus,
       );
     }
-    const result = await this.likesService.updateLike(
+    const result = await this.likesService.updateLikeComments(
       command.updateLikeDto.currentUserId,
       command.updateLikeDto.commentId,
       command.updateLikeDto.likeStatus,

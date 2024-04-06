@@ -32,30 +32,24 @@ export class CommentsRepository {
   }
   async updateComment(
     content: CreateCommentInputModel,
-    commentId: string,
-  ): Promise<CommentsDocument | null> {
-    const result = await this.commentsModel.findById(
-      new Types.ObjectId(commentId),
-    );
-    console.log('result:', result);
-    if (!result) {
-      return null;
-    }
-    console.log(content);
-    Object.assign(result, content);
-    return result.save();
-    // const result = await this.commentsModel.updateOne(
-    //   { _id: new Types.ObjectId(commentId) },
-    //   content,
-    // );
-    // return result.matchedCount === 1 ? true : false;
+    commentId: number,
+  ): Promise<boolean> {
+    const updateQuery = `UPDATE public."Comments"
+  SET "content" = $1
+  WHERE "id" = $2;`;
+    const result = await this.dataSource.query(updateQuery, [
+      content.content,
+      commentId,
+    ]);
+    return result[1] === 1 ? true : false;
   }
 
   async deleteComment(commentId: number): Promise<boolean> {
-    const result = await this.commentsModel.deleteOne({
-      _id: new Types.ObjectId(commentId),
-    });
-    return result.deletedCount ? true : false;
+    const deleteQuery = `DELETE FROM public."Comments" 
+    WHERE "id" = $1
+    RETURNING "id";`;
+    const result = await this.dataSource.query(deleteQuery, [commentId]);
+    return result[1] === 1 ? true : false;
   }
 
   async getComments(
@@ -63,7 +57,7 @@ export class CommentsRepository {
     sortDirection: string,
     pageSize: number,
     skip: number,
-    postId: string,
+    postId: number,
   ): Promise<CommentsOutputModel[]> {
     const comments = await this.commentsModel
       .find({ postId: postId }, { id: 0, __v: 0 })
@@ -73,7 +67,7 @@ export class CommentsRepository {
     console.log('repoComments: ', comments);
     return AllCommentsOutputMapper(comments);
   }
-  async countAllDocumentsForCurrentPost(postId: string): Promise<number> {
+  async countAllDocumentsForCurrentPost(postId: number): Promise<number> {
     return await this.commentsModel.countDocuments({ postId: postId });
   }
 }

@@ -44,7 +44,10 @@ export class CommentsController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async findComment(@Param('id') commentId: string, @Headers() headers) {
+  async findComment(
+    @Param('id', ParseIntPipe) commentId: number,
+    @Headers() headers,
+  ) {
     if (!headers.authorization) {
       const userId = null;
       const comment: CommentsOutputModel | null = await this.commandBus.execute(
@@ -74,7 +77,7 @@ export class CommentsController {
     @CurrentUserId() currentUserId: number,
     @Param('commentId', ParseIntPipe) commentId: number,
     @Body() content: CreateCommentInputModel,
-  ) {
+  ): Promise<boolean> {
     const comment =
       await this.commentsQueryRepository.getCommentById(commentId);
     if (!comment) {

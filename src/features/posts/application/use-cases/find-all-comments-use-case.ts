@@ -11,8 +11,8 @@ import { AllCommentsOutputModel } from '../../../comments/api/models/output/comm
 export class FindAllCommentsCommand {
   constructor(
     public sortingQueryParams: SortingQueryParamsForPosts,
-    public postId: string,
-    public userId: string | null,
+    public postId: number,
+    public userId: number | null,
   ) {}
 }
 
@@ -61,14 +61,14 @@ export class FindAllCommentsUseCase
         allComments.map(
           async (comment) => (
             (comment.likesInfo.likesCount =
-              await this.likesRepository.countLikes(comment.id.toString())),
+              await this.likesRepository.countLikes(comment.id)),
             (comment.likesInfo.dislikesCount =
-              await this.likesRepository.countDislikes(comment.id.toString())),
+              await this.likesRepository.countDislikes(comment.id)),
             (comment.likesInfo.myStatus = MyStatus.None)
           ),
         ),
       );
-    } else if (typeof command.userId === 'string') {
+    } else if (typeof command.userId === 'number') {
       const result = await Promise.all(
         allComments.map(
           async (comment) => (
@@ -78,9 +78,9 @@ export class FindAllCommentsUseCase
                 comment.id,
               )),
             (comment.likesInfo.likesCount =
-              await this.likesRepository.countLikes(comment.id.toString())),
+              await this.likesRepository.countLikes(comment.id)),
             (comment.likesInfo.dislikesCount =
-              await this.likesRepository.countDislikes(comment.id.toString()))
+              await this.likesRepository.countDislikes(comment.id))
           ),
         ),
       );
