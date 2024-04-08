@@ -112,16 +112,16 @@ export class LikesRepository {
     _parentId: number,
   ): Promise<LikesFromDb | null> {
     const selectQuery = `SELECT "id", "userId", 
-    "commentId", "myStatus", "createdAt" 
-    FROM public."LikesForComments" WHERE "userId" = $1 AND "commentId" = $2;`;
+    "postId", "myStatus", "createdAt" 
+    FROM public."LikesForPosts" WHERE "userId" = $1 AND "postId" = $2;`;
     const like = await this.dataSource.query(selectQuery, [userId, _parentId]);
     if (!like[0]) return null;
     return like[0];
   }
 
   async addLikePosts(like: LikesDbType): Promise<boolean> {
-    const insertQuery = `INSERT INTO public."LikesForComments" 
-    ("userId", "commentId","createdAt", "myStatus")
+    const insertQuery = `INSERT INTO public."LikesForPosts" 
+    ("userId", "postId","createdAt", "myStatus")
     VALUES ($1, $2, $3, $4) RETURNING id;`;
     const createdLike = await this.dataSource.query(insertQuery, [
       like.userId,
@@ -137,9 +137,9 @@ export class LikesRepository {
     _parentId: number,
     _myStatus: MyStatus,
   ): Promise<boolean> {
-    const updateQuery = `UPDATE public."LikesForComments" 
+    const updateQuery = `UPDATE public."LikesForPosts" 
     SET "myStatus" = '${_myStatus}'
-    WHERE "userId" = $1 AND "commentId" = $2;`;
+    WHERE "userId" = $1 AND "postId" = $2;`;
 
     const result = await this.dataSource.query(updateQuery, [
       userId,
@@ -149,31 +149,41 @@ export class LikesRepository {
   }
 
   async countLikesPosts(_parentId: number): Promise<number> {
-    return await this.likesModel.countDocuments({
-      parentId: _parentId,
-      myStatus: MyStatus.Like,
-    });
+    const result = await this.dataSource.query(
+      `SELECT COUNT(*) FROM 
+    public."LikesForPosts"
+    WHERE "postId" = $1 AND "myStatus" = $2;`,
+      [_parentId, MyStatus.Like],
+    );
+    return Number(result[0].count);
   }
   async countDislikesPosts(_parentId: number): Promise<number> {
-    return await this.likesModel.countDocuments({
-      parentId: _parentId,
-      myStatus: MyStatus.Dislike,
-    });
+    const result = await this.dataSource.query(
+      `SELECT COUNT(*) FROM 
+    public."LikesForPosts"
+    WHERE "postId" = $1 AND "myStatus" = $2;`,
+      [_parentId, MyStatus.Dislike],
+    );
+    return Number(result[0].count);
   }
 
   async whatIsMyStatusPosts(
     userId: number,
     _parentId: number,
   ): Promise<string> {
-    const whatIsMyStatus = await this.likesModel.findOne({
-      userId: userId,
-      parentId: _parentId,
-    });
-    if (!whatIsMyStatus) {
+    const selectQuery = `SELECT * FROM public."LikesForPosts"
+    WHERE "userId" = $1 AND "postId" = $2;`;
+    const whatIsMyStatus = await this.dataSource.query(selectQuery, [
+      userId,
+      _parentId,
+    ]);
+    console.log('🚀 ~ LikesRepository ~ whatIsMyStatus:', whatIsMyStatus);
+
+    if (!whatIsMyStatus[0]) {
       return 'None';
     }
 
-    return whatIsMyStatusMapper(whatIsMyStatus).myStatus;
+    return whatIsMyStatus[0].myStatus;
   }
 
   async lastLiked(lastLiked: LastLikedType): Promise<LastLikedDocument> {

@@ -187,9 +187,6 @@ export class PostsController {
     @CurrentUserId() currentUserId,
   ): Promise<CommentsOutputModel | null> {
     const userId = currentUserId;
-    // const user = await this.usersQueryRepository.getUser(userId);
-    // const userLogin = user.login;
-    // const userData: UserData = { userId, userLogin };
     const result = await this.commandBus.execute(
       new CreateCommentForSpecificPostCommand(
         createCommentModel,

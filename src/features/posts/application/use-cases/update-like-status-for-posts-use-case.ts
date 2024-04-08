@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateLikeForPostsDto } from '../../../likes/api/models/input/likes-input.model';
 import { PostsQueryRepository } from '../../infrastructure/posts.query-repository';
-import { Types } from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
 import { LikesService } from '../../../likes/application/likes.service';
 import { MyStatus } from '../../../likes/domain/likes.entity';
@@ -20,16 +19,14 @@ export class UpdateLikeStatusForPostsUseCase
     private usersService: UsersService,
   ) {}
   async execute(command: UpdateLikeStatusForPostsCommand): Promise<any> {
-    const isPostExist = await this.postsQueryRepository.getPostById(
-      Number(command.updatePostLikesDto.postId),
-    );
+    const { updatePostLikesDto } = command;
+    const { postId, currentUserId, likeStatusModel } = updatePostLikesDto;
+    const isPostExist = await this.postsQueryRepository.getPostById(postId);
     console.log('post, that i found at use-case likeStatus: ', isPostExist);
     if (!isPostExist) {
       throw new NotFoundException();
     }
-    const user = await this.usersService.findUserById(
-      command.updatePostLikesDto.currentUserId,
-    );
+    const user = await this.usersService.findUserById(currentUserId);
     if (!user) {
       throw new NotFoundException();
     }
@@ -37,30 +34,30 @@ export class UpdateLikeStatusForPostsUseCase
     const login = user.login;
     console.log('userLogin:', login);
     const isLikeExist = await this.likesService.isLikeExistPosts(
-      command.updatePostLikesDto.currentUserId,
-      command.updatePostLikesDto.postId,
+      currentUserId,
+      postId,
     );
     if (!isLikeExist) {
       const newLike = await this.likesService.addLikePosts(
-        command.updatePostLikesDto.currentUserId,
-        command.updatePostLikesDto.postId,
-        command.updatePostLikesDto.likeStatusModel,
+        currentUserId,
+        postId,
+        likeStatusModel,
       );
       console.log('firstCreatedLike: ', newLike);
-      if (command.updatePostLikesDto.likeStatusModel === MyStatus.Like) {
+      if (likeStatusModel === MyStatus.Like) {
         const lastLiked = await this.likesService.lastLiked(
-          command.updatePostLikesDto.currentUserId,
+          currentUserId,
           login,
-          command.updatePostLikesDto.postId,
+          postId,
         );
         console.log('lastLiked', lastLiked);
       }
       return true;
     }
     const result = await this.likesService.updateLikePosts(
-      command.updatePostLikesDto.currentUserId,
-      command.updatePostLikesDto.postId,
-      command.updatePostLikesDto.likeStatusModel,
+      currentUserId,
+      postId,
+      likeStatusModel,
     );
 
     console.log('updatedLike: ', result);
@@ -68,13 +65,10 @@ export class UpdateLikeStatusForPostsUseCase
       throw new NotFoundException();
     }
     if (
-      command.updatePostLikesDto.likeStatusModel === MyStatus.Dislike ||
-      command.updatePostLikesDto.likeStatusModel === MyStatus.None
+      likeStatusModel === MyStatus.Dislike ||
+      likeStatusModel === MyStatus.None
     ) {
-      await this.likesService.deleteLastLiked(
-        command.updatePostLikesDto.currentUserId,
-        command.updatePostLikesDto.postId,
-      );
+      await this.likesService.deleteLastLiked(currentUserId, postId);
     }
     return result;
   }
