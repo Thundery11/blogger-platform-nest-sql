@@ -77,10 +77,7 @@ export class LikesService {
     _parentId: number,
     _myStatus: MyStatus,
   ): Promise<boolean> {
-    const like = await this.likesRepository.isLikeExistComments(
-      userId,
-      _parentId,
-    );
+    const like = await this.likesRepository.isLikeExistPosts(userId, _parentId);
     if (like!.myStatus !== _myStatus) {
       return await this.likesRepository.updateLikePosts(
         userId,
@@ -90,13 +87,9 @@ export class LikesService {
     }
     return true;
   }
-  async lastLiked(
-    userId: number,
-    login: string,
-    postId: number,
-  ): Promise<LastLikedDocument | null> {
+  async lastLiked(userId: number, postId: number): Promise<number | null> {
     const addedAt = new Date().toISOString();
-    const lastLiked = new LastLikedType(addedAt, userId, login, postId);
+    const lastLiked = new LastLikedType(addedAt, userId, postId);
     console.log(lastLiked, 'LASTLIKED');
     const reaciton = await this.likesRepository.isItFirstLike(userId, postId);
     console.log('reaciton', reaciton);

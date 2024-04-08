@@ -47,7 +47,6 @@ export class UpdateLikeStatusForPostsUseCase
       if (likeStatusModel === MyStatus.Like) {
         const lastLiked = await this.likesService.lastLiked(
           currentUserId,
-          login,
           postId,
         );
         console.log('lastLiked', lastLiked);

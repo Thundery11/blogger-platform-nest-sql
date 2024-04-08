@@ -37,39 +37,39 @@ export class FindAllPostsUseCase
       pageSize,
       skip,
     );
-    // if (command.userId === null) {
-    //   const result = await Promise.all(
-    //     allPosts.map(
-    //       async (post) => (
-    //         (post.extendedLikesInfo.likesCount =
-    //           await this.likesRepository.countLikes(post.id.toString())),
-    //         (post.extendedLikesInfo.dislikesCount =
-    //           await this.likesRepository.countDislikes(post.id.toString())),
-    //         (post.extendedLikesInfo.myStatus = MyStatus.None),
-    //         (post.extendedLikesInfo.newestLikes =
-    //           await this.likesRepository.getLastLikes(post.id))
-    //       ),
-    //     ),
-    //   );
-    // } else if (typeof command.userId === 'string') {
-    //   const result = await Promise.all(
-    //     allPosts.map(
-    //       async (post) => (
-    //         (post.extendedLikesInfo.likesCount =
-    //           await this.likesRepository.countLikes(post.id.toString())),
-    //         (post.extendedLikesInfo.dislikesCount =
-    //           await this.likesRepository.countDislikes(post.id.toString())),
-    //         (post.extendedLikesInfo.myStatus =
-    //           await this.likesRepository.whatIsMyStatus(
-    //             command.userId!,
-    //             post.id,
-    //           )),
-    //         (post.extendedLikesInfo.newestLikes =
-    //           await this.likesRepository.getLastLikes(post.id))
-    //       ),
-    //     ),
-    //   );
-    // }
+    if (command.userId === null) {
+      const result = await Promise.all(
+        allPosts.map(
+          async (post) => (
+            (post.extendedLikesInfo.likesCount =
+              await this.likesRepository.countLikesPosts(Number(post.id))),
+            (post.extendedLikesInfo.dislikesCount =
+              await this.likesRepository.countDislikesPosts(Number(post.id))),
+            (post.extendedLikesInfo.myStatus = MyStatus.None),
+            (post.extendedLikesInfo.newestLikes =
+              await this.likesRepository.getLastLikes(Number(post.id)))
+          ),
+        ),
+      );
+    } else if (typeof command.userId === 'number') {
+      const result = await Promise.all(
+        allPosts.map(
+          async (post) => (
+            (post.extendedLikesInfo.likesCount =
+              await this.likesRepository.countLikesPosts(Number(post.id))),
+            (post.extendedLikesInfo.dislikesCount =
+              await this.likesRepository.countDislikesPosts(Number(post.id))),
+            (post.extendedLikesInfo.myStatus =
+              await this.likesRepository.whatIsMyStatusPosts(
+                Number(command.userId!),
+                Number(post.id),
+              )),
+            (post.extendedLikesInfo.newestLikes =
+              await this.likesRepository.getLastLikes(Number(post.id)))
+          ),
+        ),
+      );
+    }
 
     const presentationalAllPosts = {
       pagesCount,

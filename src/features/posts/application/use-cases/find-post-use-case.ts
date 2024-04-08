@@ -40,6 +40,7 @@ export class FindPostUseCase implements ICommandHandler<FindPostCommand> {
     const lastLiked = await this.likesRepository.getLastLikes(
       Number(command.postId),
     );
+    console.log('🚀 ~ FindPostUseCase ~ execute ~ lastLiked:', lastLiked);
 
     post.extendedLikesInfo.dislikesCount = dislikesCount;
     post.extendedLikesInfo.likesCount = likesCount;

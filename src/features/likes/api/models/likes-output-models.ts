@@ -26,3 +26,19 @@ export class LastLikedOutputType {
   userId: string;
   login: string;
 }
+export class LastLikedFromDb {
+  addedAt: string;
+  userId: number;
+  login: string;
+}
+
+export const lastLikedOutputMapper = (
+  lastLiked: LastLikedFromDb[],
+): LastLikedOutputType[] => {
+  const output = lastLiked.map((l) => ({
+    addedAt: l.addedAt,
+    userId: l.userId.toString(),
+    login: l.login,
+  }));
+  return output;
+};

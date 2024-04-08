@@ -16,10 +16,12 @@ import {
   LastLikedOutputType,
   LikesFromDb,
   WhatIsMyStatus,
+  lastLikedOutputMapper,
   whatIsMyStatusMapper,
 } from '../api/models/likes-output-models';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { add } from 'date-fns';
 
 @Injectable()
 export class LikesRepository {
@@ -186,30 +188,48 @@ export class LikesRepository {
     return whatIsMyStatus[0].myStatus;
   }
 
-  async lastLiked(lastLiked: LastLikedType): Promise<LastLikedDocument> {
-    const lastLikedEntity = new this.lastLikedModel(lastLiked);
-    lastLikedEntity.save();
-    return lastLikedEntity;
+  async lastLiked(lastLiked: LastLikedType): Promise<number> {
+    const { addedAt, userId, postId } = lastLiked;
+    console.log('🚀 ~ LikesRepository ~ lastLiked ~ lastLiked:', lastLiked);
+    const insertQuery = `INSERT INTO public."LastLiked"
+    ("addedAt", "userId", "postId")
+    VALUES ($1, $2, $3) RETURNING id;`;
+    const result = await this.dataSource.query(insertQuery, [
+      addedAt,
+      userId,
+      postId,
+    ]);
+
+    return result[0].id;
   }
   async deleteLastLiked(userId: number, postId: number): Promise<boolean> {
-    const result = await this.lastLikedModel.deleteOne({
-      userId: userId,
-      postId: postId,
-    });
-    return result.deletedCount === 1;
+    const deleteQuery = `DELETE FROM public."LastLiked"
+    WHERE "userId" = $1 AND "postId" = $2 RETURNING id`;
+    const result = await this.dataSource.query(deleteQuery, [userId, postId]);
+    console.log('🚀 ~ LikesRepository ~ deleteLastLiked ~ result:', result);
+    return result[1] === 1 ? true : false;
   }
   async isItFirstLike(
     userId: number,
     postId: number,
   ): Promise<LastLikedDocument | null> {
-    return await this.lastLikedModel.findOne({ userId, postId });
+    const selectQuery = `SELECT * FROM public."LastLiked"
+    WHERE "userId" = $1 AND "postId" = $2;`;
+    const result = await this.dataSource.query(selectQuery, [userId, postId]);
+    if (!result[0]) return null;
+    return result[0];
   }
 
   async getLastLikes(postId: number): Promise<LastLikedOutputType[]> {
-    return await this.lastLikedModel
-      .find({ postId }, { _id: 0, __v: 0, postId: 0 })
-      .sort({ addedAt: -1 })
-      .limit(3)
-      .lean();
+    const selectQuery = `SELECT l."addedAt", l."userId", u."login" 
+    FROM public."LastLiked" l
+    LEFT JOIN "Users" u
+    ON u."id" = l."userId"
+    WHERE "postId" = $1
+    ORDER BY "addedAt" DESC LIMIT 3`;
+
+    const lastLikes = await this.dataSource.query(selectQuery, [postId]);
+    console.log('🚀 ~ LikesRepository ~ getLastLikes ~ lastLikes:', lastLikes);
+    return lastLikedOutputMapper(lastLikes);
   }
 }
