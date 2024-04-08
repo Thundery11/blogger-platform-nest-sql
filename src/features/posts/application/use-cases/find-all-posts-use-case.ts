@@ -8,7 +8,7 @@ import { MyStatus } from '../../../likes/domain/likes.entity';
 export class FindAllPostsCommand {
   constructor(
     public sortingQueryParams: SortingQueryParams,
-    public userId: string | null,
+    public userId: number | null,
   ) {}
 }
 

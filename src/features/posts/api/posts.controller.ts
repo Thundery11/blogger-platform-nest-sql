@@ -96,7 +96,7 @@ export class PostsController {
     @Query() sortingQueryPosts: SortingQueryParamsForPosts,
     @Headers() headers,
   ): Promise<AllPostsOutputModel | null> {
-    let userId: string | null;
+    let userId: number | null;
     if (!headers.authorization) {
       userId = null;
     } else {

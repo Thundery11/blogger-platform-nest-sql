@@ -138,7 +138,7 @@ export class BlogsController {
     @Param('blogId', ParseIntPipe) blogid: number,
     @Query() sortingQueryParams: SortingQueryParams,
   ): Promise<AllPostsOutputModel | null> {
-    let userId: string | null;
+    let userId: number | null;
     if (!headers.authorization) {
       userId = null;
     } else {
