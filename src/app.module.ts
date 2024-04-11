@@ -61,6 +61,9 @@ import {
 } from './features/security-devices/domain/security-devices-entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SuperAdminBlogsController } from './features/blogs/api/super-admin.blogs.controller';
+import { LikesForPosts } from './features/likes/domain/likes-for-posts.enity';
+import { LastLiked } from './features/likes/domain/last-liked.entity';
+import { LikesForCommets } from './features/likes/domain/likes-for-comments.entity';
 
 const useCases = [
   CreateBlogUseCase,
@@ -82,7 +85,18 @@ const useCases = [
   UpdateLikeStatusForPostsUseCase,
   FindPostUseCase,
 ];
-let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
+let {
+  PGHOST,
+  PGDATABASE,
+  PGUSER,
+  PGPASSWORD,
+  PGPORT,
+  LOCALHOST,
+  LOCALDATABASE,
+  LOCALUSER,
+  LOCALPASSWORD,
+  LOCALPORT,
+} = process.env;
 
 // TypeOrmModule.forRoot({
 //   type: 'postgres',
@@ -101,18 +115,26 @@ let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
     CqrsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: PGHOST,
-      database: PGDATABASE,
-      username: PGUSER,
-      password: PGPASSWORD,
-      port: 5432,
+      host: 'localhost',
+      database: 'BankSystem',
+      username: 'nodejs',
+      password: 'nodejs',
+      port: 5000,
       autoLoadEntities: true,
       synchronize: true,
       logging: ['query'],
-      // sslmode: "require",
-      ssl: true,
+
+      // ssl: true,
+      ssl: false, //менять на true, когда подключаешь NeonDb
     }),
-    TypeOrmModule.forFeature([Blogs]),
+    TypeOrmModule.forFeature([
+      Blogs,
+      Posts,
+      LikesForPosts,
+      LastLiked,
+      Comments,
+      LikesForCommets,
+    ]),
     // ConfigModule.forRoot(),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
     MongooseModule.forFeature([

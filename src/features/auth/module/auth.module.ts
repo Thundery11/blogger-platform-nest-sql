@@ -25,6 +25,7 @@ import { GetDevicesUseCase } from '../../security-devices/application/use-cases/
 import { DeleteAllSessionsExceptCurentUseCase } from '../../security-devices/application/use-cases/delete-all-sessions-except-current-use-case';
 import { DeleteSpecialSessionUseCase } from '../../security-devices/application/use-cases/delete-special-session-use-case';
 import { LogoutUseCase } from '../application/use-cases/logout-use-case';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 const useCases = [
   LoginUserUseCase,
@@ -56,6 +57,7 @@ const useCases = [
         schema: SecurityDevicesSchema,
       },
     ]),
+    TypeOrmModule.forFeature([SecurityDevices]),
   ],
 
   providers: [

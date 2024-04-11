@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { BlogsCreateModel } from '../api/models/input/create-blog.input.model';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Posts } from '../../posts/domain/posts.entity';
 export type BlogsDocument = HydratedDocument<Blogs>;
 export type BlogsModelType = Model<BlogsDocument> & typeof statics;
 
@@ -19,6 +20,8 @@ export class Blogs {
   createdAt: string;
   @Column()
   isMembership: boolean;
+  @OneToMany(() => Posts, (p) => p.blog)
+  posts: Posts[];
 }
 
 @Schema()

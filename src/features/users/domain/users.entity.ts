@@ -2,7 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { UserCreateModel } from '../api/models/input/create-user.input.model';
 import { EmailConfirmationAndInfoType } from '../api/models/input/email-confirmationType';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { LikesForPosts } from '../../likes/domain/likes-for-posts.enity';
+import { LastLiked } from '../../likes/domain/last-liked.entity';
+import { Comments } from '../../comments/domain/comments.entity';
+import { SecurityDevices } from '../../security-devices/domain/security-devices-entity';
 
 // export type UsersDocument = HydratedDocument<Users>;
 // export type UsersModelType = Model<UsersDocument> & typeof statics;
@@ -27,6 +31,14 @@ export class Users {
   expirationDate: string;
   @Column()
   isConfirmed: boolean;
+  @OneToMany(() => LikesForPosts, (lp) => lp.user)
+  likesForPosts: LikesForPosts[];
+  @OneToMany(() => LastLiked, (ll) => ll.user)
+  lastLiked: LastLiked[];
+  @OneToMany(() => Comments, (c) => c.user)
+  comments: Comments[];
+  @OneToMany(() => SecurityDevices, (s) => s.user)
+  securityDevices: SecurityDevices[];
 }
 
 // @Schema({ _id: false })

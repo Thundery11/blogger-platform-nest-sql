@@ -1,8 +1,34 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Users } from '../../users/domain/users.entity';
+
+@Entity()
+export class SecurityDevices {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column()
+  ip: string;
+  @Column('uuid')
+  deviceId: string;
+  @Column()
+  lastActiveDate: string;
+  @Column()
+  title: string;
+  @Column()
+  userId: number;
+  @ManyToOne(() => Users, (u) => u.securityDevices)
+  user: Users;
+}
 
 @Schema()
-export class SecurityDevices {
+export class SecurityDevicess {
   @Prop({ required: true })
   userId: number;
   @Prop({ required: true })

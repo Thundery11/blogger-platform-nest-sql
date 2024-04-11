@@ -4,6 +4,17 @@ import {
   PostCreateModel,
   PostUpdateModel,
 } from '../api/models/input/create-post.input.model';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Blogs } from '../../blogs/domain/blogs.entity';
+import { LikesForPosts } from '../../likes/domain/likes-for-posts.enity';
+import { LastLiked } from '../../likes/domain/last-liked.entity';
+import { Comments } from '../../comments/domain/comments.entity';
 
 // @Schema()
 // class NewestLikes1 {
@@ -67,8 +78,32 @@ export class CreatePostDto {
   ) {}
 }
 
-@Schema()
+@Entity()
 export class Posts {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column()
+  title: string;
+  @Column()
+  shortDescription: string;
+  @Column()
+  content: string;
+  @Column()
+  blogId: number;
+  @Column()
+  createdAt: string;
+  @ManyToOne(() => Blogs, (b) => b.posts)
+  blog: Blogs;
+  @OneToMany(() => LikesForPosts, (lp) => lp.post)
+  likesForPosts: LikesForPosts[];
+  @OneToMany(() => LastLiked, (ll) => ll.post)
+  lastLiked: LastLiked[];
+  @OneToMany(() => Comments, (c) => c.post)
+  comments: Comments[];
+}
+
+@Schema()
+export class Postss {
   @Prop({ required: true })
   title: string;
   @Prop({ required: true })
@@ -136,5 +171,5 @@ export class Posts {
 export type PostsDocument = HydratedDocument<Posts>;
 export const PostsSchema = SchemaFactory.createForClass(Posts);
 PostsSchema.methods = {
-  updatePost: Posts.prototype.updatePost,
+  updatePost: Postss.prototype.updatePost,
 };

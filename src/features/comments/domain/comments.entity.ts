@@ -1,5 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Users } from '../../users/domain/users.entity';
+import { Posts } from '../../posts/domain/posts.entity';
+import { LikesForCommets } from '../../likes/domain/likes-for-comments.entity';
 
 @Schema({ _id: false })
 export class CommentatorInfo {
@@ -21,8 +31,28 @@ export class LikesInfo {
 }
 const LikesInfoSchema = SchemaFactory.createForClass(LikesInfo);
 
-@Schema()
+@Entity()
 export class Comments {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column()
+  content: string;
+  @Column()
+  createdAt: string;
+  @Column()
+  userId: number;
+  @Column()
+  postId: number;
+  @ManyToOne(() => Users, (u) => u.comments)
+  user: Users;
+  @ManyToOne(() => Posts, (p) => p.comments)
+  post: Posts;
+  @OneToMany(() => LikesForCommets, (lk) => lk.comment)
+  likesForComments: LikesForCommets[];
+}
+
+@Schema()
+export class Commentss {
   @Prop({ required: true })
   postId: string;
   @Prop({ required: true })
