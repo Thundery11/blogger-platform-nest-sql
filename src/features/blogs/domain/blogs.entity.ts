@@ -1,11 +1,28 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { BlogsCreateModel } from '../api/models/input/create-blog.input.model';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export type BlogsDocument = HydratedDocument<Blogs>;
 export type BlogsModelType = Model<BlogsDocument> & typeof statics;
 
-@Schema()
+@Entity()
 export class Blogs {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column()
+  name: string;
+  @Column()
+  description: string;
+  @Column()
+  websiteUrl: string;
+  @Column()
+  createdAt: string;
+  @Column()
+  isMembership: boolean;
+}
+
+@Schema()
+export class Blogss {
   @Prop({ required: true })
   name: string;
   @Prop({ required: true })
@@ -35,6 +52,6 @@ export class Blogs {
 export const BlogsSchema = SchemaFactory.createForClass(Blogs);
 
 const statics = {
-  createBlog: Blogs.createBlog,
+  createBlog: Blogss.createBlog,
 };
 BlogsSchema.statics = statics;

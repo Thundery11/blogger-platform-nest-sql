@@ -12,26 +12,13 @@ import { DataSource } from 'typeorm';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {
-  constructor(
-    @InjectDataSource() private dataSource: DataSource,
-    @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
-    @InjectModel(Posts.name) private postsModel: Model<Posts>,
-    @InjectModel(Comments.name) private commentsModel: Model<Comments>,
-    @InjectModel(LikesDbModel.name) private likesModel: Model<LikesDbModel>,
-    @InjectModel(LastLikedDbModel.name)
-    private lastLikedModel: Model<LastLikedDbModel>,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   @Delete()
   @HttpCode(204)
   async deleteAll() {
     await this.dataSource.query(
-      'TRUNCATE public."Users", public."Devices", public."Blogs", public."Posts", public."Comments", public."LikesForComments", public."LikesForPosts", public."LastLiked"',
+      'TRUNCATE public."Users", public."Devices", public."Blogs", public."Posts", public."Comments", public."LikesForComments", public."LikesForPosts", public."LastLiked", public."users", public."blogs"',
     );
-    await this.postsModel.deleteMany({});
-    await this.blogsModel.deleteMany({});
-    await this.commentsModel.deleteMany({});
-    await this.lastLikedModel.deleteMany({});
-    await this.likesModel.deleteMany({});
   }
 }

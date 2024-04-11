@@ -17,7 +17,7 @@ import { PostsRepository } from './features/posts/infrastructure/posts.repositor
 import { PostsQueryRepository } from './features/posts/infrastructure/posts.query-repository';
 import { PostsService } from './features/posts/application/posts.service';
 import { PostsController } from './features/posts/api/posts.controller';
-import { Users, UsersSchema } from './features/users/domain/users.entity';
+import { Users } from './features/users/domain/users.entity';
 import { AuthModule } from './features/auth/module/auth.module';
 import { UsersModule } from './features/users/module/users.module';
 import { CreateBlogUseCase } from './features/blogs/application/use-cases/create-blog-use-case';
@@ -60,7 +60,6 @@ import {
   SecurityDevicesSchema,
 } from './features/security-devices/domain/security-devices-entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TestWalletsModule } from './test-wallets/test-wallets.module';
 import { SuperAdminBlogsController } from './features/blogs/api/super-admin.blogs.controller';
 
 const useCases = [
@@ -107,11 +106,13 @@ let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
       username: PGUSER,
       password: PGPASSWORD,
       port: 5432,
-      autoLoadEntities: false,
-      synchronize: false,
+      autoLoadEntities: true,
+      synchronize: true,
+      logging: ['query'],
       // sslmode: "require",
       ssl: true,
     }),
+    TypeOrmModule.forFeature([Blogs]),
     // ConfigModule.forRoot(),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
     MongooseModule.forFeature([
@@ -121,10 +122,7 @@ let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
       },
       { name: Posts.name, schema: PostsSchema },
       //если убираю модель юзеров, падает приложение, почему???
-      {
-        name: Users.name,
-        schema: UsersSchema,
-      },
+
       {
         name: Comments.name,
         schema: CommentsSchema,
@@ -145,7 +143,6 @@ let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
     MongooseModule.forRoot(process.env.MONGO_URL!, {
       dbName: 'blogger-platform-nest',
     }),
-    TestWalletsModule,
   ],
   controllers: [
     TestingAllDataController,

@@ -1,5 +1,4 @@
-import { use } from 'passport';
-import { UsersDocument } from '../../../domain/users.entity';
+import { Users } from '../../../domain/users.entity';
 
 export class UserFomDb {
   id: number;
@@ -34,25 +33,25 @@ export class UserInfoAboutHimselfModel {
   login: string;
   userId?: string;
 }
-export const usersOutputMapper = (user: UserFomDb[]): UsersOutputModel => {
-  const outputUser = user.map((u) => ({
-    id: u.id.toString(),
-    login: u.login,
-    email: u.email,
-    createdAt: u.createdAt,
-  }))[0];
+export const usersOutputMapper = (user: Users): UsersOutputModel => {
+  const outputUser = {
+    id: user.id.toString(),
+    login: user.login,
+    email: user.email,
+    createdAt: user.createdAt,
+  };
 
   return outputUser;
 };
 
-export const usersOutputMapper1 = (user: UsersDocument): UsersOutputModel => {
-  const outputModel = new UsersOutputModel();
-  outputModel.id = '12';
-  outputModel.login = user.accountData.login;
-  outputModel.email = user.accountData.email;
-  outputModel.createdAt = user.accountData.createdAt;
-  return outputModel;
-};
+// export const usersOutputMapper1 = (user: UsersDocument): UsersOutputModel => {
+//   const outputModel = new UsersOutputModel();
+//   outputModel.id = '12';
+//   outputModel.login = user.accountData.login;
+//   outputModel.email = user.accountData.email;
+//   outputModel.createdAt = user.accountData.createdAt;
+//   return outputModel;
+// };
 export const userInfoAboutHimselfMapper = (user): UserInfoAboutHimselfModel => {
   const outputModel = new UserInfoAboutHimselfModel();
   outputModel.email = user.email;

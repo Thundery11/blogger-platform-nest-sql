@@ -6,25 +6,31 @@ import {
   allUsersOutputMapper,
   userInfoAboutHimselfMapper,
 } from '../api/models/output/user-output.model';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserCreateDto } from '../api/models/input/create-user.input.model';
+import { Users } from '../domain/users.entity';
 
 // const selectUsersConstant = ['login', 'email', 'createdAt', 'expirationDate'];
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectDataSource() private dataSource: DataSource) {}
-  async createSuperadminUser(userCreateDto: UserCreateDto) {
-    const insertQuery = `INSERT INTO public."Users"(
-      login, email, "passwordHash", "passwordSalt", "createdAt",
-       "confirmationCode", "expirationDate", "isConfirmed")
-      VALUES ('${userCreateDto.login}', '${userCreateDto.email}', 
-        '${userCreateDto.passwordHash}', '${userCreateDto.passwordSalt}', '${userCreateDto.createdAt}', '${userCreateDto.confirmationCode}',
-         '${userCreateDto.expirationDate}', '${userCreateDto.isConfirmed}') RETURNING id`;
+  constructor(
+    @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
+  ) {}
+  async createSuperadminUser(newUser: Users): Promise<Users> {
+    return this.usersRepository.save(newUser);
 
-    const newUser = await this.dataSource.query(insertQuery);
-    const userId = newUser[0].id;
-    return userId;
+    // const insertQuery = `INSERT INTO public."Users"(
+    //   login, email, "passwordHash", "passwordSalt", "createdAt",
+    //    "confirmationCode", "expirationDate", "isConfirmed")
+    //   VALUES ('${userCreateDto.login}', '${userCreateDto.email}',
+    //     '${userCreateDto.passwordHash}', '${userCreateDto.passwordSalt}', '${userCreateDto.createdAt}', '${userCreateDto.confirmationCode}',
+    //      '${userCreateDto.expirationDate}', '${userCreateDto.isConfirmed}') RETURNING id`;
+    // const newUser = await this.dataSource.query(insertQuery);
+    // const userId = newUser[0].id;
+    // return userId;
   }
   public async getAllUsers(
     sortBy: string,

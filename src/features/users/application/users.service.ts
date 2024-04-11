@@ -1,38 +1,27 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/users.repository';
-import { Users, UsersDocument, UsersModelType } from '../domain/users.entity';
+import { Users } from '../domain/users.entity';
 import bcrypt from 'bcrypt';
-import {
-  UserCreateDto,
-  UserCreateModel,
-} from '../api/models/input/create-user.input.model';
+import { UserCreateModel } from '../api/models/input/create-user.input.model';
 import {
   AllUsersOutputModel,
   UserFomDb,
-  UserId,
   UserInfoAboutHimselfModel,
 } from '../api/models/output/user-output.model';
 import { SortingQueryParamsForUsers } from '../api/models/query/query-for-sorting';
-import { InjectModel } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
 import { EmailResendingInputModel } from '../../auth/api/models/input/email-resending.model';
 import { EmailsManager } from '../../../infrastucture/managers/emails-manager';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
     private usersRepository: UsersRepository,
     private emailsManager: EmailsManager,
-
-    @InjectModel(Users.name) private usersModel: UsersModelType,
   ) {}
 
-  async createSuperadminUser(
-    userCreateModel: UserCreateModel,
-  ): Promise<number | null> {
+  async createSuperadminUser(userCreateModel: UserCreateModel): Promise<Users> {
     const createdAt = new Date().toISOString();
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(
@@ -46,23 +35,30 @@ export class UsersService {
     }).toISOString();
     const isConfirmed = false;
 
-    const userCreateDto = new UserCreateDto();
-    userCreateDto.login = userCreateModel.login;
-    userCreateDto.email = userCreateModel.email;
-    userCreateDto.passwordHash = passwordHash;
-    userCreateDto.passwordSalt = passwordSalt;
-    userCreateDto.createdAt = createdAt;
-    userCreateDto.confirmationCode = confirmationCode;
-    userCreateDto.expirationDate = expirationDate;
-    userCreateDto.isConfirmed = isConfirmed;
+    // const userCreateDto = new UserCreateDto();
+    // userCreateDto.login = userCreateModel.login;
+    // userCreateDto.email = userCreateModel.email;
+    // userCreateDto.passwordHash = passwordHash;
+    // userCreateDto.passwordSalt = passwordSalt;
+    // userCreateDto.createdAt = createdAt;
+    // userCreateDto.confirmationCode = confirmationCode;
+    // userCreateDto.expirationDate = expirationDate;
+    // userCreateDto.isConfirmed = isConfirmed;
 
-    const user = await this.usersRepository.createSuperadminUser(userCreateDto);
-    console.log({ user: user });
+    const newUser = new Users();
+    newUser.login = userCreateModel.login;
+    newUser.email = userCreateModel.email;
+    newUser.passwordHash = passwordHash;
+    newUser.passwordSalt = passwordSalt;
+    newUser.createdAt = createdAt;
+    newUser.confirmationCode = confirmationCode;
+    newUser.expirationDate = expirationDate;
+    newUser.isConfirmed = isConfirmed;
 
-    return user;
+    return await this.usersRepository.createSuperadminUser(newUser);
   }
 
-  async createUser(userCreateModel: UserCreateModel): Promise<number | null> {
+  async createUser(userCreateModel: UserCreateModel): Promise<Users> {
     const createdAt = new Date().toISOString();
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(
@@ -107,18 +103,29 @@ export class UsersService {
       });
     }
 
-    const userCreateDto = new UserCreateDto();
-    userCreateDto.login = userCreateModel.login;
-    userCreateDto.email = userCreateModel.email;
-    userCreateDto.passwordHash = passwordHash;
-    userCreateDto.passwordSalt = passwordSalt;
-    userCreateDto.createdAt = createdAt;
-    userCreateDto.confirmationCode = confirmationCode;
-    userCreateDto.expirationDate = expirationDate;
-    userCreateDto.isConfirmed = isConfirmed;
+    // const userCreateDto = new UserCreateDto();
+    // userCreateDto.login = userCreateModel.login;
+    // userCreateDto.email = userCreateModel.email;
+    // userCreateDto.passwordHash = passwordHash;
+    // userCreateDto.passwordSalt = passwordSalt;
+    // userCreateDto.createdAt = createdAt;
+    // userCreateDto.confirmationCode = confirmationCode;
+    // userCreateDto.expirationDate = expirationDate;
+    // userCreateDto.isConfirmed = isConfirmed;
 
-    await this.emailsManager.sendEmailConfirmationMessage(userCreateDto);
-    return await this.usersRepository.createSuperadminUser(userCreateDto);
+    const newUser = new Users();
+    newUser.login = userCreateModel.login;
+    newUser.email = userCreateModel.email;
+    newUser.passwordHash = passwordHash;
+    newUser.passwordSalt = passwordSalt;
+    newUser.createdAt = createdAt;
+    newUser.confirmationCode = confirmationCode;
+    newUser.expirationDate = expirationDate;
+    newUser.isConfirmed = isConfirmed;
+    await this.emailsManager.sendEmailConfirmationMessage(newUser);
+    return await this.usersRepository.createSuperadminUser(newUser);
+
+    // return await this.usersRepository.createSuperadminUser(userCreateDto);
   }
   async resendEmailConfirmationCode(
     emailResendingInputModel: EmailResendingInputModel,

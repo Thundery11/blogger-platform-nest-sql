@@ -12,7 +12,10 @@ import {
 } from '@nestjs/common';
 import { UserCreateModel } from './models/input/create-user.input.model';
 import { UsersService } from '../application/users.service';
-import { AllUsersOutputModel } from './models/output/user-output.model';
+import {
+  AllUsersOutputModel,
+  UsersOutputModel,
+} from './models/output/user-output.model';
 import { UsersQueryRepository } from '../infrastructure/users-query.repository';
 import { SortingQueryParamsForUsers } from './models/query/query-for-sorting';
 import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
@@ -27,13 +30,15 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @Post()
   @HttpCode(201)
-  async createSuperadminUser(@Body() userCreateModel: UserCreateModel) {
-    const userId =
-      await this.usersService.createSuperadminUser(userCreateModel);
-    if (!userId) {
+  async createSuperadminUser(
+    @Body() userCreateModel: UserCreateModel,
+  ): Promise<UsersOutputModel | null> {
+    const user = await this.usersService.createSuperadminUser(userCreateModel);
+    if (!user) {
       throw new NotFoundException();
     }
-    return await this.usersQueryRepository.getUser(userId);
+
+    return await this.usersQueryRepository.getUser(user.id);
   }
 
   @UseGuards(BasicAuthGuard)
