@@ -166,7 +166,7 @@ export class UsersService {
   ): Promise<AllUsersOutputModel> {
     const {
       sortBy = 'createdAt',
-      sortDirection = sortDirectionType.desc,
+      sortDirection = 'desc',
       pageNumber = 1,
       pageSize = 10,
       searchLoginTerm = '',
@@ -182,7 +182,7 @@ export class UsersService {
 
     const users = await this.usersRepository.getAllUsers(
       sortBy,
-      sortDirectionType.desc,
+      sortDirection,
       pageSize,
       skip,
       searchLoginTerm,
