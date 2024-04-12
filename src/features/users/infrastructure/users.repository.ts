@@ -68,81 +68,112 @@ export class UsersRepository {
     // ``
   }
 
-  public async deleteUser(id: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `DELETE FROM public."Users"
-    WHERE "id" = $1
-    RETURNING "id";`,
-      [id],
-    );
-    return result[1] === 1 ? true : false;
+  public async deleteUser(id: number): Promise<boolean> {
+    const result = await this.usersRepository.delete({ id: id });
+    // const result = await this.dataSource.query(
+    //   `DELETE FROM public."Users"
+    // WHERE "id" = $1
+    // RETURNING "id";`,
+    //   [id],
+    // );
+    return result.affected === 1 ? true : false;
   }
-  async findUserByLogin(loginOrEmail: string): Promise<UserFomDb | null> {
-    const user = await this.dataSource.query(
-      `SELECT * FROM public."Users" u
-    WHERE u."login" LIKE $1 OR u."email" LIKE $1;`,
-      [loginOrEmail],
-    );
-    if (!user[0]) {
+  async findUserByLogin(loginOrEmail: string): Promise<Users | null> {
+    const user = await this.usersRepository
+      .createQueryBuilder('u')
+      .where(`u.login = :loginOrEmail`, { loginOrEmail: `${loginOrEmail}` })
+      .orWhere(`u.email = :loginOrEmail`, {
+        loginOrEmail: `${loginOrEmail}`,
+      })
+      .getOne();
+    // const user = await this.usersRepository.findOne({
+    //   where: { login: loginOrEmail, email: loginOrEmail },
+    // });
+    // const user = await this.dataSource.query(
+    //   `SELECT * FROM public."Users" u
+    // WHERE u."login" LIKE $1 OR u."email" LIKE $1;`,
+    //   [loginOrEmail],
+    // );
+    if (!user) {
       return null;
     }
-    return user[0];
+    return user;
   }
   async findUserById(
     currentUserId: number,
   ): Promise<UserInfoAboutHimselfModel | null> {
-    const user = await this.dataSource.query(
-      `SELECT "email", "login", "id" 
-    FROM public."Users" u
-    WHERE u."id" = $1`,
-      [currentUserId],
-    );
+    const user = await this.usersRepository.findOne({
+      where: { id: currentUserId },
+    });
+    // const user = await this.dataSource.query(
+    //   `SELECT "email", "login", "id"
+    // FROM public."Users" u
+    // WHERE u."id" = $1`,
+    //   [currentUserId],
+    // );
     if (!user) {
       return null;
     }
-    return userInfoAboutHimselfMapper(user[0]);
+    return userInfoAboutHimselfMapper(user);
   }
   async findUserByIdForRefreshTokens(
     currentUserId: number,
-  ): Promise<UserFomDb | null> {
-    console.log('🚀 ~ UsersRepository ~ currentUserId:', currentUserId);
-    const user = await this.dataSource.query(
-      `SELECT *
-    FROM public."Users" u
-    WHERE u."id" = $1`,
-      [currentUserId],
-    );
-    console.log('🚀 ~ UsersRepository ~ user:', user[0]);
+  ): Promise<Users | null> {
+    const user = await this.usersRepository.findOneBy({ id: currentUserId });
+    // const user = await this.dataSource.query(
+    //   `SELECT *
+    // FROM public."Users" u
+    // WHERE u."id" = $1`,
+    //   [currentUserId],
+    // );
+    // console.log('🚀 ~ UsersRepository ~ user:', user[0]);
     if (!user) {
       return null;
     }
-    return user[0];
+    return user;
   }
   async updateConfirmationCode(
     id: number,
     confirmationCode: string,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `UPDATE public."Users" 
-    SET "confirmationCode" = '${confirmationCode}'
-    WHERE "id" = $1;`,
-      [id],
+    const result = await this.usersRepository.update(
+      { id: id },
+      { confirmationCode: confirmationCode },
     );
-    return result[1] === 1 ? true : false;
+    // const result = await this.dataSource.query(
+    //   `UPDATE public."Users"
+    // SET "confirmationCode" = '${confirmationCode}'
+    // WHERE "id" = $1;`,
+    //   [id],
+    // );
+    return result.affected === 1 ? true : false;
   }
-  async findUserByConfirmationCode(code: string): Promise<UserFomDb | null> {
-    const res = await this.dataSource.query(
-      `SELECT * FROM public."Users" WHERE "confirmationCode" = $1`,
-      [code],
-    );
-    return res[0];
-  }
-  async updateConfirmation(id: number): Promise<boolean> {
-    const res = await this.dataSource.query(
-      `UPDATE public."Users" SET "isConfirmed" = 'true' WHERE "id" = $1`,
-      [id],
+  async findUserByConfirmationCode(code: string): Promise<Users | null> {
+    const result = await this.usersRepository.findOne({
+      where: { confirmationCode: code },
+    });
+    // const res = await this.dataSource.query(
+    //   `SELECT * FROM public."Users" WHERE "confirmationCode" = $1`,
+    //   [code],
+    // );
+    if (!result) return null;
+    console.log(
+      '🚀 ~ UsersRepository ~ findUserByConfirmationCode ~ result:',
+      result,
     );
 
-    return res[1] === 1 ? true : false;
+    return result;
+  }
+  async updateConfirmation(id: number): Promise<boolean> {
+    const result = await this.usersRepository.update(
+      { id: id },
+      { isConfirmed: true },
+    );
+    // const res = await this.dataSource.query(
+    //   `UPDATE public."Users" SET "isConfirmed" = 'true' WHERE "id" = $1`,
+    //   [id],
+    // );
+
+    return result.affected === 1 ? true : false;
   }
 }

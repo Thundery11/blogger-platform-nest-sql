@@ -5,7 +5,7 @@ import { UserCreateDto } from '../../features/users/api/models/input/create-user
 @Injectable()
 export class EmailsManager {
   constructor(private emailAdapter: EmailAdapter) {}
-  async sendEmailConfirmationMessage(userCreateDto: UserCreateDto) {
+  async sendEmailConfirmationMessage(userCreateDto: Users) {
     const message = `<h1>Thank for your registration</h1><p>To finish registration please follow the link below:<a href='https://somesite.com/confirm-email?code=${userCreateDto.confirmationCode}'>complete registration</a> </p>`;
     await this.emailAdapter.sendEmail(userCreateDto.email, message);
   }

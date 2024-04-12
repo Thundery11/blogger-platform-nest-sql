@@ -6,6 +6,7 @@ import {
   HttpCode,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   UseGuards,
@@ -53,7 +54,7 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
-  async deleteUser(@Param('id') id: string): Promise<boolean> {
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
     const result = await this.usersService.deleteUser(id);
     if (!result) {
       throw new NotFoundException();

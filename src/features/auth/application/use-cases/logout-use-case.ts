@@ -24,6 +24,11 @@ export class LogoutUseCase implements ICommandHandler<LogoutCommand> {
     const lastActiveDate = new Date(payload.iat * 1000).toISOString();
     const isValidRefreshToken =
       await this.securityDevicesRepo.isValidRefreshToken(lastActiveDate);
+    console.log(
+      '🚀 ~ LogoutUseCase ~ execute ~ isValidRefreshToken:',
+      isValidRefreshToken,
+    );
+
     if (!isValidRefreshToken) {
       throw new UnauthorizedException();
     }

@@ -11,6 +11,7 @@ import { UsersRepository } from '../../users/infrastructure/users.repository';
 import { jwtConstants, tokensLivesConstants } from '../constants/constants';
 import { v4 as uuidv4, v4 } from 'uuid';
 import { UserFomDb } from '../../users/api/models/output/user-output.model';
+import { Users } from '../../users/domain/users.entity';
 @Injectable()
 export class AuthService {
   constructor(

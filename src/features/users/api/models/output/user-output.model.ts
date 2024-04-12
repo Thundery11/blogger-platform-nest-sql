@@ -34,12 +34,11 @@ export class UserInfoAboutHimselfModel {
   userId?: string;
 }
 export const usersOutputMapper = (user: Users): UsersOutputModel => {
-  const outputUser = {
-    id: user.id.toString(),
-    login: user.login,
-    email: user.email,
-    createdAt: user.createdAt,
-  };
+  const outputUser = new UsersOutputModel();
+  outputUser.id = user.id.toString();
+  outputUser.login = user.login;
+  outputUser.email = user.email;
+  outputUser.createdAt = user.createdAt;
 
   return outputUser;
 };
@@ -52,7 +51,9 @@ export const usersOutputMapper = (user: Users): UsersOutputModel => {
 //   outputModel.createdAt = user.accountData.createdAt;
 //   return outputModel;
 // };
-export const userInfoAboutHimselfMapper = (user): UserInfoAboutHimselfModel => {
+export const userInfoAboutHimselfMapper = (
+  user: Users,
+): UserInfoAboutHimselfModel => {
   const outputModel = new UserInfoAboutHimselfModel();
   outputModel.email = user.email;
   outputModel.login = user.login;

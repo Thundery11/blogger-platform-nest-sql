@@ -114,6 +114,7 @@ export class UsersService {
     // userCreateDto.isConfirmed = isConfirmed;
 
     const newUser = new Users();
+    console.log('🚀 ~ UsersService ~ createUser ~ newUser:', newUser);
     newUser.login = userCreateModel.login;
     newUser.email = userCreateModel.email;
     newUser.passwordHash = passwordHash;
@@ -133,7 +134,6 @@ export class UsersService {
     const user = await this.usersRepository.findUserByLogin(
       emailResendingInputModel.email,
     );
-    console.log('🚀 ~ UsersService ~ user:', user);
     if (!user) return null;
     if (user.isConfirmed === true) return null;
     if (user.isConfirmed === false) {
@@ -143,6 +143,10 @@ export class UsersService {
           user.id,
           newConfirmationCode,
         );
+      console.log(
+        '🚀 ~ UsersService ~ updateConfirmationCode:',
+        updateConfirmationCode,
+      );
       const updatedUser = await this.usersRepository.findUserByLogin(
         emailResendingInputModel.email,
       );
@@ -192,12 +196,10 @@ export class UsersService {
     };
     return presentationalUsers;
   }
-  async findUserByLoginOrEmail(
-    loginOrEmail: string,
-  ): Promise<UserFomDb | null> {
+  async findUserByLoginOrEmail(loginOrEmail: string): Promise<Users | null> {
     return await this.usersRepository.findUserByLogin(loginOrEmail);
   }
-  async deleteUser(id: string): Promise<boolean> {
+  async deleteUser(id: number): Promise<boolean> {
     return await this.usersRepository.deleteUser(id);
   }
 
@@ -206,7 +208,7 @@ export class UsersService {
     return hash;
   }
   async findUserById(
-    currentUserId: any,
+    currentUserId: number,
   ): Promise<UserInfoAboutHimselfModel | null> {
     return await this.usersRepository.findUserById(currentUserId);
   }
