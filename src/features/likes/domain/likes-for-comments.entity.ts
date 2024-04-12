@@ -4,7 +4,7 @@ import { Comments } from '../../comments/domain/comments.entity';
 import { Users } from '../../users/domain/users.entity';
 
 @Entity()
-export class LikesForCommets {
+export class LikesForComments {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()

@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Users } from '../../users/domain/users.entity';
 import { Posts } from '../../posts/domain/posts.entity';
-import { LikesForCommets } from '../../likes/domain/likes-for-comments.entity';
+import { LikesForComments } from '../../likes/domain/likes-for-comments.entity';
 
 @Schema({ _id: false })
 export class CommentatorInfo {
@@ -47,8 +47,8 @@ export class Comments {
   user: Users;
   @ManyToOne(() => Posts, (p) => p.comments)
   post: Posts;
-  @OneToMany(() => LikesForCommets, (lk) => lk.comment)
-  likesForComments: LikesForCommets[];
+  @OneToMany(() => LikesForComments, (lk) => lk.comment)
+  likesForComments: LikesForComments[];
 }
 
 @Schema()

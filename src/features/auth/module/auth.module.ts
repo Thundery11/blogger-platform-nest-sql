@@ -26,6 +26,7 @@ import { DeleteAllSessionsExceptCurentUseCase } from '../../security-devices/app
 import { DeleteSpecialSessionUseCase } from '../../security-devices/application/use-cases/delete-special-session-use-case';
 import { LogoutUseCase } from '../application/use-cases/logout-use-case';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TestingAllDataController } from '../../testingAllData/testingAllData';
 
 const useCases = [
   LoginUserUseCase,
@@ -74,6 +75,6 @@ const useCases = [
     },
   ],
   controllers: [AuthController, SecurityDevicesController],
-  exports: [AuthService],
+  exports: [AuthService, SecurityDevicesRepository],
 })
 export class AuthModule {}

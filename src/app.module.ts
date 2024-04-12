@@ -63,7 +63,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SuperAdminBlogsController } from './features/blogs/api/super-admin.blogs.controller';
 import { LikesForPosts } from './features/likes/domain/likes-for-posts.enity';
 import { LastLiked } from './features/likes/domain/last-liked.entity';
-import { LikesForCommets } from './features/likes/domain/likes-for-comments.entity';
+import { LikesForComments } from './features/likes/domain/likes-for-comments.entity';
 
 const useCases = [
   CreateBlogUseCase,
@@ -115,17 +115,17 @@ let {
     CqrsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      database: 'BankSystem',
-      username: 'nodejs',
-      password: 'nodejs',
-      port: 5000,
+      host: PGHOST,
+      database: PGDATABASE,
+      username: PGUSER,
+      password: PGPASSWORD,
+      port: 5432,
       autoLoadEntities: true,
       synchronize: true,
       logging: ['query'],
 
       // ssl: true,
-      ssl: false, //менять на true, когда подключаешь NeonDb
+      ssl: true, //менять на true, когда подключаешь NeonDb
     }),
     TypeOrmModule.forFeature([
       Blogs,
@@ -133,7 +133,9 @@ let {
       LikesForPosts,
       LastLiked,
       Comments,
-      LikesForCommets,
+      LikesForComments,
+      Users,
+      SecurityDevices,
     ]),
     // ConfigModule.forRoot(),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
