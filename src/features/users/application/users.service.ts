@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
 import { EmailResendingInputModel } from '../../auth/api/models/input/email-resending.model';
 import { EmailsManager } from '../../../infrastucture/managers/emails-manager';
+import { sortDirectionType } from '../../../infrastucture/global-types/global-types';
 
 @Injectable()
 export class UsersService {
@@ -165,7 +166,7 @@ export class UsersService {
   ): Promise<AllUsersOutputModel> {
     const {
       sortBy = 'createdAt',
-      sortDirection = 'desc',
+      sortDirection = sortDirectionType.desc,
       pageNumber = 1,
       pageSize = 10,
       searchLoginTerm = '',
@@ -181,7 +182,7 @@ export class UsersService {
 
     const users = await this.usersRepository.getAllUsers(
       sortBy,
-      sortDirection,
+      sortDirectionType.desc,
       pageSize,
       skip,
       searchLoginTerm,

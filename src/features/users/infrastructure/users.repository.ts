@@ -7,9 +7,10 @@ import {
   userInfoAboutHimselfMapper,
 } from '../api/models/output/user-output.model';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { UserCreateDto } from '../api/models/input/create-user.input.model';
 import { Users } from '../domain/users.entity';
+import { sortDirectionType } from '../../../infrastucture/global-types/global-types';
 
 // const selectUsersConstant = ['login', 'email', 'createdAt', 'expirationDate'];
 @Injectable()
@@ -34,22 +35,32 @@ export class UsersRepository {
   }
   public async getAllUsers(
     sortBy: string,
-    sortDirection: string,
+    sortDirection: sortDirectionType,
     pageSize: number,
     skip: number,
     searchLoginTerm: string,
     searchEmailTerm: string,
   ): Promise<UsersOutputModel[]> {
-    const selectQuery = `SELECT "id", "login", "email", "createdAt",
-    "expirationDate" FROM public."Users" u
-    WHERE u."login" ILIKE $1 OR u."email" ILIKE $2
-     ORDER BY u."${sortBy}" ${sortDirection} 
-     LIMIT ${pageSize} OFFSET ${skip};
-     `;
-    const users = await this.dataSource.query(selectQuery, [
-      `%${searchLoginTerm}%`,
-      `%${searchEmailTerm}%`,
-    ]);
+    const users = await this.usersRepository
+      .createQueryBuilder('u')
+      .select('u')
+      .where('u.login ILIKE :login', { login: `%${searchLoginTerm}%` })
+      .orWhere('u.email ILIKE :email', { email: ` %${searchEmailTerm}%` })
+      .orderBy(`u."${sortBy}"`, `${sortDirectionType.desc}`)
+      .limit(pageSize)
+      .skip(skip)
+      .getMany();
+
+    // const selectQuery = `SELECT "id", "login", "email", "createdAt",
+    // "expirationDate" FROM public."Users" u
+    // WHERE u."login" ILIKE $1 OR u."email" ILIKE $2
+    //  ORDER BY u."${sortBy}" ${sortDirection}
+    //  LIMIT ${pageSize} OFFSET ${skip};
+    //  `;
+    // const users = await this.dataSource.query(selectQuery, [
+    //   `%${searchLoginTerm}%`,
+    //   `%${searchEmailTerm}%`,
+    // ]);
     return allUsersOutputMapper(users);
   }
 
@@ -57,13 +68,19 @@ export class UsersRepository {
     searchLoginTerm: string,
     searchEmailTerm: string,
   ): Promise<number> {
-    const selectQuery = `SELECT COUNT(*) FROM public."Users" u
-    WHERE u."login" ILIKE $1 OR u."email" ILIKE $2;`;
-    const result = await this.dataSource.query(selectQuery, [
-      `%${searchLoginTerm}%`,
-      `%${searchEmailTerm}%`,
-    ]);
-    const totalCount = Number(result[0].count);
+    const [records, totalCount] = await this.usersRepository.findAndCount({
+      where: {
+        login: Like(`%${searchLoginTerm}%`),
+        email: Like(`%${searchEmailTerm}%`),
+      },
+    });
+    // const selectQuery = `SELECT COUNT(*) FROM public."Users" u
+    // WHERE u."login" ILIKE $1 OR u."email" ILIKE $2;`;
+    // const result = await this.dataSource.query(selectQuery, [
+    //   `%${searchLoginTerm}%`,
+    //   `%${searchEmailTerm}%`,
+    // ]);
+
     return totalCount;
     // ``
   }
