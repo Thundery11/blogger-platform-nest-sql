@@ -1,17 +1,10 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../users/application/users.service';
 import bcrypt from 'bcrypt';
-import { Types } from 'mongoose';
 import { UsersRepository } from '../../users/infrastructure/users.repository';
 import { jwtConstants, tokensLivesConstants } from '../constants/constants';
-import { v4 as uuidv4, v4 } from 'uuid';
-import { UserFomDb } from '../../users/api/models/output/user-output.model';
-import { Users } from '../../users/domain/users.entity';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -40,7 +33,7 @@ export class AuthService {
     return {
       accessToken: await this.jwtService.signAsync(payload, {
         secret: jwtConstants.JWT_SECRET,
-        expiresIn: tokensLivesConstants['10sec'],
+        expiresIn: tokensLivesConstants['1hour'],
       }),
     };
   }
@@ -48,7 +41,7 @@ export class AuthService {
     const payload = { sub: user.id, deviceId: deviceId };
     return await this.jwtService.signAsync(payload, {
       secret: jwtConstants.REFRESH_TOKEN_SECRET,
-      expiresIn: tokensLivesConstants['20sec'],
+      expiresIn: tokensLivesConstants['2hours'],
     });
   }
 
@@ -57,7 +50,6 @@ export class AuthService {
       const result = await this.jwtService.verify(refreshToken, {
         secret: jwtConstants.REFRESH_TOKEN_SECRET,
       });
-      console.log({ REFRESHTOKEN: result });
       if (!result) {
         throw new UnauthorizedException();
       }
