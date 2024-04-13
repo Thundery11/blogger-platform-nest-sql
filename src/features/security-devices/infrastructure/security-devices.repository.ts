@@ -40,20 +40,17 @@ export class SecurityDevicesRepository {
   async getDevices(
     userId: string,
   ): Promise<SecurityDevicesOutputModel[] | null> {
-    // const securityDevices = await this.dataSource
-    //   .getRepository(SecurityDevices)
-    //   .createQueryBuilder('sd')
-    //   .where('sd.userId = :userId', { userId: userId })
-    //   .getMany();
-    // console.log(
-    //   '🚀 ~ SecurityDevicesRepository ~ securityDevices:',
-    //   securityDevices,
+    const securityDevices = await this.dataSource
+      .getRepository(SecurityDevices)
+      .createQueryBuilder('sd')
+      .where('sd.userId = :userId', { userId: userId })
+      .getMany();
+
+    // const securityDevices = await this.dataSource.query(
+    //   `SELECT * FROM public."Devices"
+    // WHERE "userId" = $1`,
+    //   [userId],
     // );
-    const securityDevices = await this.dataSource.query(
-      `SELECT * FROM public."Devices"
-    WHERE "userId" = $1`,
-      [userId],
-    );
 
     if (!securityDevices) {
       return null;
@@ -61,35 +58,42 @@ export class SecurityDevicesRepository {
     return allSecurityDevicesMapper(securityDevices);
   }
   async terminateOtherSessions(deviceId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `DELETE FROM public."Devices"
-    WHERE NOT "deviceId" = $1;`,
-      [deviceId],
-    );
-    return result[1] === 1 ? true : false;
+    const res = await this.securityDevicesRepo
+      .createQueryBuilder('sd')
+      .delete()
+      .where('deviceId != :deviceId', { deviceId: deviceId })
+      .execute();
+    // const result = await this.dataSource.query(
+    //   `DELETE FROM public."Devices"
+    // WHERE NOT "deviceId" = $1;`,
+    //   [deviceId],
+    // );
+    return res.affected === 1 ? true : false;
   }
 
-  async getCurrentSession(
-    deviceId: string,
-  ): Promise<SecurityDevicesDocument | null> {
-    const currentSession = await this.dataSource.query(
-      `SELECT * FROM public."Devices" 
-    WHERE "deviceId" = $1;`,
-      [deviceId],
-    );
-    if (!currentSession) {
+  async getCurrentSession(deviceId: string): Promise<SecurityDevices | null> {
+    const currSession = await this.securityDevicesRepo.findOne({
+      where: { deviceId: deviceId },
+    });
+    // const currentSession = await this.dataSource.query(
+    //   `SELECT * FROM public."Devices"
+    // WHERE "deviceId" = $1;`,
+    //   [deviceId],
+    // );
+    if (!currSession) {
       return null;
     }
-    return currentSession[0];
+    return currSession;
   }
 
   async deleteCurrentSession(deviceId: string): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `DELETE FROM public."Devices"
-    WHERE "deviceId" = $1;`,
-      [deviceId],
-    );
-    return result[1] === 1 ? true : false;
+    const res = await this.securityDevicesRepo.delete({ deviceId: deviceId });
+    // const result = await this.dataSource.query(
+    //   `DELETE FROM public."Devices"
+    // WHERE "deviceId" = $1;`,
+    //   [deviceId],
+    // );
+    return res.affected === 1 ? true : false;
   }
 
   async deleteRefreshTokenWhenLogout(deviceId: string): Promise<boolean> {

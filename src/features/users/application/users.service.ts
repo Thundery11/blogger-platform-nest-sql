@@ -172,10 +172,8 @@ export class UsersService {
       searchLoginTerm = '',
       searchEmailTerm = '',
     } = sortingQueryParams;
-    console.log({ pageNumber: pageNumber });
-    console.log({ pageSize: pageSize });
+
     const skip = (Number(pageNumber) - 1) * Number(pageSize);
-    console.log('🚀 ~ UsersService ~ skip:', skip);
 
     const countedDocuments = await this.usersRepository.countDocuments(
       searchLoginTerm,

@@ -50,11 +50,9 @@ export class UsersRepository {
         email: `%${searchEmailTerm}%`,
       })
       .orderBy(`u."${sortBy}"`, sortDirection === 'asc' ? 'ASC' : 'DESC')
-      .offset(skip)
-      .limit(pageSize)
+      .skip(skip)
+      .take(pageSize)
       .getMany();
-    console.log('🚀 ~ UsersRepository ~ users:', users);
-
     // const selectQuery = `SELECT "id", "login", "email", "createdAt",
     // "expirationDate" FROM public."Users" u
     // WHERE u."login" ILIKE $1 OR u."email" ILIKE $2
