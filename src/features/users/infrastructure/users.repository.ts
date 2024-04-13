@@ -71,12 +71,22 @@ export class UsersRepository {
     searchLoginTerm: string,
     searchEmailTerm: string,
   ): Promise<number> {
-    const [records, totalCount] = await this.usersRepository.findAndCount({
-      where: {
-        login: Like(`%${searchLoginTerm}%`),
-        email: Like(`%${searchEmailTerm}%`),
-      },
-    });
+    const count = await this.usersRepository
+      .createQueryBuilder('u')
+      .select('u')
+      .where('u.login ILIKE :login OR u.email ILIKE :email', {
+        login: `%${searchLoginTerm}%`,
+        email: `%${searchEmailTerm}%`,
+      })
+      .getCount();
+    console.log('🚀 ~ UsersRepository ~ count:', count);
+    // const totalCount = await this.usersRepository.count({
+    //   where: {
+    //     login: Like(`%${searchLoginTerm}%`),
+    //     email: Like(`%${searchEmailTerm}%`),
+    //   },
+    // });
+    // console.log('🚀 ~ UsersRepository ~ totalCount:', totalCount);
     // const selectQuery = `SELECT COUNT(*) FROM public."Users" u
     // WHERE u."login" ILIKE $1 OR u."email" ILIKE $2;`;
     // const result = await this.dataSource.query(selectQuery, [
@@ -84,7 +94,7 @@ export class UsersRepository {
     //   `%${searchEmailTerm}%`,
     // ]);
 
-    return totalCount;
+    return count;
     // ``
   }
 
