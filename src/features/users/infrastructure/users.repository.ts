@@ -41,15 +41,19 @@ export class UsersRepository {
     searchLoginTerm: string,
     searchEmailTerm: string,
   ): Promise<UsersOutputModel[]> {
-    const [users, count] = await this.usersRepository
+    console.log(skip);
+    const users = await this.usersRepository
       .createQueryBuilder('u')
       .select('u')
-      .where('u.login ILIKE :login', { login: `%${searchLoginTerm}%` })
-      .orWhere('u.email ILIKE :email', { email: ` %${searchEmailTerm}%` })
+      .where('u.login ILIKE :login OR u.email ILIKE :email', {
+        login: `%${searchLoginTerm}%`,
+        email: `%${searchEmailTerm}%`,
+      })
       .orderBy(`u."${sortBy}"`, sortDirection === 'asc' ? 'ASC' : 'DESC')
+      .offset(skip)
       .limit(pageSize)
-      .skip(skip)
-      .getManyAndCount();
+      .getMany();
+    console.log('🚀 ~ UsersRepository ~ users:', users);
 
     // const selectQuery = `SELECT "id", "login", "email", "createdAt",
     // "expirationDate" FROM public."Users" u
@@ -61,7 +65,7 @@ export class UsersRepository {
     //   `%${searchLoginTerm}%`,
     //   `%${searchEmailTerm}%`,
     // ]);
-    console.log({ count: count });
+
     return allUsersOutputMapper(users);
   }
 

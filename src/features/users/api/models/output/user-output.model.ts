@@ -61,9 +61,7 @@ export const userInfoAboutHimselfMapper = (
   return outputModel;
 };
 
-export const allUsersOutputMapper = (
-  users: UserFomDb[],
-): UsersOutputModel[] => {
+export const allUsersOutputMapper = (users: Users[]): UsersOutputModel[] => {
   const allUsersOutput = users.map((user) => ({
     id: user.id.toString(),
     login: user.login,

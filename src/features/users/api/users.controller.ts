@@ -48,6 +48,10 @@ export class UsersController {
   async getAllUsers(
     @Query() sortingQueryParams: SortingQueryParamsForUsers,
   ): Promise<AllUsersOutputModel> {
+    console.log(
+      '🚀 ~ UsersController ~ sortingQueryParams:',
+      sortingQueryParams,
+    );
     return await this.usersService.getAllUsers(sortingQueryParams);
   }
 
