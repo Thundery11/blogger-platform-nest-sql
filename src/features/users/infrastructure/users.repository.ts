@@ -79,7 +79,6 @@ export class UsersRepository {
         email: `%${searchEmailTerm}%`,
       })
       .getCount();
-    console.log('🚀 ~ UsersRepository ~ count:', count);
     // const totalCount = await this.usersRepository.count({
     //   where: {
     //     login: Like(`%${searchLoginTerm}%`),

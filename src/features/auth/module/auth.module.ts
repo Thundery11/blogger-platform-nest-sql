@@ -50,7 +50,7 @@ const useCases = [
     JwtModule.register({
       global: false,
       secret: jwtConstants.JWT_SECRET,
-      signOptions: { expiresIn: tokensLivesConstants['1hour'] },
+      signOptions: { expiresIn: tokensLivesConstants['10sec'] },
     }),
     MongooseModule.forFeature([
       {
