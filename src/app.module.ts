@@ -85,7 +85,7 @@ const useCases = [
   UpdateLikeStatusForPostsUseCase,
   FindPostUseCase,
 ];
-let {
+const {
   PGHOST,
   PGDATABASE,
   PGUSER,
@@ -124,8 +124,8 @@ let {
       synchronize: true,
       logging: ['query'],
 
-      // ssl: true,
-      ssl: true, //менять на true, когда подключаешь NeonDb
+      ssl: true,
+      // ssl: false, //менять на true, когда подключаешь NeonDb
     }),
     TypeOrmModule.forFeature([
       Blogs,
