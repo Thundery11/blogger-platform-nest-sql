@@ -1,4 +1,4 @@
-import { SecurityDevicesDocument } from '../../../domain/security-devices-entity';
+import { SecurityDevicesDocument } from '../../../domain/security-devices.entity';
 
 export class SecurityDevicesOutputModel {
   ip: string;

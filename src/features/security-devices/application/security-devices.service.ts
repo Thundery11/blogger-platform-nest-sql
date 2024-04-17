@@ -3,7 +3,7 @@ import { SecurityDevicesRepository } from '../infrastructure/security-devices.re
 import {
   SecurityDevices,
   SecurityDevicesDocument,
-} from '../domain/security-devices-entity';
+} from '../domain/security-devices.entity';
 
 @Injectable()
 export class SecurityDevicesService {

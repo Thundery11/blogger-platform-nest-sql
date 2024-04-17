@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   SecurityDevices,
   SecurityDevicesDocument,
-} from '../domain/security-devices-entity';
+} from '../domain/security-devices.entity';
 import {
   SecurityDevicesOutputModel,
   allSecurityDevicesMapper,

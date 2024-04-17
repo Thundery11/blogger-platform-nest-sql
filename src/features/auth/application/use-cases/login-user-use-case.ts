@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { AuthService } from '../auth.service';
 import { v4 } from 'uuid';
 import { SecurityDevicesService } from '../../../security-devices/application/security-devices.service';
-import { SecurityDevices } from '../../../security-devices/domain/security-devices-entity';
+import { SecurityDevices } from '../../../security-devices/domain/security-devices.entity';
 import { LoginUserWithDeviceDto } from '../../api/models/input/login-user-with-device-dto';
 
 export class LoginUserCommand {

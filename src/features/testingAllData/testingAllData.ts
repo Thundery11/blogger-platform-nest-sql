@@ -6,11 +6,11 @@ import { Posts } from '../posts/domain/posts.entity';
 import { Users } from '../users/domain/users.entity';
 import { Comments } from '../comments/domain/comments.entity';
 import { LastLikedDbModel, LikesDbModel } from '../likes/domain/likes.entity';
-import { SecurityDevices } from '../security-devices/domain/security-devices-entity';
+import { SecurityDevices } from '../security-devices/domain/security-devices.entity';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { LikesForComments } from '../likes/domain/likes-for-comments.entity';
-import { LikesForPosts } from '../likes/domain/likes-for-posts.enity';
+import { LikesForPosts } from '../likes/domain/likes-for-posts.entity';
 import { LastLiked } from '../likes/domain/last-liked.entity';
 
 @Controller('testing/all-data')

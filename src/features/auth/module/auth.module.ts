@@ -16,7 +16,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   SecurityDevices,
   SecurityDevicesSchema,
-} from '../../security-devices/domain/security-devices-entity';
+} from '../../security-devices/domain/security-devices.entity';
 import { SecurityDevicesRepository } from '../../security-devices/infrastructure/security-devices.repository';
 import { SecurityDevicesService } from '../../security-devices/application/security-devices.service';
 import { RefreshTokenUseCase } from '../application/use-cases/refresh-token-use-case';

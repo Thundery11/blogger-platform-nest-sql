@@ -12,7 +12,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Blogs } from '../../blogs/domain/blogs.entity';
-import { LikesForPosts } from '../../likes/domain/likes-for-posts.enity';
+import { LikesForPosts } from '../../likes/domain/likes-for-posts.entity';
 import { LastLiked } from '../../likes/domain/last-liked.entity';
 import { Comments } from '../../comments/domain/comments.entity';
 
