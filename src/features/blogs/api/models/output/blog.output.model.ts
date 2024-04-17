@@ -1,4 +1,4 @@
-import { BlogsDocument } from '../../../domain/blogs.entity';
+import { Blogs } from '../../../domain/blogs.entity';
 
 export class BlogFromDb {
   id: number;
@@ -24,21 +24,19 @@ export class AllBlogsOutputModel {
   items: BlogsOutputModel[];
 }
 
-export const BlogsOutputMapper = (blog: BlogFromDb[]): BlogsOutputModel => {
-  const outputModel = blog.map((b) => ({
-    id: b.id.toString(),
-    name: b.name,
-    description: b.description,
-    websiteUrl: b.websiteUrl,
-    createdAt: b.createdAt,
-    isMembership: b.isMembership,
-  }))[0];
+export const BlogsOutputMapper = (blog: Blogs): BlogsOutputModel => {
+  const outputModel = new BlogsOutputModel();
+  outputModel.id = blog.id.toString();
+  outputModel.name = blog.name;
+  outputModel.description = blog.description;
+  outputModel.websiteUrl = blog.websiteUrl;
+  outputModel.createdAt = blog.createdAt;
+  outputModel.isMembership = blog.isMembership;
+
   return outputModel;
 };
 
-export const allBlogsOutputMapper = (
-  blogs: BlogFromDb[],
-): BlogsOutputModel[] => {
+export const allBlogsOutputMapper = (blogs: Blogs[]): BlogsOutputModel[] => {
   const allBlogsOutput = blogs.map((blog) => ({
     id: blog.id.toString(),
     name: blog.name,

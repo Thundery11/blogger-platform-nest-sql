@@ -1,44 +1,61 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blogs, BlogsDocument } from '../domain/blogs.entity';
-import { Model, Types } from 'mongoose';
+import { Injectable } from '@nestjs/common';
+import { Blogs } from '../domain/blogs.entity';
 import {
+  AllBlogsOutputModel,
+  BlogsOutputMapper,
   BlogsOutputModel,
   allBlogsOutputMapper,
 } from '../api/models/output/blog.output.model';
-import {
-  BlogsCreateDto,
-  BlogsCreateModel,
-} from '../api/models/input/create-blog.input.model';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { BlogsCreateModel } from '../api/models/input/create-blog.input.model';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class BlogsRepository {
   constructor(
-    @InjectModel(Blogs.name) private blogsModel: Model<Blogs>,
+    @InjectRepository(Blogs) private blogsRepository: Repository<Blogs>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  public async createBlog(blogsCreateDto: BlogsCreateDto) {
-    const insertQuery = `INSERT INTO public."Blogs"("name", "description", "websiteUrl",
-   "createdAt", "isMembership") VALUES ('${blogsCreateDto.name}', '${blogsCreateDto.description}', '${blogsCreateDto.websiteUrl}',
-   '${blogsCreateDto.createdAt}', '${blogsCreateDto.isMembership}') RETURNING id`;
-    const newBlog = await this.dataSource.query(insertQuery);
-    const blogId = newBlog[0].id;
-    return blogId;
+  public async createBlog(newBlog: Blogs): Promise<BlogsOutputModel> {
+    try {
+      const blog = await this.blogsRepository.save(newBlog);
+      return BlogsOutputMapper(blog);
+    } catch (e) {
+      console.error(e);
+      {
+        throw e;
+      }
+    }
+
+    //   const insertQuery = `INSERT INTO public."Blogs"("name", "description", "websiteUrl",
+    //  "createdAt", "isMembership") VALUES ('${blogsCreateDto.name}', '${blogsCreateDto.description}', '${blogsCreateDto.websiteUrl}',
+    //  '${blogsCreateDto.createdAt}', '${blogsCreateDto.isMembership}') RETURNING id`;
+    //   const newBlog = await this.dataSource.query(insertQuery);
+    //   const blogId = newBlog[0].id;
+    //   return blogId;
   }
 
   public async countDocuments(searchNameTerm: string): Promise<number> {
-    const selectQuery = `SELECT COUNT(*) FROM public."Blogs" b
-   WHERE b."name" ILIKE $1;`;
-    const result = await this.dataSource.query(selectQuery, [
-      `%${searchNameTerm}%`,
-    ]);
-    console.log('🚀 ~ BlogsRepository ~ countDocuments ~ result:', result);
-    const totalCount = Number(result[0].count);
+    try {
+      const count = await this.blogsRepository
+        .createQueryBuilder('b')
+        .select('b')
+        .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
+        .getCount();
+      return count;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
 
-    return totalCount;
+    //   const selectQuery = `SELECT COUNT(*) FROM public."blogs" b
+    // //  WHERE b."name" ILIKE $1;`;
+    //   const result = await this.dataSource.query(selectQuery, [
+    //     `%${searchNameTerm}%`,
+    //   ]);
+    //   console.log('🚀 ~ BlogsRepository ~ countDocuments ~ result:', result);
+    //   const totalCount = Number(result[0].count);
   }
 
   public async getAllBlogs(
@@ -48,45 +65,83 @@ export class BlogsRepository {
     pageSize: number,
     skip: number,
   ): Promise<BlogsOutputModel[]> {
-    const selectQuery = `SELECT 
-    "id", "name", "description",
-     "websiteUrl", "createdAt", "isMembership"
-     FROM public."Blogs" b
-     WHERE b."name" ILIKE $1
-     ORDER BY b."${sortBy}" ${sortDirection}
-     LIMIT ${pageSize} OFFSET ${skip};
-     `;
+    try {
+      const blogs = await this.blogsRepository
+        .createQueryBuilder('b')
+        .select('b')
+        .where('b.name ILIKE :searchNameTerm', {
+          searchNameTerm: `%${searchNameTerm}%`,
+        })
+        .orderBy(`b.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
+        .skip(skip)
+        .take(pageSize)
+        .getMany();
+      return allBlogsOutputMapper(blogs);
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
 
-    const blogs = await this.dataSource.query(selectQuery, [
-      `%${searchNameTerm}%`,
-    ]);
-    return allBlogsOutputMapper(blogs);
+    // const selectQuery = `SELECT
+    // "id", "name", "description",
+    //  "websiteUrl", "createdAt", "isMembership"
+    //  FROM public."Blogs" b
+    //  WHERE b."name" ILIKE $1
+    //  ORDER BY b."${sortBy}" ${sortDirection}
+    //  LIMIT ${pageSize} OFFSET ${skip};
+    //  `;
+
+    // const blogs = await this.dataSource.query(selectQuery, [
+    //   `%${searchNameTerm}%`,
+    // ]);
+    // return allBlogsOutputMapper(blogs);
   }
 
   public async updateBlog(
     id: number,
     blogsUpdateModel: BlogsCreateModel,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `UPDATE public."Blogs"
-    SET "name" = '${blogsUpdateModel.name}', 
-    "description" = '${blogsUpdateModel.description}',
-    "websiteUrl" = '${blogsUpdateModel.websiteUrl}'
-    WHERE "id"= $1;`,
-      [id],
-    );
-    console.log('🚀 ~ BlogsRepository ~ result:', result);
+    try {
+      const res = await this.blogsRepository.update(
+        { id: id },
+        {
+          description: blogsUpdateModel.description,
+          websiteUrl: blogsUpdateModel.websiteUrl,
+          name: blogsUpdateModel.name,
+        },
+      );
+      return res.affected === 1 ? true : false;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+    // const result = await this.dataSource.query(
+    //   `UPDATE public."Blogs"
+    // SET "name" = '${blogsUpdateModel.name}',
+    // "description" = '${blogsUpdateModel.description}',
+    // "websiteUrl" = '${blogsUpdateModel.websiteUrl}'
+    // WHERE "id"= $1;`,
+    //   [id],
+    // );
+    // console.log('🚀 ~ BlogsRepository ~ result:', result);
 
-    return result[1] === 1 ? true : false;
+    // return result[1] === 1 ? true : false;
   }
 
   public async deleteBlog(id: number): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `DELETE FROM public."Blogs"
-    WHERE "id" = $1
-    RETURNING "id";`,
-      [id],
-    );
-    return result[1] === 1 ? true : false;
+    try {
+      const result = await this.blogsRepository.delete({ id: id });
+      return result.affected === 1;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+    // const result = await this.dataSource.query(
+    //   `DELETE FROM public."Blogs"
+    // WHERE "id" = $1
+    // RETURNING "id";`,
+    //   [id],
+    // );
+    // return result[1] === 1 ? true : false;
   }
 }

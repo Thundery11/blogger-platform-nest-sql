@@ -1,37 +1,26 @@
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  BlogsCreateDto,
-  BlogsCreateModel,
-} from '../../api/models/input/create-blog.input.model';
-import {
-  Blogs,
-  BlogsDocument,
-  BlogsModelType,
-} from '../../domain/blogs.entity';
+import { BlogsCreateModel } from '../../api/models/input/create-blog.input.model';
+import { Blogs } from '../../domain/blogs.entity';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { BlogsOutputModel } from '../../api/models/output/blog.output.model';
 
 export class CreateBlogCommand {
   constructor(public blogsCreateModel: BlogsCreateModel) {}
 }
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
-  constructor(
-    private blogsRepository: BlogsRepository,
-    @InjectModel(Blogs.name) private blogsModel: BlogsModelType,
-  ) {}
+  constructor(private blogsRepository: BlogsRepository) {}
 
-  async execute(command: CreateBlogCommand): Promise<number | null> {
+  async execute(command: CreateBlogCommand): Promise<BlogsOutputModel> {
     const createdAt = new Date().toISOString();
     const isMembership = false;
-    const blogsCreateDto = new BlogsCreateDto(
-      command.blogsCreateModel.name,
-      command.blogsCreateModel.description,
-      command.blogsCreateModel.websiteUrl,
-      createdAt,
-      isMembership,
-    );
+    const newBlog = new Blogs();
+    newBlog.description = command.blogsCreateModel.description;
+    newBlog.websiteUrl = command.blogsCreateModel.websiteUrl;
+    newBlog.name = command.blogsCreateModel.name;
+    newBlog.createdAt = createdAt;
+    newBlog.isMembership = isMembership;
 
-    return await this.blogsRepository.createBlog(blogsCreateDto);
+    return await this.blogsRepository.createBlog(newBlog);
   }
 }

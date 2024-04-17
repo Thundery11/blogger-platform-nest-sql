@@ -65,13 +65,13 @@ export class SuperAdminBlogsController {
   async createBlog(
     @Body() blogsCreateModel: BlogsCreateModel,
   ): Promise<BlogsOutputModel> {
-    const blogId = await this.commandBus.execute(
+    const blog = await this.commandBus.execute(
       new CreateBlogCommand(blogsCreateModel),
     );
-    const blog = await this.blogsQueryRepository.getBlogById(blogId);
-    if (!blog) {
-      throw new NotFoundException();
-    }
+    // const blog = await this.blogsQueryRepository.getBlogById(blogId);
+    // if (!blog) {
+    //   throw new NotFoundException();
+    // }
     return blog;
   }
   @UseGuards(BasicAuthGuard)
