@@ -131,13 +131,13 @@ export class SuperAdminBlogsController {
     @Param('blogId', ParseIntPipe) blogId: number,
     @Body() postCreateModel: PostCreateModel,
   ): Promise<PostOutputModel | null> {
-    const postId = await this.commandBus.execute(
+    const post = await this.commandBus.execute(
       new CreatePostForSpecificBlogCommand(postCreateModel, blogId),
     );
-    if (!postId) {
+    if (!post) {
       throw new NotFoundException();
     }
-    return await this.postsQueryRepository.getPostById(postId);
+    return await this.postsQueryRepository.getPostById(post.id);
   }
   @UseGuards(BasicAuthGuard)
   @Get(':blogId/posts')

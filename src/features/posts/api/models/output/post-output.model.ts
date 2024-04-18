@@ -1,5 +1,5 @@
 import { MyStatus } from '../../../../likes/domain/likes.entity';
-import { PostsDocument } from '../../../domain/posts.entity';
+import { Posts, PostsDocument } from '../../../domain/posts.entity';
 
 export class PostFromDb {
   constructor(
@@ -51,27 +51,54 @@ export class PostOutputModel {
 //   return postsOutputMapperFinally(post);
 // };
 
-export const postsOutputMapperFinally = (
-  post: PostFromDb[],
-): PostOutputModel => {
-  const outputModel = post.map((p) => ({
-    id: p.id.toString(),
-    title: p.title,
-    shortDescription: p.shortDescription,
-    content: p.content,
-    blogId: p.blogId.toString(),
-    blogName: p.blogName,
-    createdAt: p.createdAt,
-    extendedLikesInfo: {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: MyStatus.None,
-      newestLikes: [],
-    },
-  }))[0];
+export const postsOutputMapperFinally = (post: Posts): PostOutputModel => {
+  // const output = post.raw.map((p) => ({
+  //   id: p.id.toString(),
+  //   title: p.title,
+  //   shortDescription: p.shortDescription,
+  //   content: p.content,
+  //   blogId: p.blogId.toString(),
+  //   blogName: p.blogName,
+  //   createdAt: p.createdAt,
+  //   extendedLikesInfo: {
+  //     likesCount: 0,
+  //     dislikesCount: 0,
+  //     myStatus: MyStatus.None,
+  //     newestLikes: [],
+  //   },
+  // }))[0];
+  // console.log('🚀 ~ postsOutputMapperFinally ~ output:', output);
 
+  const outputModel = new PostOutputModel(
+    post.id.toString(),
+    post.title,
+    post.shortDescription,
+    post.content,
+    post.blogId.toString(),
+    post.blog.name,
+    post.createdAt,
+    ExtendedLikesInfo.getDefault(),
+  );
   return outputModel;
 };
+
+//     id: p.id.toString(),
+//     title: p.title,
+//     shortDescription: p.shortDescription,
+//     content: p.content,
+//     blogId: p.blogId.toString(),
+//     blogName: p.blogName,
+//     createdAt: p.createdAt,
+//     extendedLikesInfo: {
+//       likesCount: 0,
+//       dislikesCount: 0,
+//       myStatus: MyStatus.None,
+//       newestLikes: [],
+//     },
+//   }))[0];
+
+//   return outputModel;
+// };
 
 export class AllPostsOutputModel {
   pagesCount: number;

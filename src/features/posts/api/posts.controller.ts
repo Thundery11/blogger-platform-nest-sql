@@ -136,20 +136,20 @@ export class PostsController {
     return allComments;
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  @HttpCode(201)
-  async createPost(
-    @Body() postCreateModelWithBlogId: PostCreateModelWithBlogId,
-  ): Promise<PostOutputModel> {
-    const result = await this.commandBus.execute(
-      new CreatePostCommand(postCreateModelWithBlogId),
-    );
-    if (!result) {
-      throw new NotFoundException();
-    }
-    return await this.postsQueryRepository.getPostById(result._id);
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Post()
+  // @HttpCode(201)
+  // async createPost(
+  //   @Body() postCreateModelWithBlogId: PostCreateModelWithBlogId,
+  // ): Promise<PostOutputModel> {
+  //   const result = await this.commandBus.execute(
+  //     new CreatePostCommand(postCreateModelWithBlogId),
+  //   );
+  //   if (!result) {
+  //     throw new NotFoundException();
+  //   }
+  //   return await this.postsQueryRepository.getPostById(result._id);
+  // }
 
   // @UseGuards(BasicAuthGuard)
   // @Put(':id')

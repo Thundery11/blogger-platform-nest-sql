@@ -27,7 +27,7 @@ export class CreatePostForSpecificBlogUseCase
   ) {}
   async execute(
     command: CreatePostForSpecificBlogCommand,
-  ): Promise<number | null> {
+  ): Promise<Posts | null> {
     const { postCreateModel, blogId } = command;
     const isBlogExist = await this.blogsQueryRepository.getBlogById(blogId);
     console.log('🚀 ~ isBlogExist:', isBlogExist);
@@ -38,16 +38,12 @@ export class CreatePostForSpecificBlogUseCase
     const { title, shortDescription, content } = postCreateModel;
     const createdAt = new Date().toISOString();
 
-    const extendedLikesInfo = new ExtendedLikesInfoo(0, 0, 'None', []);
-
-    const newPost = new CreatePostDto(
-      title,
-      shortDescription,
-      content,
-      Number(isBlogExist.id),
-      isBlogExist.name,
-      createdAt,
-    );
+    const newPost = new Posts();
+    newPost.title = title;
+    newPost.shortDescription = shortDescription;
+    newPost.content = content;
+    newPost.blogId = Number(isBlogExist.id);
+    newPost.createdAt = createdAt;
 
     return this.postsRepository.createPost(newPost);
   }

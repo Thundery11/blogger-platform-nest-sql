@@ -19,7 +19,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
     private blogsQueryRepository: BlogsQueryRepository,
     private postsRepository: PostsRepository,
   ) {}
-  async execute(command: CreatePostCommand): Promise<number | null> {
+  async execute(command: CreatePostCommand): Promise<Posts | null> {
     const { title, shortDescription, content, blogId } =
       command.postCreateModelWithBlogId;
 
@@ -31,20 +31,18 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
     }
 
     const createdAt = new Date().toISOString();
-    const extendedLikesInfo = new ExtendedLikesInfo();
-    extendedLikesInfo.likesCount = 0;
-    extendedLikesInfo.dislikesCount = 0;
-    extendedLikesInfo.myStatus = 'None';
-    extendedLikesInfo.newestLikes = [];
+    // const extendedLikesInfo = new ExtendedLikesInfo();
+    // extendedLikesInfo.likesCount = 0;
+    // extendedLikesInfo.dislikesCount = 0;
+    // extendedLikesInfo.myStatus = 'None';
+    // extendedLikesInfo.newestLikes = [];
 
-    const newPost = new CreatePostDto(
-      title,
-      shortDescription,
-      content,
-      Number(isBlogExist.id),
-      isBlogExist.name,
-      createdAt,
-    );
+    const newPost = new Posts();
+    newPost.title = title;
+    newPost.shortDescription = shortDescription;
+    newPost.content = content;
+    newPost.blogId = Number(isBlogExist.id);
+    newPost.createdAt = createdAt;
 
     return this.postsRepository.createPost(newPost);
   }

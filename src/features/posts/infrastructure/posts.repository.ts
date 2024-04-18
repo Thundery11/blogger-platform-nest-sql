@@ -8,29 +8,35 @@ import {
   allPostsOutputMapper,
 } from '../api/models/output/post-output.model';
 import { PostUpdateModel } from '../api/models/input/create-post.input.model';
-import { DataSource } from 'typeorm';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsRepository {
   constructor(
-    @InjectModel(Posts.name) private postsModel: Model<Posts>,
     @InjectDataSource() private dataSource: DataSource,
+    @InjectRepository(Posts) private postsRepository: Repository<Posts>,
   ) {}
 
-  public async createPost(newPost: CreatePostDto): Promise<number | null> {
-    const insertQuery = `INSERT INTO public."Posts"(
-  "title", "shortDescription", "content","createdAt", "blogId")
-   VALUES ('${newPost.title}', '${newPost.shortDescription}','${newPost.content}',
-   '${newPost.createdAt}','${newPost.blogId}') RETURNING id;`;
+  public async createPost(newPost: Posts): Promise<Posts | null> {
+    try {
+      const post = await this.postsRepository.save(newPost);
+      return post;
+    } catch (e) {
+      throw e;
+    }
+    //   const insertQuery = `INSERT INTO public."Posts"(
+    // "title", "shortDescription", "content","createdAt", "blogId")
+    //  VALUES ('${newPost.title}', '${newPost.shortDescription}','${newPost.content}',
+    //  '${newPost.createdAt}','${newPost.blogId}') RETURNING id;`;
 
-    const createdPost = await this.dataSource.query(insertQuery);
-    const postId = createdPost[0].id;
-    return postId;
+    //   const createdPost = await this.dataSource.query(insertQuery);
+    //   const postId = createdPost[0].id;
+    //   return postId;
   }
-  public async countDocuments(query: object): Promise<number> {
-    return await this.postsModel.countDocuments(query);
-  }
+  // public async countDocuments(query: object): Promise<number> {
+  //   return await this.postsModel.countDocuments(query);
+  // }
   async countAllDocumentsForCurrentBlog(blogId: number): Promise<number> {
     const selectQuery = `SELECT COUNT(*) FROM
     public."Posts" p
@@ -94,15 +100,27 @@ export class PostsRepository {
     blogId: number,
     postUpdateModel: PostUpdateModel,
   ): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `UPDATE public."Posts"
-    SET "title" = '${postUpdateModel.title}', 
-    "shortDescription" = '${postUpdateModel.shortDescription}',
-    "content" = '${postUpdateModel.content}'
-    WHERE "id" = $1 AND "blogId" = $2;`,
-      [postId, blogId],
-    );
-    return result[1] === 1 ? true : false;
+    try {
+      const res = await this.postsRepository.update(
+        { id: postId, blogId: blogId },
+        {
+          title: postUpdateModel.title,
+          shortDescription: postUpdateModel.shortDescription,
+          content: postUpdateModel.content,
+        },
+      );
+      // const result = await this.dataSource.query(
+      //   `UPDATE public."Posts"
+      // SET "title" = '${postUpdateModel.title}',
+      // "shortDescription" = '${postUpdateModel.shortDescription}',
+      // "content" = '${postUpdateModel.content}'
+      // WHERE "id" = $1 AND "blogId" = $2;`,
+      //   [postId, blogId],
+      // );
+      return res.affected === 1;
+    } catch (e) {
+      throw e;
+    }
   }
   public async getAllPosts(
     sortBy: string,
@@ -130,12 +148,20 @@ export class PostsRepository {
   }
 
   public async deletePost(blogId: number, postId: number): Promise<boolean> {
-    const result = await this.dataSource.query(
-      `DELETE FROM public."Posts"
-    WHERE "id" = $1 AND "blogId" = $2
-    RETURNING "id";`,
-      [postId, blogId],
-    );
-    return result[1] === 1 ? true : false;
+    try {
+      const res = await this.postsRepository.delete({
+        id: postId,
+        blogId: blogId,
+      });
+      // const result = await this.dataSource.query(
+      //   `DELETE FROM public."Posts"
+      // WHERE "id" = $1 AND "blogId" = $2
+      // RETURNING "id";`,
+      //   [postId, blogId],
+      // );
+      return res.affected === 1;
+    } catch (e) {
+      throw e;
+    }
   }
 }
