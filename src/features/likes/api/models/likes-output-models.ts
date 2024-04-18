@@ -1,3 +1,4 @@
+import { LastLiked } from '../../domain/last-liked.entity';
 import { LikesDocument, MyStatus } from '../../domain/likes.entity';
 
 export class WhatIsMyStatus {
@@ -33,12 +34,12 @@ export class LastLikedFromDb {
 }
 
 export const lastLikedOutputMapper = (
-  lastLiked: LastLikedFromDb[],
+  lastLiked: LastLiked[],
 ): LastLikedOutputType[] => {
   const output = lastLiked.map((l) => ({
     addedAt: l.addedAt,
     userId: l.userId.toString(),
-    login: l.login,
+    login: l.user.login,
   }));
   return output;
 };

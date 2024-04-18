@@ -6,6 +6,9 @@ import {
 } from '../api/models/input/likes-input.model';
 import { LikesRepository } from '../infrastructure/likes.repository';
 import { LastLikedOutputType } from '../api/models/likes-output-models';
+import { LikesForComments } from '../domain/likes-for-comments.entity';
+import { LikesForPosts } from '../domain/likes-for-posts.entity';
+import { LastLiked } from '../domain/last-liked.entity';
 
 @Injectable()
 export class LikesService {
@@ -30,7 +33,11 @@ export class LikesService {
     _myStatus: MyStatus,
   ): Promise<boolean> {
     const createdAt = new Date().toISOString();
-    const like = new LikesDbType(userId, _parentId, createdAt, _myStatus);
+    const like = new LikesForComments();
+    like.userId = userId;
+    like.commentId = _parentId;
+    like.myStatus = _myStatus;
+    like.createdAt = createdAt;
 
     return await this.likesRepository.addLikeComments(like);
   }
@@ -68,8 +75,12 @@ export class LikesService {
     _myStatus: MyStatus,
   ): Promise<boolean> {
     const createdAt = new Date().toISOString();
-    const like = new LikesDbType(userId, _parentId, createdAt, _myStatus);
-
+    // const like = new LikesDbType(userId, _parentId, createdAt, _myStatus);
+    const like = new LikesForPosts();
+    like.userId = userId;
+    like.postId = _parentId;
+    like.myStatus = _myStatus;
+    like.createdAt = createdAt;
     return await this.likesRepository.addLikePosts(like);
   }
   async updateLikePosts(
@@ -87,9 +98,12 @@ export class LikesService {
     }
     return true;
   }
-  async lastLiked(userId: number, postId: number): Promise<number | null> {
+  async lastLiked(userId: number, postId: number): Promise<LastLiked | null> {
     const addedAt = new Date().toISOString();
-    const lastLiked = new LastLikedType(addedAt, userId, postId);
+    const lastLiked = new LastLiked();
+    lastLiked.addedAt = addedAt;
+    lastLiked.postId = postId;
+    lastLiked.userId = userId;
     console.log(lastLiked, 'LASTLIKED');
     const reaciton = await this.likesRepository.isItFirstLike(userId, postId);
     console.log('reaciton', reaciton);

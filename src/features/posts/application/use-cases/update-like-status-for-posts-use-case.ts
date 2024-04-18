@@ -49,6 +49,7 @@ export class UpdateLikeStatusForPostsUseCase
           currentUserId,
           postId,
         );
+        console.log('🚀 ~ execute ~ lastLiked:', lastLiked);
         console.log('lastLiked', lastLiked);
       }
       return true;

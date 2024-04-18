@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { PostUpdateModel } from '../../api/models/input/create-post.input.model';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';

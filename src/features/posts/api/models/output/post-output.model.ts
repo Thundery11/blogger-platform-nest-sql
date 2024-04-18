@@ -108,16 +108,14 @@ export class AllPostsOutputModel {
   items: PostOutputModel[];
 }
 
-export const allPostsOutputMapper = (
-  posts: PostFromDb[],
-): PostOutputModel[] => {
+export const allPostsOutputMapper = (posts: Posts[]): PostOutputModel[] => {
   const allPostsOutput = posts.map((post) => ({
     id: post.id.toString(),
     title: post.title,
     shortDescription: post.shortDescription,
     content: post.content,
     blogId: post.blogId.toString(),
-    blogName: post.blogName,
+    blogName: post.blog.name,
     createdAt: post.createdAt,
     extendedLikesInfo: {
       likesCount: 0,
