@@ -180,11 +180,19 @@ export class PostsRepository {
     skip: number,
   ): Promise<PostOutputModel[]> {
     try {
+      let orderCriteria;
+      if (sortBy === 'blogName') {
+        orderCriteria = { 'b.name': sortDirection === 'asc' ? 'ASC' : 'DESC' };
+      } else {
+        orderCriteria = {
+          [`p.${sortBy}`]: sortDirection === 'asc' ? 'ASC' : 'DESC',
+        };
+      }
       const posts = await this.postsRepository
         .createQueryBuilder('p')
         .leftJoin('p.blog', 'b')
         .select(['p', 'b.name'])
-        .orderBy(`p.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
+        .orderBy(orderCriteria)
         .skip(skip)
         .take(pageSize)
         .getMany();
