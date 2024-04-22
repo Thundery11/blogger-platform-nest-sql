@@ -6,6 +6,7 @@ import {
 import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { Comments } from '../../domain/comments.entity';
+import { NotFoundException } from '@nestjs/common';
 
 export class CreateCommentForSpecificPostCommand {
   constructor(
@@ -30,7 +31,7 @@ export class CreateCommentForSpecificPostUseCase
     const { userId, postId, createCommentModel } = command;
     const isPostExist = await this.postsRepository.getPostById(postId);
     if (!isPostExist) {
-      return null;
+      throw new NotFoundException();
     }
     const createdAt = new Date().toISOString();
     const createCommentDto = new Comments();
