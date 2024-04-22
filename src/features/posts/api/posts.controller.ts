@@ -46,7 +46,6 @@ import { FindAllCommentsCommand } from '../application/use-cases/find-all-commen
 import { AuthService } from '../../auth/application/auth.service';
 import {
   LikeStatus,
-  UpdateLikeDto,
   UpdateLikeForPostsDto,
 } from '../../likes/api/models/input/likes-input.model';
 import { UpdateLikeStatusForPostsCommand } from '../application/use-cases/update-like-status-for-posts-use-case';
@@ -194,7 +193,10 @@ export class PostsController {
         postId,
       ),
     );
-    const comment = await this.commentsQueryRepository.getCommentById(result);
+    const comment = await this.commentsQueryRepository.getCommentById(
+      result.id,
+    );
+    console.log('🚀 ~ PostsController ~ comment:', comment);
     if (!comment) {
       throw new NotFoundException();
     }

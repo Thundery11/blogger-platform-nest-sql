@@ -30,7 +30,7 @@ import { UpdateCommentCommand } from '../application/use-cases/update-comment-us
 import { DeleteCommentCommand } from '../application/use-cases/delete-comment-use-case';
 import {
   LikeStatus,
-  UpdateLikeDto,
+  UpdateLikeForCommentsDto,
 } from '../../likes/api/models/input/likes-input.model';
 import { UpdateLikeStatusCommand } from '../application/use-cases/update-like-status-use-case';
 
@@ -127,7 +127,7 @@ export class CommentsController {
     @CurrentUserId() currentUserId: number,
     @Body() likeStatus: LikeStatus,
   ): Promise<boolean> {
-    const updateLikeDto = new UpdateLikeDto(
+    const updateLikeDto = new UpdateLikeForCommentsDto(
       commentId,
       currentUserId,
       likeStatus.likeStatus,

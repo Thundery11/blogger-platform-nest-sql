@@ -1,12 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UpdateLikeDto } from '../../../likes/api/models/input/likes-input.model';
+import { UpdateLikeForCommentsDto } from '../../../likes/api/models/input/likes-input.model';
 import { LikesService } from '../../../likes/application/likes.service';
 import { CommentsQueryRepository } from '../../infrastructure/comments.query.repository';
 import { Types } from 'mongoose';
 import { NotFoundException } from '@nestjs/common';
 
 export class UpdateLikeStatusCommand {
-  constructor(public updateLikeDto: UpdateLikeDto) {}
+  constructor(public updateLikeDto: UpdateLikeForCommentsDto) {}
 }
 @CommandHandler(UpdateLikeStatusCommand)
 export class UpdateCommentsLikeStatusUseCase

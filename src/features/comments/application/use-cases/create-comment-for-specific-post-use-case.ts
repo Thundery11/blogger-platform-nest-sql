@@ -5,6 +5,7 @@ import {
 } from '../../api/models/input/comments-input.model';
 import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
+import { Comments } from '../../domain/comments.entity';
 
 export class CreateCommentForSpecificPostCommand {
   constructor(
@@ -25,19 +26,18 @@ export class CreateCommentForSpecificPostUseCase
 
   async execute(
     command: CreateCommentForSpecificPostCommand,
-  ): Promise<number | null> {
+  ): Promise<Comments | null> {
     const { userId, postId, createCommentModel } = command;
     const isPostExist = await this.postsRepository.getPostById(postId);
     if (!isPostExist) {
       return null;
     }
     const createdAt = new Date().toISOString();
-    const createCommentDto = new CreateCommentDto(
-      userId,
-      postId,
-      createdAt,
-      createCommentModel.content,
-    );
+    const createCommentDto = new Comments();
+    createCommentDto.userId = userId;
+    createCommentDto.postId = postId;
+    createCommentDto.createdAt = createdAt;
+    createCommentDto.content = createCommentModel.content;
 
     return this.commentsRepository.createComment(createCommentDto);
   }

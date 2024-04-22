@@ -24,7 +24,7 @@ export class LikeStatus {
   likeStatus: MyStatus;
 }
 
-export class UpdateLikeDto {
+export class UpdateLikeForCommentsDto {
   constructor(
     public commentId: number,
     public currentUserId: number,

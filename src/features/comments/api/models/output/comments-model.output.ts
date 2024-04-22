@@ -1,5 +1,5 @@
 import { MyStatus } from '../../../../likes/domain/likes.entity';
-import { CommentsDocument } from '../../../domain/comments.entity';
+import { Comments, CommentsDocument } from '../../../domain/comments.entity';
 
 class LikesInfo {
   constructor(
@@ -45,34 +45,41 @@ export class AllCommentsOutputModel {
 }
 
 export const commentsOutputQueryMapper = (
-  comment: CommentFromDb[],
+  comment: Comments,
 ): CommentsOutputModel => {
-  const outputModel = comment.map((c) => ({
-    id: c.id.toString(),
-    content: c.content,
-    commentatorInfo: {
-      userId: c.userId.toString(),
-      userLogin: c.userLogin,
-    },
-    createdAt: c.createdAt,
-    likesInfo: {
-      likesCount: 0,
-      dislikesCount: 0,
-      myStatus: MyStatus.None,
-    },
-  }))[0];
+  const outputModel = new CommentsOutputModel(
+    comment.id.toString(),
+    comment.content,
+    new CommentatorInfo(comment.userId.toString(), comment.user.login),
+    comment.createdAt,
+    LikesInfo.getDefault(),
+  );
+  // comment.map((c) => ({
+  //   id: c.id.toString(),
+  //   content: c.content,
+  //   commentatorInfo: {
+  //     userId: c.userId.toString(),
+  //     userLogin: c.userLogin,
+  //   },
+  //   createdAt: c.createdAt,
+  //   likesInfo: {
+  //     likesCount: 0,
+  //     dislikesCount: 0,
+  //     myStatus: MyStatus.None,
+  //   },
+  // }))[0];
   return outputModel;
 };
 
 export const AllCommentsOutputMapper = (
-  comments: CommentFromDb[],
+  comments: Comments[],
 ): CommentsOutputModel[] => {
   const allCommentsOutput = comments.map((comment) => ({
     id: comment.id.toString(),
     content: comment.content,
     commentatorInfo: {
       userId: comment.userId.toString(),
-      userLogin: comment.userLogin,
+      userLogin: comment.user.login,
     },
     createdAt: comment.createdAt,
     likesInfo: {
