@@ -12,6 +12,7 @@ import { DataSource, Repository } from 'typeorm';
 import { LikesForComments } from '../likes/domain/likes-for-comments.entity';
 import { LikesForPosts } from '../likes/domain/likes-for-posts.entity';
 import { LastLiked } from '../likes/domain/last-liked.entity';
+import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {
@@ -28,6 +29,7 @@ export class TestingAllDataController {
     @InjectRepository(LikesForPosts)
     private likesForPostsRepo: Repository<LikesForPosts>,
     @InjectRepository(LastLiked) private lastLikedsRepo: Repository<LastLiked>,
+    @InjectRepository(QuizQuestions) private qqRepo: Repository<QuizQuestions>,
   ) {}
 
   @Delete()
@@ -41,6 +43,7 @@ export class TestingAllDataController {
     await this.securityRepo.delete({});
     await this.blogsRepo.delete({});
     await this.usersRepo.delete({});
+    await this.qqRepo.delete({});
     // await this.dataSource.query(
     //   'TRUNCATE public."users", public."devices", public."blogs", public."posts", public."comments", public."likesForComments", public."likesForPosts", public."lastLiked" CASCADE',
     // );
