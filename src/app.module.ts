@@ -64,6 +64,11 @@ import { SuperAdminBlogsController } from './features/blogs/api/super-admin.blog
 import { LikesForPosts } from './features/likes/domain/likes-for-posts.entity';
 import { LastLiked } from './features/likes/domain/last-liked.entity';
 import { LikesForComments } from './features/likes/domain/likes-for-comments.entity';
+import { QuizQuestionsController } from './quizQuestions/api/quizQuestions.controller';
+import { CreateQuizQuestionUseCase } from './quizQuestions/application/use-cases/create-quiz-question-use-case';
+import { QuizQuestionsRepository } from './quizQuestions/api/infrastructure/quiz-questions.repository';
+import { QuizQuestions } from './quizQuestions/domain/quiz-questions.entity';
+import { DeleteQuizQuestionUseCase } from './quizQuestions/application/use-cases/delete-quiz-question-use-case';
 
 const useCases = [
   CreateBlogUseCase,
@@ -84,6 +89,8 @@ const useCases = [
   FindAllCommentsUseCase,
   UpdateLikeStatusForPostsUseCase,
   FindPostUseCase,
+  CreateQuizQuestionUseCase,
+  DeleteQuizQuestionUseCase,
 ];
 const {
   PGHOST,
@@ -122,7 +129,7 @@ const {
       password: PGPASSWORD,
       port: 5432,
       autoLoadEntities: true,
-      synchronize: true,
+      // synchronize: true,
       logging: ['query'],
       ssl: true,
       // ssl: false, //менять на true, когда подключаешь NeonDb
@@ -136,6 +143,7 @@ const {
       LikesForComments,
       Users,
       SecurityDevices,
+      QuizQuestions,
     ]),
     // ConfigModule.forRoot(),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
@@ -175,6 +183,7 @@ const {
     PostsController,
     CommentsController,
     SuperAdminBlogsController,
+    QuizQuestionsController,
   ],
 
   providers: [
@@ -190,6 +199,7 @@ const {
     LikesRepository,
     LikesService,
     IsBlogExistConstraint,
+    QuizQuestionsRepository,
 
     ...useCases,
   ],
