@@ -16,6 +16,8 @@ import { LikesForPosts } from '../../likes/domain/likes-for-posts.entity';
 import { LastLiked } from '../../likes/domain/last-liked.entity';
 import { Comments } from '../../comments/domain/comments.entity';
 import { LikesForComments } from '../../likes/domain/likes-for-comments.entity';
+import { QuizQuestionsRepository } from '../../../quizQuestions/api/infrastructure/quiz-questions.repository';
+import { QuizQuestions } from '../../../quizQuestions/domain/quiz-questions.entity';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { LikesForComments } from '../../likes/domain/likes-for-comments.entity';
       LikesForComments,
       Users,
       SecurityDevices,
+      QuizQuestions,
     ]),
   ],
   controllers: [UsersController],
