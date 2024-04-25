@@ -11,11 +11,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from '../../features/auth/guards/basic-auth.guard';
-import { QuizQuestionsCreateModel } from './models/input/quiz-questions.input.model';
+import {
+  PublishQuestionUpdateModel,
+  QuizQuestionsCreateModel,
+} from './models/input/quiz-questions.input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuizQuestionCommand } from '../application/use-cases/create-quiz-question-use-case';
 import { DeleteQuizQuestionCommand } from '../application/use-cases/delete-quiz-question-use-case';
 import { UpdateQuizQuestionCommand } from '../application/use-cases/update-quiz-question-use-case';
+import { PublishQuestionCommand } from '../application/use-cases/publish-question-use-case';
 
 @Controller('sa/quiz/questions')
 export class QuizQuestionsController {
@@ -50,6 +54,18 @@ export class QuizQuestionsController {
   ): Promise<boolean> {
     return await this.commandBus.execute(
       new UpdateQuizQuestionCommand(quizUpdateModel, id),
+    );
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @Put(':id/publish')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async publishQuestion(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() publishQuestionUpdateModel: PublishQuestionUpdateModel,
+  ): Promise<boolean> {
+    return await this.commandBus.execute(
+      new PublishQuestionCommand(id, publishQuestionUpdateModel),
     );
   }
 }

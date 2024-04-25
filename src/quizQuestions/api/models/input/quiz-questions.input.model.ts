@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsString, Length, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsString,
+  Length,
+  ValidateNested,
+} from 'class-validator';
 import {
   IsArrayOfStrings,
   IsArrayOfStringsValidator,
@@ -13,4 +19,9 @@ export class QuizQuestionsCreateModel {
   @IsArray()
   @IsArrayOfStringsValidator()
   readonly correctAnswers: string[];
+}
+
+export class PublishQuestionUpdateModel {
+  @IsBoolean()
+  published: boolean;
 }

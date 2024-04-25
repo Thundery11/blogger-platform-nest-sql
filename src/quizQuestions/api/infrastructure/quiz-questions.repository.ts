@@ -52,4 +52,12 @@ export class QuizQuestionsRepository {
       throw new Error(`Error in updated question ${e}`);
     }
   }
+  async publishQuestion(id: number, published: boolean): Promise<boolean> {
+    try {
+      const result = await this.quizQuestionsRepo.update({ id }, { published });
+      return result.affected === 1;
+    } catch (e) {
+      throw new Error('Something going wrong at publishQuestion');
+    }
+  }
 }
