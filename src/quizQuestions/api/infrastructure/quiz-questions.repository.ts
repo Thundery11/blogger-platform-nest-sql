@@ -6,6 +6,7 @@ import {
   QuizQuestionsOutputModel,
   quizQuestionOutputMapper,
 } from '../models/output/quizQuestions.output.model';
+import { QuizQuestionsCreateModel } from '../models/input/quiz-questions.input.model';
 
 @Injectable()
 export class QuizQuestionsRepository {
@@ -13,7 +14,7 @@ export class QuizQuestionsRepository {
     @InjectRepository(QuizQuestions)
     private quizQuestionsRepo: Repository<QuizQuestions>,
   ) {}
-  public async createQuizQuestion(
+  async createQuizQuestion(
     quizQuestion: QuizQuestions,
   ): Promise<QuizQuestionsOutputModel> {
     try {
@@ -23,12 +24,32 @@ export class QuizQuestionsRepository {
       throw e;
     }
   }
-  public async deleteQuizQuestion(id: number): Promise<boolean> {
+  async deleteQuizQuestion(id: number): Promise<boolean> {
     try {
       const result = await this.quizQuestionsRepo.delete({ id });
       return result.affected === 1;
     } catch (e) {
       throw new Error(`something going wrong with delete quiz question: ${e}`);
+    }
+  }
+
+  async updateQuestion(
+    quizUpdateModel: QuizQuestionsCreateModel,
+    id: number,
+    updatedAt: string,
+  ): Promise<boolean> {
+    try {
+      const result = await this.quizQuestionsRepo.update(
+        { id: id },
+        {
+          body: quizUpdateModel.body,
+          correctAnswers: quizUpdateModel.correctAnswers,
+          updatedAt: updatedAt,
+        },
+      );
+      return result.affected === 1;
+    } catch (e) {
+      throw new Error(`Error in updated question ${e}`);
     }
   }
 }

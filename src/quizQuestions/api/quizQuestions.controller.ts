@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { BasicAuthGuard } from '../../features/auth/guards/basic-auth.guard';
@@ -14,6 +15,7 @@ import { QuizQuestionsCreateModel } from './models/input/quiz-questions.input.mo
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateQuizQuestionCommand } from '../application/use-cases/create-quiz-question-use-case';
 import { DeleteQuizQuestionCommand } from '../application/use-cases/delete-quiz-question-use-case';
+import { UpdateQuizQuestionCommand } from '../application/use-cases/update-quiz-question-use-case';
 
 @Controller('sa/quiz/questions')
 export class QuizQuestionsController {
@@ -24,11 +26,6 @@ export class QuizQuestionsController {
   async createQuestion(
     @Body() quizQuestionsCreateModel: QuizQuestionsCreateModel,
   ) {
-    console.log(
-      '🚀 ~ QuizQuestionsController ~ quizQuestionsCreateModel:',
-      quizQuestionsCreateModel,
-    );
-
     const quizQuestion = await this.commandBus.execute(
       new CreateQuizQuestionCommand(quizQuestionsCreateModel),
     );
@@ -42,5 +39,17 @@ export class QuizQuestionsController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<boolean> {
     return await this.commandBus.execute(new DeleteQuizQuestionCommand(id));
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateQuestion(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() quizUpdateModel: QuizQuestionsCreateModel,
+  ): Promise<boolean> {
+    return await this.commandBus.execute(
+      new UpdateQuizQuestionCommand(quizUpdateModel, id),
+    );
   }
 }

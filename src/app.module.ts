@@ -69,6 +69,7 @@ import { CreateQuizQuestionUseCase } from './quizQuestions/application/use-cases
 import { QuizQuestionsRepository } from './quizQuestions/api/infrastructure/quiz-questions.repository';
 import { QuizQuestions } from './quizQuestions/domain/quiz-questions.entity';
 import { DeleteQuizQuestionUseCase } from './quizQuestions/application/use-cases/delete-quiz-question-use-case';
+import { UpdateQuizQuestionUseCase } from './quizQuestions/application/use-cases/update-quiz-question-use-case';
 
 const useCases = [
   CreateBlogUseCase,
@@ -91,6 +92,7 @@ const useCases = [
   FindPostUseCase,
   CreateQuizQuestionUseCase,
   DeleteQuizQuestionUseCase,
+  UpdateQuizQuestionUseCase,
 ];
 const {
   PGHOST,
