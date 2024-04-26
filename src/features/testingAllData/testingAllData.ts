@@ -42,8 +42,8 @@ export class TestingAllDataController {
     await this.postsRepo.delete({});
     await this.securityRepo.delete({});
     await this.blogsRepo.delete({});
-    // await this.usersRepo.delete({});
-    // await this.qqRepo.delete({});
+    await this.usersRepo.delete({});
+    await this.qqRepo.delete({});
 
     // await this.dataSource.query(
     //   'TRUNCATE public."users", public."devices", public."blogs", public."posts", public."comments", public."likesForComments", public."likesForPosts", public."lastLiked" CASCADE',

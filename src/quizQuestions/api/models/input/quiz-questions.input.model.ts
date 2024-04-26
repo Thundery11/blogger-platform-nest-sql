@@ -25,3 +25,12 @@ export class PublishQuestionUpdateModel {
   @IsBoolean()
   published: boolean;
 }
+
+export class SortingQueryParamsForQuiz {
+  bodySearchTerm?: string;
+  publishedStatus: string;
+  sortBy: string;
+  sortDirection: string;
+  pageNumber: number;
+  pageSize: number;
+}

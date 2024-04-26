@@ -26,7 +26,7 @@ export class QuizQuestionsRepository {
   }
   async deleteQuizQuestion(id: number): Promise<boolean> {
     try {
-      const result = await this.quizQuestionsRepo.delete({ id });
+      const result = await this.quizQuestionsRepo.delete({ id: id });
       return result.affected === 1;
     } catch (e) {
       throw new Error(`something going wrong with delete quiz question: ${e}`);
@@ -54,10 +54,37 @@ export class QuizQuestionsRepository {
   }
   async publishQuestion(id: number, published: boolean): Promise<boolean> {
     try {
-      const result = await this.quizQuestionsRepo.update({ id }, { published });
+      const result = await this.quizQuestionsRepo.update(
+        { id: id },
+        { published: published },
+      );
       return result.affected === 1;
     } catch (e) {
       throw new Error('Something going wrong at publishQuestion');
     }
+  }
+
+  async countDocuments(
+    searchBodyTerm: string,
+    sortingByPublish,
+  ): Promise<number> {
+    // return await this.quizQuestionsRepo
+    // .createQueryBuilder('q')
+    // .select('q')
+    // .where('q.body ILIKE :body', { body: `%${searchBodyTerm}%` })
+    // .andWhere('q.published = :published', { published: sortingByPublish })
+    // .getCount();
+    let searchString = `%${searchBodyTerm}%`;
+    const queryBuilder = this.quizQuestionsRepo.createQueryBuilder('q');
+
+    queryBuilder.where('q.body ILIKE :searchString', { searchString });
+
+    if (sortingByPublish !== null) {
+      queryBuilder.andWhere('q.published = :publishedStatus', {
+        publishedStatus: sortingByPublish,
+      });
+    }
+
+    return await queryBuilder.getCount();
   }
 }

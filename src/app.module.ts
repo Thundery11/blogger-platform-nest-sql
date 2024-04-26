@@ -71,6 +71,8 @@ import { QuizQuestions } from './quizQuestions/domain/quiz-questions.entity';
 import { DeleteQuizQuestionUseCase } from './quizQuestions/application/use-cases/delete-quiz-question-use-case';
 import { UpdateQuizQuestionUseCase } from './quizQuestions/application/use-cases/update-quiz-question-use-case';
 import { PublishQuestionUseCase } from './quizQuestions/application/use-cases/publish-question-use-case';
+import { QuizQuestionsQueryRepository } from './quizQuestions/api/infrastructure/quiz-questions.query.repository';
+import { FindAllQuestionsUseCase } from './quizQuestions/application/use-cases/get-all-quiz-questions-use-case';
 
 const useCases = [
   CreateBlogUseCase,
@@ -95,6 +97,7 @@ const useCases = [
   DeleteQuizQuestionUseCase,
   UpdateQuizQuestionUseCase,
   PublishQuestionUseCase,
+  FindAllQuestionsUseCase,
 ];
 const {
   PGHOST,
@@ -204,6 +207,7 @@ const {
     LikesService,
     IsBlogExistConstraint,
     QuizQuestionsRepository,
+    QuizQuestionsQueryRepository,
 
     ...useCases,
   ],

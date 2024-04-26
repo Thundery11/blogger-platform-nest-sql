@@ -179,9 +179,8 @@ export class UsersService {
       searchLoginTerm,
       searchEmailTerm,
     );
-    console.log('🚀 ~ UsersService ~ countedDocuments:', countedDocuments);
+
     const pagesCount: number = Math.ceil(countedDocuments / pageSize);
-    console.log('🚀 ~ UsersService ~ pagesCount:', pagesCount);
 
     const users = await this.usersRepository.getAllUsers(
       sortBy,

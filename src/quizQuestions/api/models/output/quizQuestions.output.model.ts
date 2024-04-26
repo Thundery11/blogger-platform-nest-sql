@@ -21,3 +21,17 @@ export const quizQuestionOutputMapper = (
   output.updatedAt = newQuizQuestion.updatedAt;
   return output;
 };
+
+export const allQuizQuestionOutputMapper = (
+  questions: QuizQuestions[],
+): QuizQuestionsOutputModel[] => {
+  const output = questions.map((q) => ({
+    id: q.id.toString(),
+    body: q.body,
+    correctAnswers: q.correctAnswers,
+    published: q.published,
+    createdAt: q.createdAt,
+    updatedAt: q.updatedAt,
+  }));
+  return output;
+};
