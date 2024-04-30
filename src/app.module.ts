@@ -67,12 +67,12 @@ import { LikesForComments } from './features/likes/domain/likes-for-comments.ent
 import { QuizQuestionsController } from './quizQuestions/api/quizQuestions.controller';
 import { CreateQuizQuestionUseCase } from './quizQuestions/application/use-cases/create-quiz-question-use-case';
 import { QuizQuestionsRepository } from './quizQuestions/api/infrastructure/quiz-questions.repository';
-import { QuizQuestions } from './quizQuestions/domain/quiz-questions.entity';
 import { DeleteQuizQuestionUseCase } from './quizQuestions/application/use-cases/delete-quiz-question-use-case';
 import { UpdateQuizQuestionUseCase } from './quizQuestions/application/use-cases/update-quiz-question-use-case';
 import { PublishQuestionUseCase } from './quizQuestions/application/use-cases/publish-question-use-case';
 import { QuizQuestionsQueryRepository } from './quizQuestions/api/infrastructure/quiz-questions.query.repository';
 import { FindAllQuestionsUseCase } from './quizQuestions/application/use-cases/get-all-quiz-questions-use-case';
+import { QuizQuestions } from './quizQuestions/domain/quiz-questions.entity';
 
 const useCases = [
   CreateBlogUseCase,
