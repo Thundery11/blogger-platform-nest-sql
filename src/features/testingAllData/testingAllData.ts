@@ -35,20 +35,19 @@ export class TestingAllDataController {
   @Delete()
   @HttpCode(204)
   async deleteAll() {
-    await this.lastLikedsRepo.delete({});
-    await this.likesForCommentsRepo.delete({});
-    await this.likesForPostsRepo.delete({});
-    await this.commentsRepo.delete({});
-    await this.postsRepo.delete({});
-    await this.securityRepo.delete({});
-    await this.blogsRepo.delete({});
-    await this.usersRepo.delete({});
-    await this.qqRepo.delete({});
-    return true;
-  }
+    // await this.lastLikedsRepo.delete({});
+    // await this.likesForCommentsRepo.delete({});
+    // await this.likesForPostsRepo.delete({});
+    // await this.commentsRepo.delete({});
+    // await this.postsRepo.delete({});
+    // await this.securityRepo.delete({});
+    // await this.blogsRepo.delete({});
+    // await this.usersRepo.delete({});
+    // await this.qqRepo.delete({});
+    // return true;
 
-  //   return await this.dataSource.query(
-  //     'TRUNCATE public."users", public."security_devices", public."blogs", public."posts", public."comments", public."likes_for_comments", public."likes_for_posts", public."last_liked", public."quiz_questions" CASCADE',
-  //   );
-  // }
+    return await this.dataSource.query(
+      'TRUNCATE public."users", public."security_devices", public."blogs", public."posts", public."comments", public."likes_for_comments", public."likes_for_posts", public."last_liked", public."quiz_questions" CASCADE',
+    );
+  }
 }
