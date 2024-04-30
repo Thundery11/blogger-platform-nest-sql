@@ -35,15 +35,15 @@ export class TestingAllDataController {
   @Delete()
   @HttpCode(204)
   async deleteAll() {
-    // await this.lastLikedsRepo.delete({});
-    // await this.likesForCommentsRepo.delete({});
-    // await this.likesForPostsRepo.delete({});
-    // await this.commentsRepo.delete({});
-    // await this.postsRepo.delete({});
-    // await this.securityRepo.delete({});
-    // await this.blogsRepo.delete({});
-    // await this.usersRepo.delete({});
-    // await this.qqRepo.delete({});
+    await this.lastLikedsRepo.delete({});
+    await this.likesForCommentsRepo.delete({});
+    await this.likesForPostsRepo.delete({});
+    await this.commentsRepo.delete({});
+    await this.postsRepo.delete({});
+    await this.securityRepo.delete({});
+    await this.blogsRepo.delete({});
+    await this.usersRepo.delete({});
+    await this.qqRepo.delete({});
     return true;
   }
 
