@@ -43,7 +43,7 @@ export class TestingAllDataController {
     await this.securityRepo.delete({});
     await this.blogsRepo.delete({});
     await this.usersRepo.delete({});
-    await this.qqRepo.delete({});
+    // await this.qqRepo.delete({});
     return true;
 
     // return await this.dataSource.query(

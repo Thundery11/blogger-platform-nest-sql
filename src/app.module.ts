@@ -136,7 +136,7 @@ const {
       password: PGPASSWORD,
       port: 5432,
       autoLoadEntities: true,
-      // synchronize: true,
+      synchronize: true,
       logging: ['query'],
       ssl: true,
       // ssl: false, //менять на true, когда подключаешь NeonDb
