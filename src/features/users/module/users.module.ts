@@ -36,7 +36,7 @@ import { QuizQuestions } from '../../../quizQuestions/domain/quiz-questions.enti
   ],
   controllers: [UsersController],
   providers: [
-    TestingAllDataController,
+    // TestingAllDataController,
     UsersService,
     UsersRepository,
     UsersQueryRepository,
