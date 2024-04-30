@@ -17,7 +17,6 @@ import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity'
 @Controller('testing/all-data')
 export class TestingAllDataController {
   constructor(
-    @InjectDataSource() private dataSource: DataSource,
     @InjectRepository(Users) private usersRepo: Repository<Users>,
     @InjectRepository(SecurityDevices)
     private securityRepo: Repository<SecurityDevices>,
@@ -35,15 +34,16 @@ export class TestingAllDataController {
   @Delete()
   @HttpCode(204)
   async deleteAll() {
-    await this.lastLikedsRepo.delete({});
-    await this.likesForCommentsRepo.delete({});
-    await this.likesForPostsRepo.delete({});
-    await this.commentsRepo.delete({});
-    await this.postsRepo.delete({});
-    await this.securityRepo.delete({});
-    await this.blogsRepo.delete({});
-    await this.usersRepo.delete({});
-    await this.qqRepo.delete({});
+    // await this.lastLikedsRepo.delete({});
+    // await this.likesForCommentsRepo.delete({});
+    // await this.likesForPostsRepo.delete({});
+    // await this.commentsRepo.delete({});
+    // await this.postsRepo.delete({});
+    // await this.securityRepo.delete({});
+    // await this.blogsRepo.delete({});
+    // await this.usersRepo.delete({});
+    // await this.qqRepo.delete({});
+    return true;
 
     // await this.dataSource.query(
     //   'TRUNCATE public."users", public."devices", public."blogs", public."posts", public."comments", public."likesForComments", public."likesForPosts", public."lastLiked" CASCADE',
