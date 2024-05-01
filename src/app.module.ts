@@ -59,7 +59,7 @@ import {
   SecurityDevices,
   SecurityDevicesSchema,
 } from './features/security-devices/domain/security-devices.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { SuperAdminBlogsController } from './features/blogs/api/super-admin.blogs.controller';
 import { LikesForPosts } from './features/likes/domain/likes-for-posts.entity';
 import { LastLiked } from './features/likes/domain/last-liked.entity';
@@ -111,7 +111,20 @@ const {
   LOCALPASSWORD,
   LOCALPORT,
 } = process.env;
-
+export const options: TypeOrmModuleOptions = {
+  type: 'postgres',
+  // url: 'postgres://Blogger-platform-db_owner:ZEHlI8zxaqb0@ep-sparkling-feather-a2nkv6w8.eu-central-1.aws.neon.tech/blogger-platform-db-typeorm?sslmode=require',
+  host: PGHOST,
+  database: PGDATABASE,
+  username: PGUSER,
+  password: PGPASSWORD,
+  port: 5432,
+  autoLoadEntities: true,
+  synchronize: true,
+  logging: ['query'],
+  ssl: true,
+  // ssl: false, //менять на true, когда подключаешь NeonDb
+};
 // TypeOrmModule.forRoot({
 //   type: 'postgres',
 //   host: 'localhost',
@@ -127,20 +140,7 @@ const {
     AuthModule,
     UsersModule,
     CqrsModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      // url: 'postgres://Blogger-platform-db_owner:ZEHlI8zxaqb0@ep-sparkling-feather-a2nkv6w8.eu-central-1.aws.neon.tech/blogger-platform-db-typeorm?sslmode=require',
-      host: PGHOST,
-      database: PGDATABASE,
-      username: PGUSER,
-      password: PGPASSWORD,
-      port: 5432,
-      autoLoadEntities: true,
-      synchronize: true,
-      logging: ['query'],
-      ssl: true,
-      // ssl: false, //менять на true, когда подключаешь NeonDb
-    }),
+    TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,
