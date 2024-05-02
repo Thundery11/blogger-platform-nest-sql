@@ -8,17 +8,17 @@ import { BlogsRepository } from '../infrastructure/blogs.repository';
 describe('BlogsController', () => {
   let blogsController: BlogsController;
   let createBlogUseCase: CreateBlogUseCase;
-  let blogsRepository: BlogsRepository;
+  // let blogsRepository: BlogsRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BlogsController],
-      providers: [CreateBlogUseCase, BlogsRepository],
+      providers: [CreateBlogUseCase],
     }).compile();
 
     blogsController = module.get<BlogsController>(BlogsController);
     createBlogUseCase = module.get<CreateBlogUseCase>(CreateBlogUseCase);
-    blogsRepository = module.get<BlogsRepository>(BlogsRepository);
+    // blogsRepository = module.get<BlogsRepository>(BlogsRepository);
   });
 
   describe('createBlog', () => {
