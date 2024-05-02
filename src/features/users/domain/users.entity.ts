@@ -7,6 +7,7 @@ import { LikesForPosts } from '../../likes/domain/likes-for-posts.entity';
 import { LastLiked } from '../../likes/domain/last-liked.entity';
 import { Comments } from '../../comments/domain/comments.entity';
 import { SecurityDevices } from '../../security-devices/domain/security-devices.entity';
+import { PlayerProgress } from '../../../quiz-game/domain/player-progress.entity';
 
 // export type UsersDocument = HydratedDocument<Users>;
 // export type UsersModelType = Model<UsersDocument> & typeof statics;
@@ -39,6 +40,8 @@ export class Users {
   comments: Comments[];
   @OneToMany(() => SecurityDevices, (s) => s.user)
   securityDevices: SecurityDevices[];
+  @OneToMany(() => PlayerProgress, (pp) => pp.user)
+  playerProgress: PlayerProgress[];
 }
 
 // @Schema({ _id: false })

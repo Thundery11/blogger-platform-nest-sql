@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { QuestionOfTheGame } from '../../quiz-game/domain/question-of-the-game.entity';
 
 // type CorrectAnswers ={
 //   correctAnswers: string[];
@@ -20,4 +21,8 @@ export class QuizQuestions {
   createdAt: string;
   @Column({ nullable: true })
   updatedAt: string;
+
+  // @OneToOne(() => QuestionOfTheGame) //many to many
+  // @Column()
+  // questionOfTheGame: QuestionOfTheGame;
 }

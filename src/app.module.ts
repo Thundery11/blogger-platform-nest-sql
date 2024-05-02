@@ -73,6 +73,10 @@ import { PublishQuestionUseCase } from './quizQuestions/application/use-cases/pu
 import { QuizQuestionsQueryRepository } from './quizQuestions/api/infrastructure/quiz-questions.query.repository';
 import { FindAllQuestionsUseCase } from './quizQuestions/application/use-cases/get-all-quiz-questions-use-case';
 import { QuizQuestions } from './quizQuestions/domain/quiz-questions.entity';
+import { Game } from './quiz-game/domain/quiz-game.entity';
+import { Answers } from './quiz-game/domain/quiz-answers.entity';
+import { QuestionOfTheGame } from './quiz-game/domain/question-of-the-game.entity';
+import { PlayerProgress } from './quiz-game/domain/player-progress.entity';
 
 const useCases = [
   CreateBlogUseCase,
@@ -111,6 +115,7 @@ const {
   LOCALPASSWORD,
   LOCALPORT,
 } = process.env;
+
 export const options: TypeOrmModuleOptions = {
   type: 'postgres',
   // url: 'postgres://Blogger-platform-db_owner:ZEHlI8zxaqb0@ep-sparkling-feather-a2nkv6w8.eu-central-1.aws.neon.tech/blogger-platform-db-typeorm?sslmode=require',
@@ -120,27 +125,29 @@ export const options: TypeOrmModuleOptions = {
   password: PGPASSWORD,
   port: 5432,
   autoLoadEntities: true,
-  synchronize: false,
+  synchronize: true,
   logging: ['query'],
   ssl: true,
   // ssl: false, //менять на true, когда подключаешь NeonDb
 };
-// TypeOrmModule.forRoot({
-//   type: 'postgres',
-//   host: 'localhost',
-//   port: 5000,
-//   username: 'nodejs',
-//   password: 'nodejs',
-//   database: 'BankSystem',
-//   autoLoadEntities: false,
-//   synchronize: false,
-// }),
+
+export const localDbOptions: TypeOrmModuleOptions = {
+  type: 'postgres',
+  host: 'localhost',
+  port: 5000,
+  username: 'nodejs',
+  password: 'nodejs',
+  database: 'BankSystem',
+  autoLoadEntities: true,
+  synchronize: true,
+  ssl: false,
+};
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     CqrsModule,
-    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forRoot(localDbOptions),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,
@@ -151,6 +158,10 @@ export const options: TypeOrmModuleOptions = {
       Users,
       SecurityDevices,
       QuizQuestions,
+      Game,
+      Answers,
+      QuestionOfTheGame,
+      PlayerProgress,
     ]),
     // ConfigModule.forRoot(),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
