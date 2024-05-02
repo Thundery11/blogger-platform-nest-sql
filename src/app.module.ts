@@ -120,7 +120,7 @@ export const options: TypeOrmModuleOptions = {
   password: PGPASSWORD,
   port: 5432,
   autoLoadEntities: true,
-  synchronize: true,
+  synchronize: false,
   logging: ['query'],
   ssl: true,
   // ssl: false, //менять на true, когда подключаешь NeonDb
