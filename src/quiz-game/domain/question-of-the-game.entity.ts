@@ -34,7 +34,7 @@ export class QuestionOfTheGame {
   // answers: Answers[]
 
   @OneToMany(() => Answers, (a) => a.questionOfTheGame) //one to many
-  answers: Answers[];
+  answers: Answers[]; // где должны храниться answers
 
   @Column()
   order: number;

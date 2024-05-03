@@ -25,17 +25,16 @@ export class Game {
   firstPlayerProgress: PlayerProgress;
 
   @Column()
-  firstPlayerProgressId: number;
+  firstPlayerProgressId: number; //????????????
 
   @OneToOne(() => PlayerProgress)
   @JoinColumn()
   secondPlayerProgress: PlayerProgress;
 
   @Column({ nullable: true })
-  secondPlayerProgressId: true;
+  secondPlayerProgressId: number;
 
   @OneToMany(() => QuestionOfTheGame, (q) => q.game, { nullable: true })
-  //   @Column({ nullable: true })
   questionOfTheGame: QuestionOfTheGame[];
 
   @Column({ type: 'enum', enum: GameStatus })
