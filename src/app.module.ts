@@ -77,6 +77,9 @@ import { Game } from './quiz-game/domain/quiz-game.entity';
 import { Answers } from './quiz-game/domain/quiz-answers.entity';
 import { QuestionOfTheGame } from './quiz-game/domain/question-of-the-game.entity';
 import { PlayerProgress } from './quiz-game/domain/player-progress.entity';
+import { QuizGameService } from './quiz-game/application/quiz-game.service';
+import { QuizGameController } from './quiz-game/api/quiz-game.controller';
+import { QuizGameRepository } from './quiz-game/infrastructure/quiiz-game.repository';
 
 const useCases = [
   CreateBlogUseCase,
@@ -202,6 +205,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     CommentsController,
     SuperAdminBlogsController,
     QuizQuestionsController,
+    QuizGameController,
   ],
 
   providers: [
@@ -219,6 +223,8 @@ export const localDbOptions: TypeOrmModuleOptions = {
     IsBlogExistConstraint,
     QuizQuestionsRepository,
     QuizQuestionsQueryRepository,
+    QuizGameService,
+    QuizGameRepository,
 
     ...useCases,
   ],

@@ -32,10 +32,10 @@ export class Game {
   secondPlayerProgress: PlayerProgress;
 
   @Column({ nullable: true })
-  secondPlayerProgressId: number;
+  secondPlayerProgressId: number; // ???????????
 
   @OneToMany(() => QuestionOfTheGame, (q) => q.game, { nullable: true })
-  questionOfTheGame: QuestionOfTheGame[];
+  questions: QuestionOfTheGame[];
 
   @Column({ type: 'enum', enum: GameStatus })
   status: GameStatus;

@@ -13,6 +13,10 @@ import { LikesForComments } from '../likes/domain/likes-for-comments.entity';
 import { LikesForPosts } from '../likes/domain/likes-for-posts.entity';
 import { LastLiked } from '../likes/domain/last-liked.entity';
 import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity';
+import { Game } from '../../quiz-game/domain/quiz-game.entity';
+import { Answers } from '../../quiz-game/domain/quiz-answers.entity';
+import { PlayerProgress } from '../../quiz-game/domain/player-progress.entity';
+import { QuestionOfTheGame } from '../../quiz-game/domain/question-of-the-game.entity';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {
@@ -30,11 +34,21 @@ export class TestingAllDataController {
     private likesForPostsRepo: Repository<LikesForPosts>,
     @InjectRepository(LastLiked) private lastLikedsRepo: Repository<LastLiked>,
     @InjectRepository(QuizQuestions) private qqRepo: Repository<QuizQuestions>,
+    @InjectRepository(Game) private gameRepo: Repository<Game>,
+    @InjectRepository(Answers) private answersRepo: Repository<Answers>,
+    @InjectRepository(PlayerProgress)
+    private playerProgressRepo: Repository<PlayerProgress>,
+    @InjectRepository(QuestionOfTheGame)
+    private questionOfTheGameRepo: Repository<QuestionOfTheGame>,
   ) {}
 
   @Delete()
   @HttpCode(204)
   async deleteAll() {
+    await this.gameRepo.delete({});
+    await this.answersRepo.delete({});
+    await this.playerProgressRepo.delete({});
+    await this.questionOfTheGameRepo.delete({});
     await this.lastLikedsRepo.delete({});
     await this.likesForCommentsRepo.delete({});
     await this.likesForPostsRepo.delete({});

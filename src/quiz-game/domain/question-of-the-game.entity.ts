@@ -26,7 +26,7 @@ export class QuestionOfTheGame {
   @Column()
   gameId: number;
 
-  @ManyToOne(() => Game, (g) => g.questionOfTheGame)
+  @ManyToOne(() => Game, (g) => g.questions)
   game: Game;
 
   // @OneToMany(()=> Answers, (a)=> a.questionOfTheGame)
