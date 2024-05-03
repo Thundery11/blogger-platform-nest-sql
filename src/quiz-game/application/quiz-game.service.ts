@@ -20,18 +20,30 @@ export class QuizGameService {
       const firstPlayerProgress = new PlayerProgress();
       firstPlayerProgress.userId = currentUserId;
       firstPlayerProgress.score = 0;
-      const firstPlayer =
+      const addFirstplayerToDb =
         await this.quizGameRepository.addFirstPlayerToTheGame(
           firstPlayerProgress,
         );
 
+      const firstPlayer = await this.quizGameRepository.getPlayer(
+        addFirstplayerToDb.userId,
+      );
+      console.log(
+        '🚀 ~ QuizGameService ~ connectToTheGame ~ firstPlayer:',
+        firstPlayer,
+      );
+
       const pairCreatedDate = new Date().toISOString();
       const status = GameStatus.PendingSecondPlayer;
-      const newGame = new Game();
-      newGame.pairCreatedDate = pairCreatedDate;
-      newGame.status = status;
-      newGame.firstPlayerProgress = firstPlayerProgress;
-      newGame.questions = null;
+      const newGame = Game.createGame(firstPlayer);
+      console.log(
+        '🚀 ~ QuizGameService ~ connectToTheGame ~ newGame:',
+        newGame,
+      );
+      //   newGame.pairCreatedDate = pairCreatedDate;
+      //   newGame.status = status;
+      //   newGame.firstPlayerProgress = firstPlayer;
+      //   newGame.questions = null;
 
       return await this.quizGameRepository.startGame(newGame);
     } else {

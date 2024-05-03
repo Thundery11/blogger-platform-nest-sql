@@ -20,6 +20,26 @@ export class QuizGameRepository {
   async addFirstPlayerToTheGame(player: PlayerProgress) {
     return await this.playerProgressRepo.save(player);
   }
+  async getPlayer(id: number) {
+    const player = await this.playerProgressRepo
+      .createQueryBuilder('p')
+      .leftJoin('p.user', 'u')
+      .leftJoin('p.answers', 'a')
+      .select([
+        'p.id',
+        'p.userId',
+        'p.score',
+        'u.login',
+        'u.id',
+        'a.questionOfTheGameId as questionId',
+        'a.answerStatus',
+        'a.addedAt',
+      ])
+      .where(`p.userId = :userId`, { userId: id })
+      .getOneOrFail();
+
+    return player;
+  }
 
   async startGame(newGame: Game) {
     return await this.quizGameRepository.save(newGame);

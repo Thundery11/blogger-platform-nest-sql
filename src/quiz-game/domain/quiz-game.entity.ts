@@ -42,4 +42,16 @@ export class Game {
 
   @Column({ nullable: true })
   finishGameDate: string;
+
+  static createGame(firstPlayer: PlayerProgress): Game {
+    const pairCreatedDate = new Date().toISOString();
+    const status = GameStatus.PendingSecondPlayer;
+    const newGame = new Game();
+    newGame.pairCreatedDate = pairCreatedDate;
+    newGame.status = status;
+    newGame.firstPlayerProgress = firstPlayer;
+    newGame.questions = null;
+
+    return newGame;
+  }
 }
