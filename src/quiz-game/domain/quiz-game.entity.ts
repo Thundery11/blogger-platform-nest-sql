@@ -24,18 +24,12 @@ export class Game {
   @JoinColumn()
   firstPlayerProgress: PlayerProgress;
 
-  @Column()
-  firstPlayerProgressId: number; //????????????
-
-  @OneToOne(() => PlayerProgress)
+  @OneToOne(() => PlayerProgress, { nullable: true })
   @JoinColumn()
   secondPlayerProgress: PlayerProgress;
 
-  @Column({ nullable: true })
-  secondPlayerProgressId: number; // ???????????
-
   @OneToMany(() => QuestionOfTheGame, (q) => q.game, { nullable: true })
-  questions: QuestionOfTheGame[];
+  questions?: QuestionOfTheGame[] | null;
 
   @Column({ type: 'enum', enum: GameStatus })
   status: GameStatus;

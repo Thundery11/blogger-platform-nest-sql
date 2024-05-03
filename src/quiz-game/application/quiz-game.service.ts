@@ -9,22 +9,33 @@ export class QuizGameService {
   constructor(private quizGameRepository: QuizGameRepository) {}
 
   async connectToTheGame(currentUserId: number) {
-    const firstPlayerProgress = new PlayerProgress();
-    firstPlayerProgress.userId = currentUserId;
-    firstPlayerProgress.score = 0;
-    const firstPlayer =
-      await this.quizGameRepository.addFirstPlayerToTheGame(
-        firstPlayerProgress,
-      );
+    const isGameWithPandingPlayerExist =
+      await this.quizGameRepository.isGameWithPandingPlayerExist();
+    console.log(
+      '🚀 ~ QuizGameService ~ connectToTheGame ~ isGameWithPandingPlayerExist:',
+      isGameWithPandingPlayerExist,
+    );
 
-    const pairCreatedDate = new Date().toISOString();
-    const status = GameStatus.PendingSecondPlayer;
-    const newGame = new Game();
-    newGame.pairCreatedDate = pairCreatedDate;
-    newGame.status = status;
-    newGame.firstPlayerProgressId = firstPlayer.id;
-    newGame.questions = [];
+    if (!isGameWithPandingPlayerExist) {
+      const firstPlayerProgress = new PlayerProgress();
+      firstPlayerProgress.userId = currentUserId;
+      firstPlayerProgress.score = 0;
+      const firstPlayer =
+        await this.quizGameRepository.addFirstPlayerToTheGame(
+          firstPlayerProgress,
+        );
 
-    return await this.quizGameRepository.startGame(newGame);
+      const pairCreatedDate = new Date().toISOString();
+      const status = GameStatus.PendingSecondPlayer;
+      const newGame = new Game();
+      newGame.pairCreatedDate = pairCreatedDate;
+      newGame.status = status;
+      newGame.firstPlayerProgress = firstPlayerProgress;
+      newGame.questions = null;
+
+      return await this.quizGameRepository.startGame(newGame);
+    } else {
+      return false;
+    }
   }
 }
