@@ -23,11 +23,11 @@ export class QuizGameRepository {
   async getPlayer(id: number) {
     const player = await this.playerProgressRepo
       .createQueryBuilder('p')
-      .leftJoin('p.user', 'u')
+      .leftJoin('p.player', 'u')
       .leftJoin('p.answers', 'a')
       .select([
         'p.id',
-        'p.userId',
+        'p.playerId',
         'p.score',
         'u.login',
         'u.id',
@@ -35,7 +35,7 @@ export class QuizGameRepository {
         'a.answerStatus',
         'a.addedAt',
       ])
-      .where(`p.userId = :userId`, { userId: id })
+      .where(`p.playerId = :userId`, { userId: id })
       .getOneOrFail();
 
     return player;

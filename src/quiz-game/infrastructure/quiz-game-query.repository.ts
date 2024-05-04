@@ -13,7 +13,7 @@ export class QuizGameQueryRepository {
   ) {}
   async isUserAlreadyInGame(id: number): Promise<PlayerProgress | null> {
     const game = await this.playerProgressRepo.findOne({
-      where: { userId: id },
+      where: { playerId: id },
     });
     return game;
   }
@@ -43,10 +43,10 @@ export class QuizGameQueryRepository {
         'qq.id',
       ])
       .leftJoin('g.firstPlayerProgress', 'fpp')
-      .leftJoin('fpp.user', 'u')
+      .leftJoin('fpp.player', 'u')
       .leftJoin('fpp.answers', 'fppa')
       .leftJoin('g.secondPlayerProgress', 'spp')
-      .leftJoin('spp.user', 'su')
+      .leftJoin('spp.player', 'su')
       .leftJoin('spp.answers', 'sppa')
       .leftJoin('g.questions', 'q')
       .leftJoin('q.question', 'qq')

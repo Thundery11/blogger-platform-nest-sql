@@ -40,7 +40,7 @@ export class Users {
   comments: Comments[];
   @OneToMany(() => SecurityDevices, (s) => s.user)
   securityDevices: SecurityDevices[];
-  @OneToMany(() => PlayerProgress, (pp) => pp.user)
+  @OneToMany(() => PlayerProgress, (pp) => pp.player)
   playerProgress: PlayerProgress[];
 }
 

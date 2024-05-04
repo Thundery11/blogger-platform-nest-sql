@@ -14,10 +14,10 @@ export class PlayerProgress {
   public id: number;
 
   @Column()
-  userId: number;
+  playerId: number;
 
   @ManyToOne(() => Users, (u) => u.playerProgress) //????
-  user: Users;
+  player: Users;
 
   @OneToMany(() => Answers, (a) => a.playerProgress)
   answers: Answers[]; //можно хранить просто массивом
@@ -27,7 +27,7 @@ export class PlayerProgress {
 
   static addPlayer(currentUserId: number) {
     const addedPlayer = new PlayerProgress();
-    addedPlayer.userId = currentUserId;
+    addedPlayer.playerId = currentUserId;
     addedPlayer.score = 0;
 
     return addedPlayer;

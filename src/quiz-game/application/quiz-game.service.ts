@@ -28,13 +28,17 @@ export class QuizGameService {
 
     if (!isGameWithPandingPlayerExist) {
       const firstPlayerProgress = new PlayerProgress();
-      firstPlayerProgress.userId = currentUserId;
+      firstPlayerProgress.playerId = currentUserId;
       firstPlayerProgress.score = 0;
       const addFirstplayerToDb =
         await this.quizGameRepository.addPlayerToTheGame(firstPlayerProgress);
+      console.log(
+        '🚀 ~ QuizGameService ~ connectToTheGame ~ addFirstplayerToDb:',
+        addFirstplayerToDb,
+      );
 
       const firstPlayer = await this.quizGameRepository.getPlayer(
-        addFirstplayerToDb.userId,
+        addFirstplayerToDb.playerId,
       );
       console.log(
         '🚀 ~ QuizGameService ~ connectToTheGame ~ firstPlayer:',
@@ -60,7 +64,7 @@ export class QuizGameService {
         await this.quizGameRepository.addPlayerToTheGame(secondPlayerProgress);
 
       const secondPlayer = await this.quizGameRepository.getPlayer(
-        addSecondPlayerToDb.userId,
+        addSecondPlayerToDb.playerId,
       );
       console.log(
         '🚀 ~ QuizGameService ~ connectToTheGame ~ secondPlayer:',
