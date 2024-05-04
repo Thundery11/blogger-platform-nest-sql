@@ -42,6 +42,10 @@ export class Game {
 
   @Column({ nullable: true })
   finishGameDate: string;
+  // @Column()
+  // firstPlayerProgressId: number;
+  // @Column({ nullable: true })
+  // secondPlayerProgressId: number;
 
   static createGame(firstPlayer: PlayerProgress): Game {
     const pairCreatedDate = new Date().toISOString();

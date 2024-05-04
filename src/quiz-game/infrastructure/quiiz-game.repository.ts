@@ -17,7 +17,7 @@ export class QuizGameRepository {
       where: { status: GameStatus.PendingSecondPlayer },
     });
   }
-  async addFirstPlayerToTheGame(player: PlayerProgress) {
+  async addPlayerToTheGame(player: PlayerProgress) {
     return await this.playerProgressRepo.save(player);
   }
   async getPlayer(id: number) {
@@ -43,5 +43,22 @@ export class QuizGameRepository {
 
   async startGame(newGame: Game) {
     return await this.quizGameRepository.save(newGame);
+  }
+
+  async addSecondPlayerToTheGame(
+    secondPlayer: PlayerProgress,
+    startGameDate: string,
+    status: GameStatus,
+  ) {
+    const result = await this.quizGameRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        secondPlayerProgress: secondPlayer,
+        startGameDate: startGameDate,
+        status: status,
+      })
+      .execute();
+    return result.affected === 1;
   }
 }

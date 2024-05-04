@@ -24,4 +24,12 @@ export class PlayerProgress {
 
   @Column()
   score: number;
+
+  static addPlayer(currentUserId: number) {
+    const addedPlayer = new PlayerProgress();
+    addedPlayer.userId = currentUserId;
+    addedPlayer.score = 0;
+
+    return addedPlayer;
+  }
 }

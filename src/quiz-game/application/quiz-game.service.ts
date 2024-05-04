@@ -1,29 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { MyStatus } from '../../features/likes/domain/likes.entity';
 import { Game, GameStatus } from '../domain/quiz-game.entity';
 import { QuizGameRepository } from '../infrastructure/quiiz-game.repository';
 import { PlayerProgress } from '../domain/player-progress.entity';
+import { QuizGameQueryRepository } from '../infrastructure/quiz-game-query.repository';
 
 @Injectable()
 export class QuizGameService {
-  constructor(private quizGameRepository: QuizGameRepository) {}
+  constructor(
+    private quizGameRepository: QuizGameRepository,
+    private quizGameQueryRepository: QuizGameQueryRepository,
+  ) {}
 
   async connectToTheGame(currentUserId: number) {
     const isGameWithPandingPlayerExist =
       await this.quizGameRepository.isGameWithPandingPlayerExist();
+
+    const isUserAlreadyInGame =
+      await this.quizGameQueryRepository.isUserAlreadyInGame(currentUserId);
     console.log(
-      '🚀 ~ QuizGameService ~ connectToTheGame ~ isGameWithPandingPlayerExist:',
-      isGameWithPandingPlayerExist,
+      '🚀 ~ QuizGameService ~ connectToTheGame ~ isUserAlreadyInGame:',
+      isUserAlreadyInGame,
     );
+    if (isUserAlreadyInGame) {
+      throw new ForbiddenException('u are allready in game');
+    }
 
     if (!isGameWithPandingPlayerExist) {
       const firstPlayerProgress = new PlayerProgress();
       firstPlayerProgress.userId = currentUserId;
       firstPlayerProgress.score = 0;
       const addFirstplayerToDb =
-        await this.quizGameRepository.addFirstPlayerToTheGame(
-          firstPlayerProgress,
-        );
+        await this.quizGameRepository.addPlayerToTheGame(firstPlayerProgress);
 
       const firstPlayer = await this.quizGameRepository.getPlayer(
         addFirstplayerToDb.userId,
@@ -46,8 +54,30 @@ export class QuizGameService {
       //   newGame.questions = null;
 
       return await this.quizGameRepository.startGame(newGame);
-    } else {
-      return false;
+    } else if (isGameWithPandingPlayerExist) {
+      const secondPlayerProgress = PlayerProgress.addPlayer(currentUserId);
+      const addSecondPlayerToDb =
+        await this.quizGameRepository.addPlayerToTheGame(secondPlayerProgress);
+
+      const secondPlayer = await this.quizGameRepository.getPlayer(
+        addSecondPlayerToDb.userId,
+      );
+      console.log(
+        '🚀 ~ QuizGameService ~ connectToTheGame ~ secondPlayer:',
+        secondPlayer,
+      );
+
+      const startGameDate = new Date().toISOString();
+      const status = GameStatus.Active;
+
+      const addSecondPlayerToTheGame =
+        await this.quizGameRepository.addSecondPlayerToTheGame(
+          secondPlayer,
+          startGameDate,
+          status,
+        );
+
+      return addSecondPlayerToTheGame;
     }
   }
 }
