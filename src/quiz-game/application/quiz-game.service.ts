@@ -34,16 +34,10 @@ export class QuizGameService {
         addFirstplayerToDb.playerId,
       );
 
-      // const pairCreatedDate = new Date().toISOString();
-      // const status = GameStatus.PendingSecondPlayer;
       const newGame = Game.createGame(firstPlayer);
 
       return await this.quizGameRepository.startGame(newGame);
     } else if (isGameWithPandingPlayerExist) {
-      console.log(
-        '🚀 ~ QuizGameService ~ connectToTheGame ~ isGameWithPandingPlayerExist:',
-        isGameWithPandingPlayerExist,
-      );
       const secondPlayerProgress = PlayerProgress.addPlayer(currentUserId);
       const addSecondPlayerToDb =
         await this.quizGameRepository.addPlayerToTheGame(secondPlayerProgress);
@@ -54,17 +48,6 @@ export class QuizGameService {
 
       const gameId = isGameWithPandingPlayerExist!.id;
       const quizQuestion = await this.quizGameRepository.getQuizQuestions();
-      console.log(
-        '🚀 ~ QuizGameService ~ connectToTheGame ~ quizQuestion:',
-        quizQuestion,
-      );
-
-      // const questions =
-      //   await this.quizGameRepository.addQuestionsToTheGame(gameId);
-      // console.log(
-      //   '🚀 ~ QuizGameService ~ connectToTheGame ~ questions:',
-      //   questions,
-      // );
 
       const startGameDate = new Date().toISOString();
       const status = GameStatus.Active;

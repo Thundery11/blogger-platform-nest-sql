@@ -28,8 +28,6 @@ export class Game {
   @JoinColumn()
   secondPlayerProgress: PlayerProgress;
 
-  // @OneToMany(() => QuestionOfTheGame, (q) => q.game, { nullable: true })
-  // questions?: QuestionOfTheGame[] | null;
   @Column('jsonb', { nullable: true })
   questions: QuizQuestions[];
 
@@ -44,10 +42,6 @@ export class Game {
 
   @Column({ nullable: true })
   finishGameDate: string;
-  // @Column()
-  // firstPlayerProgressId: number;
-  // @Column({ nullable: true })
-  // secondPlayerProgressId: number;
 
   static createGame(firstPlayer: PlayerProgress): Game {
     const pairCreatedDate = new Date().toISOString();
@@ -56,7 +50,6 @@ export class Game {
     newGame.pairCreatedDate = pairCreatedDate;
     newGame.status = status;
     newGame.firstPlayerProgress = firstPlayer;
-    // newGame.questions = null;
 
     return newGame;
   }

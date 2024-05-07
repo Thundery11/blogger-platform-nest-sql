@@ -15,6 +15,7 @@ import { JwtAuthGuard } from '../../features/auth/guards/jwt-auth.guard';
 import { CurrentUserId } from '../../features/auth/decorators/current-user-id-param.decorator';
 import { QuizGameService } from '../application/quiz-game.service';
 import { QuizGameQueryRepository } from '../infrastructure/quiz-game-query.repository';
+import { IdModel } from './models/input/quiz-game.input.model';
 
 @Controller('pair-game-quiz/pairs')
 export class QuizGameController {
@@ -40,6 +41,7 @@ export class QuizGameController {
     @CurrentUserId() currentUserId: number,
   ) {
     console.log('🚀 ~ QuizGameController ~ id:', id);
+    // const gameId = Number(id.id);
     const user =
       await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
     if (!user) {
@@ -47,7 +49,6 @@ export class QuizGameController {
     }
 
     const game = await this.quizGameQueryRepo.findGame(id);
-    console.log('🚀 ~ QuizGameController ~ game:', game);
     if (!game) {
       throw new NotFoundException();
     }

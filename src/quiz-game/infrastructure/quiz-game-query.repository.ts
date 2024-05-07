@@ -55,7 +55,6 @@ export class QuizGameQueryRepository {
     }
 
     console.log('🚀 ~ QuizGameQueryRepository ~ findGame ~ game:', game);
-    // return game;
     return quizGameOutputModel(game);
   }
 }
