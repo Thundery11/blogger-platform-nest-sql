@@ -76,7 +76,9 @@ export class QuizGameService {
           status,
           quizQuestion,
         );
-
+      if (addSecondPlayerToTheGame) {
+        return await this.quizGameQueryRepository.findGame(gameId);
+      }
       return addSecondPlayerToTheGame;
     }
   }
