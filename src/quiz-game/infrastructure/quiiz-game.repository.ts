@@ -4,6 +4,7 @@ import { Game, GameStatus } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
 import { PlayerProgress } from '../domain/player-progress.entity';
 import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity';
+import { quizGameOutputModel } from '../api/models/output/quiz-game.output.model';
 
 @Injectable()
 export class QuizGameRepository {
@@ -30,7 +31,6 @@ export class QuizGameRepository {
       .leftJoin('p.answers', 'a')
       .select([
         'p.id',
-        'p.playerId',
         'p.score',
         'u.login',
         'u.id',
@@ -44,7 +44,8 @@ export class QuizGameRepository {
   }
 
   async startGame(newGame: Game) {
-    return await this.quizGameRepository.save(newGame);
+    const game = await this.quizGameRepository.save(newGame);
+    return quizGameOutputModel(game);
   }
 
   async addSecondPlayerToTheGame(

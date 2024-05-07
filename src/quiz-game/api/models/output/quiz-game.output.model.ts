@@ -23,7 +23,7 @@ export class PlayerProgressOutput {
 export class QuizGameOutputModel {
   id: string;
   firstPlayerProgress: PlayerProgressOutput;
-  secondPlayerProgress: PlayerProgressOutput;
+  secondPlayerProgress: PlayerProgressOutput | null;
   questions: QuizQuestionsOutput[];
   status: GameStatus;
   pairCreatedDate: string;
@@ -32,13 +32,17 @@ export class QuizGameOutputModel {
 }
 
 export const quizGameOutputModel = (game: Game) => {
-  const mappedQuestions = game.questions.map((q) => ({
-    id: q.id.toString(),
-    body: q.body,
-  }));
+  let mappedQuestions;
+  if (game.questions) {
+    mappedQuestions = game.questions.map((q) => ({
+      id: q.id.toString(),
+      body: q.body,
+    }));
+  }
+
   const outputGame = new QuizGameOutputModel();
   outputGame.id = game.id.toString();
-  outputGame.questions = mappedQuestions;
+  outputGame.questions = mappedQuestions ?? null;
   outputGame.pairCreatedDate = game.pairCreatedDate;
   outputGame.status = game.status;
   outputGame.startGameDate = game.startGameDate;
@@ -58,17 +62,21 @@ export const quizGameOutputModel = (game: Game) => {
     game.firstPlayerProgress.player.login;
   outputGame.firstPlayerProgress.score = game.firstPlayerProgress.score;
   outputGame.secondPlayerProgress = new PlayerProgressOutput();
-  outputGame.secondPlayerProgress.player = new Player();
-  outputGame.secondPlayerProgress.answers = game.secondPlayerProgress.answers
-    ? game.firstPlayerProgress.answers.map((answer) => ({
-        ...answer,
-        id: answer.id.toString(),
-      }))
-    : [];
-  outputGame.secondPlayerProgress.player.id =
-    game.secondPlayerProgress.player.id.toString();
-  outputGame.secondPlayerProgress.player.login =
-    game.secondPlayerProgress.player.login;
-  outputGame.secondPlayerProgress.score = game.secondPlayerProgress.score;
+  if (game.secondPlayerProgress) {
+    outputGame.secondPlayerProgress.player = new Player();
+    outputGame.secondPlayerProgress.answers = game.secondPlayerProgress.answers
+      ? game.firstPlayerProgress.answers.map((answer) => ({
+          ...answer,
+          id: answer.id.toString(),
+        }))
+      : [];
+    outputGame.secondPlayerProgress.player.id =
+      game.secondPlayerProgress.player.id.toString();
+    outputGame.secondPlayerProgress.player.login =
+      game.secondPlayerProgress.player.login;
+    outputGame.secondPlayerProgress.score = game.secondPlayerProgress.score;
+  } else {
+    outputGame.secondPlayerProgress = null;
+  }
   return outputGame;
 };
