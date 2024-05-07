@@ -1,9 +1,4 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { QuestionOfTheGame } from '../../quiz-game/domain/question-of-the-game.entity';
-
-// type CorrectAnswers ={
-//   correctAnswers: string[];
-// }
 
 @Entity()
 export class QuizQuestions {

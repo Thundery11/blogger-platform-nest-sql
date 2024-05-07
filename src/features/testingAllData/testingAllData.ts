@@ -16,7 +16,6 @@ import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity'
 import { Game } from '../../quiz-game/domain/quiz-game.entity';
 import { Answers } from '../../quiz-game/domain/quiz-answers.entity';
 import { PlayerProgress } from '../../quiz-game/domain/player-progress.entity';
-import { QuestionOfTheGame } from '../../quiz-game/domain/question-of-the-game.entity';
 
 @Controller('testing/all-data')
 export class TestingAllDataController {
@@ -38,8 +37,6 @@ export class TestingAllDataController {
     @InjectRepository(Answers) private answersRepo: Repository<Answers>,
     @InjectRepository(PlayerProgress)
     private playerProgressRepo: Repository<PlayerProgress>,
-    @InjectRepository(QuestionOfTheGame)
-    private questionOfTheGameRepo: Repository<QuestionOfTheGame>,
   ) {}
 
   @Delete()
@@ -48,7 +45,6 @@ export class TestingAllDataController {
     await this.gameRepo.delete({});
     await this.answersRepo.delete({});
     await this.playerProgressRepo.delete({});
-    await this.questionOfTheGameRepo.delete({});
     await this.lastLikedsRepo.delete({});
     await this.likesForCommentsRepo.delete({});
     await this.likesForPostsRepo.delete({});

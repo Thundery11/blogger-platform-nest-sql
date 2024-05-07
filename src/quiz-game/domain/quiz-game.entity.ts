@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { QuestionOfTheGame } from './question-of-the-game.entity';
 import { PlayerProgress } from './player-progress.entity';
 
 export enum GameStatus {
@@ -28,8 +27,10 @@ export class Game {
   @JoinColumn()
   secondPlayerProgress: PlayerProgress;
 
-  @OneToMany(() => QuestionOfTheGame, (q) => q.game, { nullable: true })
-  questions?: QuestionOfTheGame[] | null;
+  // @OneToMany(() => QuestionOfTheGame, (q) => q.game, { nullable: true })
+  // questions?: QuestionOfTheGame[] | null;
+  @Column('jsonb', { nullable: true })
+  questions: { id: number; body: string }[];
 
   @Column({ type: 'enum', enum: GameStatus })
   status: GameStatus;
@@ -54,7 +55,7 @@ export class Game {
     newGame.pairCreatedDate = pairCreatedDate;
     newGame.status = status;
     newGame.firstPlayerProgress = firstPlayer;
-    newGame.questions = null;
+    // newGame.questions = null;
 
     return newGame;
   }

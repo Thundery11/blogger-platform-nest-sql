@@ -19,7 +19,6 @@ import { LikesForComments } from '../../likes/domain/likes-for-comments.entity';
 import { QuizQuestionsRepository } from '../../../quizQuestions/api/infrastructure/quiz-questions.repository';
 import { QuizQuestions } from '../../../quizQuestions/domain/quiz-questions.entity';
 import { PlayerProgress } from '../../../quiz-game/domain/player-progress.entity';
-import { QuestionOfTheGame } from '../../../quiz-game/domain/question-of-the-game.entity';
 import { Answers } from '../../../quiz-game/domain/quiz-answers.entity';
 import { Game } from '../../../quiz-game/domain/quiz-game.entity';
 
@@ -38,7 +37,6 @@ import { Game } from '../../../quiz-game/domain/quiz-game.entity';
       QuizQuestions,
       Game,
       Answers,
-      QuestionOfTheGame,
       PlayerProgress,
     ]),
   ],

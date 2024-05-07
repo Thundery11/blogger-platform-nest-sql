@@ -6,7 +6,6 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { PlayerProgress } from './player-progress.entity';
-import { QuestionOfTheGame } from './question-of-the-game.entity';
 
 export enum IsCorrectAnswer {
   Correct = 'Correct',
@@ -18,11 +17,11 @@ export class Answers {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column()
-  questionOfTheGameId: number;
+  // @Column()
+  // questionOfTheGameId: number;
 
-  @ManyToOne(() => QuestionOfTheGame, (q) => q.answers)
-  questionOfTheGame: QuestionOfTheGame;
+  // @ManyToOne(() => QuestionOfTheGame, (q) => q.answers)
+  // questionOfTheGame: QuestionOfTheGame;
 
   @Column()
   playerProgressId: number;

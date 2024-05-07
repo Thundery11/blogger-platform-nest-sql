@@ -20,37 +20,34 @@ export class QuizGameQueryRepository {
 
   async findGame(id: number) {
     const game = await this.quizGameQueryRepo
-      .createQueryBuilder('g')
+      .createQueryBuilder('game')
       .select([
-        'g.id',
-        'g.status',
-        'g.pairCreatedDate',
-        'g.startGameDate',
-        'g.finishGameDate',
-        'fppa.id as questionId',
-        'fppa.answerStatus',
-        'fppa.addedAt',
-        'u.login',
-        'u.id',
-        'fpp.score',
-        'sppa.id as questionId',
-        'sppa.answerStatus',
-        'sppa.addedAt',
-        'su.login',
-        'su.id',
-        'spp.score',
-        'qq.body',
-        'qq.id',
+        'game.id',
+        'game.status',
+        'game.pairCreatedDate',
+        'game.startGameDate',
+        'game.finishGameDate',
+        'firstPlayerAnswers.id as questionId',
+        'firstPlayerAnswers.answerStatus',
+        'firstPlayerAnswers.addedAt',
+        'firstPlayer.login',
+        'firstPlayer.id',
+        'firstPlayerProgress.score',
+        'secondPlayerAnswers.id as questionId',
+        'secondPlayerAnswers.answerStatus',
+        'secondPlayerAnswers.addedAt',
+        'secondPlayer.login',
+        'secondPlayer.id',
+        'secondPlayerProgress.score',
+        'game.questions',
       ])
-      .leftJoin('g.firstPlayerProgress', 'fpp')
-      .leftJoin('fpp.player', 'u')
-      .leftJoin('fpp.answers', 'fppa')
-      .leftJoin('g.secondPlayerProgress', 'spp')
-      .leftJoin('spp.player', 'su')
-      .leftJoin('spp.answers', 'sppa')
-      .leftJoin('g.questions', 'q')
-      .leftJoin('q.question', 'qq')
-      .where(`g.id = :id`, { id: id })
+      .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+      .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
+      .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+      .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
+      .where(`game.id = :id`, { id: id })
       .getOne();
     return game;
   }

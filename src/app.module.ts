@@ -75,7 +75,6 @@ import { FindAllQuestionsUseCase } from './quizQuestions/application/use-cases/g
 import { QuizQuestions } from './quizQuestions/domain/quiz-questions.entity';
 import { Game } from './quiz-game/domain/quiz-game.entity';
 import { Answers } from './quiz-game/domain/quiz-answers.entity';
-import { QuestionOfTheGame } from './quiz-game/domain/question-of-the-game.entity';
 import { PlayerProgress } from './quiz-game/domain/player-progress.entity';
 import { QuizGameService } from './quiz-game/application/quiz-game.service';
 import { QuizGameController } from './quiz-game/api/quiz-game.controller';
@@ -151,7 +150,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     AuthModule,
     UsersModule,
     CqrsModule,
-    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forRoot(localDbOptions),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,
@@ -164,7 +163,6 @@ export const localDbOptions: TypeOrmModuleOptions = {
       QuizQuestions,
       Game,
       Answers,
-      QuestionOfTheGame,
       PlayerProgress,
     ]),
     // ConfigModule.forRoot(),

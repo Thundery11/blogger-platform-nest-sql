@@ -18,10 +18,7 @@ export class QuizGameService {
 
     const isUserAlreadyInGame =
       await this.quizGameQueryRepository.isUserAlreadyInGame(currentUserId);
-    console.log(
-      '🚀 ~ QuizGameService ~ connectToTheGame ~ isUserAlreadyInGame:',
-      isUserAlreadyInGame,
-    );
+
     if (isUserAlreadyInGame) {
       throw new ForbiddenException('u are allready in game');
     }
@@ -32,33 +29,21 @@ export class QuizGameService {
       firstPlayerProgress.score = 0;
       const addFirstplayerToDb =
         await this.quizGameRepository.addPlayerToTheGame(firstPlayerProgress);
-      console.log(
-        '🚀 ~ QuizGameService ~ connectToTheGame ~ addFirstplayerToDb:',
-        addFirstplayerToDb,
-      );
 
       const firstPlayer = await this.quizGameRepository.getPlayer(
         addFirstplayerToDb.playerId,
       );
-      console.log(
-        '🚀 ~ QuizGameService ~ connectToTheGame ~ firstPlayer:',
-        firstPlayer,
-      );
 
-      const pairCreatedDate = new Date().toISOString();
-      const status = GameStatus.PendingSecondPlayer;
+      // const pairCreatedDate = new Date().toISOString();
+      // const status = GameStatus.PendingSecondPlayer;
       const newGame = Game.createGame(firstPlayer);
-      console.log(
-        '🚀 ~ QuizGameService ~ connectToTheGame ~ newGame:',
-        newGame,
-      );
-      //   newGame.pairCreatedDate = pairCreatedDate;
-      //   newGame.status = status;
-      //   newGame.firstPlayerProgress = firstPlayer;
-      //   newGame.questions = null;
 
       return await this.quizGameRepository.startGame(newGame);
     } else if (isGameWithPandingPlayerExist) {
+      console.log(
+        '🚀 ~ QuizGameService ~ connectToTheGame ~ isGameWithPandingPlayerExist:',
+        isGameWithPandingPlayerExist,
+      );
       const secondPlayerProgress = PlayerProgress.addPlayer(currentUserId);
       const addSecondPlayerToDb =
         await this.quizGameRepository.addPlayerToTheGame(secondPlayerProgress);
@@ -66,10 +51,20 @@ export class QuizGameService {
       const secondPlayer = await this.quizGameRepository.getPlayer(
         addSecondPlayerToDb.playerId,
       );
+
+      const gameId = isGameWithPandingPlayerExist!.id;
+      const quizQuestion = await this.quizGameRepository.getQuizQuestions();
       console.log(
-        '🚀 ~ QuizGameService ~ connectToTheGame ~ secondPlayer:',
-        secondPlayer,
+        '🚀 ~ QuizGameService ~ connectToTheGame ~ quizQuestion:',
+        quizQuestion,
       );
+
+      // const questions =
+      //   await this.quizGameRepository.addQuestionsToTheGame(gameId);
+      // console.log(
+      //   '🚀 ~ QuizGameService ~ connectToTheGame ~ questions:',
+      //   questions,
+      // );
 
       const startGameDate = new Date().toISOString();
       const status = GameStatus.Active;
@@ -79,9 +74,12 @@ export class QuizGameService {
           secondPlayer,
           startGameDate,
           status,
+          quizQuestion,
         );
 
       return addSecondPlayerToTheGame;
     }
   }
+
+  async addQuestionsTotheGame() {}
 }

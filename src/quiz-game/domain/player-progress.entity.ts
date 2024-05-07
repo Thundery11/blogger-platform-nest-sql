@@ -20,7 +20,7 @@ export class PlayerProgress {
   player: Users;
 
   @OneToMany(() => Answers, (a) => a.playerProgress)
-  answers: Answers[]; //можно хранить просто массивом
+  answers: Answers[];
 
   @Column()
   score: number;

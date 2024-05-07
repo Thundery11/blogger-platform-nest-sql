@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game, GameStatus } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
 import { PlayerProgress } from '../domain/player-progress.entity';
+import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity';
 
 @Injectable()
 export class QuizGameRepository {
@@ -10,6 +11,8 @@ export class QuizGameRepository {
     @InjectRepository(Game) private quizGameRepository: Repository<Game>,
     @InjectRepository(PlayerProgress)
     private playerProgressRepo: Repository<PlayerProgress>,
+    @InjectRepository(QuizQuestions)
+    private quizQuestionsRepository: Repository<QuizQuestions>,
   ) {}
 
   async isGameWithPandingPlayerExist() {
@@ -49,6 +52,7 @@ export class QuizGameRepository {
     secondPlayer: PlayerProgress,
     startGameDate: string,
     status: GameStatus,
+    quizQuestion,
   ) {
     const result = await this.quizGameRepository
       .createQueryBuilder()
@@ -57,8 +61,33 @@ export class QuizGameRepository {
         secondPlayerProgress: secondPlayer,
         startGameDate: startGameDate,
         status: status,
+        questions: quizQuestion,
       })
       .execute();
     return result.affected === 1;
   }
+
+  async getQuizQuestions() {
+    const quizQuestions = await this.quizQuestionsRepository
+      .createQueryBuilder('qq')
+      .select(['qq.id', 'qq.body'])
+      .where({ published: true })
+      .orderBy('RANDOM()')
+      .take(5)
+      .getMany();
+    return quizQuestions;
+  }
+
+  // async addQuestion(gameId: number){
+  //   const question = await this.quizQuestionsRepository.save
+  // }
+
+  // async addQuestionsToTheGame(gameId: number) {
+  //   const questions = await this.questionsForUsersRepository
+  //     .createQueryBuilder('qg')
+  //     .select(['qg.question', 'question.body', 'question.id', 'qg.order'])
+  //     .leftJoin('qg.question', 'question')
+  //     .getMany();
+  //   return questions;
+  // }
 }
