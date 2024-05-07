@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
 import { PlayerProgress } from '../domain/player-progress.entity';
+import { quizGameOutputModel } from '../api/models/output/quiz-game.output.model';
 
 @Injectable()
 export class QuizGameQueryRepository {
@@ -49,6 +50,12 @@ export class QuizGameQueryRepository {
       .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
       .where(`game.id = :id`, { id: id })
       .getOne();
-    return game;
+    if (!game) {
+      return null;
+    }
+
+    console.log('🚀 ~ QuizGameQueryRepository ~ findGame ~ game:', game);
+    // return game;
+    return quizGameOutputModel(game);
   }
 }

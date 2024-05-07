@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 
 import { PlayerProgress } from './player-progress.entity';
+import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity';
 
 export enum GameStatus {
   PendingSecondPlayer = 'PendingSecondPlayer',
@@ -30,7 +31,7 @@ export class Game {
   // @OneToMany(() => QuestionOfTheGame, (q) => q.game, { nullable: true })
   // questions?: QuestionOfTheGame[] | null;
   @Column('jsonb', { nullable: true })
-  questions: { id: number; body: string }[];
+  questions: QuizQuestions[];
 
   @Column({ type: 'enum', enum: GameStatus })
   status: GameStatus;

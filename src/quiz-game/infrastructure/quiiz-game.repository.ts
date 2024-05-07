@@ -34,7 +34,6 @@ export class QuizGameRepository {
         'p.score',
         'u.login',
         'u.id',
-        'a.questionOfTheGameId as questionId',
         'a.answerStatus',
         'a.addedAt',
       ])
@@ -70,7 +69,7 @@ export class QuizGameRepository {
   async getQuizQuestions() {
     const quizQuestions = await this.quizQuestionsRepository
       .createQueryBuilder('qq')
-      .select(['qq.id', 'qq.body'])
+      .select(['qq.id', 'qq.body', 'qq.correctAnswers'])
       .where({ published: true })
       .orderBy('RANDOM()')
       .take(5)
