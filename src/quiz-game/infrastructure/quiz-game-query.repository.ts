@@ -57,4 +57,44 @@ export class QuizGameQueryRepository {
     console.log('🚀 ~ QuizGameQueryRepository ~ findGame ~ game:', game);
     return quizGameOutputModel(game);
   }
+
+  async findGameForCurrentUser(id: number) {
+    const game = await this.quizGameQueryRepo
+      .createQueryBuilder('game')
+      .select([
+        'game.id',
+        'game.status',
+        'game.pairCreatedDate',
+        'game.startGameDate',
+        'game.finishGameDate',
+        'firstPlayerAnswers.id as questionId',
+        'firstPlayerAnswers.answerStatus',
+        'firstPlayerAnswers.addedAt',
+        'firstPlayer.login',
+        'firstPlayer.id',
+        'firstPlayerProgress.score',
+        'secondPlayerAnswers.id as questionId',
+        'secondPlayerAnswers.answerStatus',
+        'secondPlayerAnswers.addedAt',
+        'secondPlayer.login',
+        'secondPlayer.id',
+        'secondPlayerProgress.score',
+        'game.questions',
+      ])
+      .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+      .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
+      .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+      .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
+      .where(`game.firstPlayerProgressId = :id`, { id: id })
+      .orWhere(`game.secondPlayerProgressId = :id`, { id: id })
+      .getOne();
+    if (!game) {
+      return null;
+    }
+
+    // console.log('🚀 ~ QuizGameQueryRepository ~ findGame ~ game:', game);
+    return quizGameOutputModel(game);
+  }
 }

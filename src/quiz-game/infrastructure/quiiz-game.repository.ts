@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { PlayerProgress } from '../domain/player-progress.entity';
 import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity';
 import { quizGameOutputModel } from '../api/models/output/quiz-game.output.model';
+import { Answers } from '../domain/quiz-answers.entity';
 
 @Injectable()
 export class QuizGameRepository {
@@ -14,6 +15,7 @@ export class QuizGameRepository {
     private playerProgressRepo: Repository<PlayerProgress>,
     @InjectRepository(QuizQuestions)
     private quizQuestionsRepository: Repository<QuizQuestions>,
+    @InjectRepository(Answers) private answersRepository: Repository<Answers>,
   ) {}
 
   async isGameWithPandingPlayerExist() {
@@ -77,7 +79,33 @@ export class QuizGameRepository {
       .getMany();
     return quizQuestions;
   }
+  async whatAnswerAddingNow(playerProgressId: number) {
+    const answers = await this.playerProgressRepo
+      .createQueryBuilder('pp')
+      .select([
+        'pp.playerId',
+        'playerAnswers.id as questionId', //не работает алиас
+        'playerAnswers.answerStatus',
+        'playerAnswers.addedAt',
+      ])
+      .leftJoin('pp.answers', 'playerAnswers')
+      .where(`pp.id = :id`, { id: playerProgressId })
+      .getOne();
+    return answers;
+  }
 
+  async addAnswerToDb(answer: Answers) {
+    return await this.answersRepository.save(answer);
+  }
+  async getCurrentQuestionToAnswerOnIt(playerProgressId: number) {
+    const questions = await this.quizGameRepository
+      .createQueryBuilder('game')
+      .select(['game.questions'])
+      .where(`game.firstPlayerProgressId = :id`, { id: playerProgressId })
+      .orWhere(`game.secondPlayerProgressId = :id`, { id: playerProgressId })
+      .getOne();
+    return questions;
+  }
   // async addQuestion(gameId: number){
   //   const question = await this.quizQuestionsRepository.save
   // }

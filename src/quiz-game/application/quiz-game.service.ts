@@ -4,6 +4,8 @@ import { Game, GameStatus } from '../domain/quiz-game.entity';
 import { QuizGameRepository } from '../infrastructure/quiiz-game.repository';
 import { PlayerProgress } from '../domain/player-progress.entity';
 import { QuizGameQueryRepository } from '../infrastructure/quiz-game-query.repository';
+import { AnswerDto } from '../api/models/input/quiz-game.input.model';
+import { Answers, IsCorrectAnswer } from '../domain/quiz-answers.entity';
 
 @Injectable()
 export class QuizGameService {
@@ -66,5 +68,41 @@ export class QuizGameService {
     }
   }
 
-  async addQuestionsTotheGame() {}
+  async addAnswer(
+    answerDto: AnswerDto,
+    playerProgressId: number,
+    currentUserId: number,
+  ) {
+    const allPossibleQuestionsFromGame =
+      await this.quizGameRepository.getCurrentQuestionToAnswerOnIt(
+        playerProgressId,
+      );
+    const whatAnswerAddingNow =
+      await this.quizGameRepository.whatAnswerAddingNow(playerProgressId);
+    console.log(
+      '🚀 ~ QuizGameService ~ whatAnswerAddingNow:',
+      whatAnswerAddingNow?.answers.length,
+    );
+
+    if (whatAnswerAddingNow?.answers.length === 0) {
+      const question = allPossibleQuestionsFromGame?.questions[0];
+      console.log('🚀 ~ QuizGameService ~ questions:', question);
+      const questionId = question?.id;
+      console.log("🚀 ~ QuizGameService ~ questionId:", questionId)
+    } else if (whatAnswerAddingNow?.answers.length === 1) {
+      const res1 =
+        await this.quizGameRepository.getCurrentQuestionToAnswerOnIt(
+          playerProgressId,
+        );
+      console.log('🚀 ~ QuizGameService ~ res:', res1);
+    }
+    const answer = new Answers();
+    answer.playerProgressId = playerProgressId;
+    answer.answerStatus = IsCorrectAnswer.Correct;
+    answer.addedAt = new Date().toISOString();
+    // console.log('🚀 ~ QuizGameService ~ answer:', answer);
+
+    const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
+    console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
+  }
 }

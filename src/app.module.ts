@@ -77,9 +77,9 @@ import { Game } from './quiz-game/domain/quiz-game.entity';
 import { Answers } from './quiz-game/domain/quiz-answers.entity';
 import { PlayerProgress } from './quiz-game/domain/player-progress.entity';
 import { QuizGameService } from './quiz-game/application/quiz-game.service';
-import { QuizGameController } from './quiz-game/api/quiz-game.controller';
 import { QuizGameRepository } from './quiz-game/infrastructure/quiiz-game.repository';
 import { QuizGameQueryRepository } from './quiz-game/infrastructure/quiz-game-query.repository';
+import { QuizGameController } from './quiz-game/api/quiz-game.controller';
 
 const useCases = [
   CreateBlogUseCase,

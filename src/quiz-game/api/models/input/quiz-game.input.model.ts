@@ -1,6 +1,13 @@
-import { IsNumberStringFormat } from '../../../../features/auth/decorators/id.format.decorator';
+// import { IsNumberStringFormat } from '../../../../features/auth/decorators/id.format.decorator';
 
-export class IdModel {
-  @IsNumberStringFormat()
-  id: string;
+import { IsString } from 'class-validator';
+
+// export class IdModel {
+//   @IsNumberStringFormat()
+//   id: string;
+// }
+
+export class AnswerDto {
+  @IsString()
+  answer: string;
 }
