@@ -22,7 +22,8 @@ export class Answers {
 
   // @ManyToOne(() => QuestionOfTheGame, (q) => q.answers)
   // questionOfTheGame: QuestionOfTheGame;
-
+  @Column()
+  questionId: number;
   @Column()
   playerProgressId: number;
 
