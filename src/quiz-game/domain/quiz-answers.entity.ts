@@ -17,11 +17,6 @@ export class Answers {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  // @Column()
-  // questionOfTheGameId: number;
-
-  // @ManyToOne(() => QuestionOfTheGame, (q) => q.answers)
-  // questionOfTheGame: QuestionOfTheGame;
   @Column()
   questionId: number;
   @Column()
@@ -35,7 +30,4 @@ export class Answers {
 
   @Column()
   addedAt: string;
-  // @ManyToOne(()=> QuestionOfTheGame, (q)=> q.answers)
-  // @Column()
-  // questionOfTheGame: QuestionOfTheGame
 }

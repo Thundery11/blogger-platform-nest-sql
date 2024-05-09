@@ -2,7 +2,7 @@ import { PlayerProgress } from '../../../domain/player-progress.entity';
 import { Answers, IsCorrectAnswer } from '../../../domain/quiz-answers.entity';
 import { Game, GameStatus } from '../../../domain/quiz-game.entity';
 export class AnswersOutputModel {
-  id: string;
+  questionId: string;
   answerStatus: IsCorrectAnswer;
   addedAt: string;
 }
@@ -32,6 +32,10 @@ export class QuizGameOutputModel {
 }
 
 export const quizGameOutputModel = (game: Game) => {
+  console.log(
+    '🚀 ~ quizGameOutputModel ~ game:',
+    game.secondPlayerProgress.answers,
+  );
   let mappedQuestions;
   if (game.questions) {
     mappedQuestions = game.questions.map((q) => ({
@@ -53,7 +57,7 @@ export const quizGameOutputModel = (game: Game) => {
   outputGame.firstPlayerProgress.answers = game.firstPlayerProgress.answers
     ? game.firstPlayerProgress.answers.map((answer) => ({
         ...answer,
-        id: answer.id.toString(),
+        questionId: answer.questionId.toString(),
       }))
     : [];
   outputGame.firstPlayerProgress.player.id =
@@ -65,9 +69,9 @@ export const quizGameOutputModel = (game: Game) => {
   if (game.secondPlayerProgress) {
     outputGame.secondPlayerProgress.player = new Player();
     outputGame.secondPlayerProgress.answers = game.secondPlayerProgress.answers
-      ? game.firstPlayerProgress.answers.map((answer) => ({
+      ? game.secondPlayerProgress.answers.map((answer) => ({
           ...answer,
-          id: answer.id.toString(),
+          questionId: answer.questionId.toString(),
         }))
       : [];
     outputGame.secondPlayerProgress.player.id =

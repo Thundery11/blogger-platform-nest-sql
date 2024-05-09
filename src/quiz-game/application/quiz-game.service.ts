@@ -68,6 +68,50 @@ export class QuizGameService {
     }
   }
 
+  async addAnswer(
+    answerDto: AnswerDto,
+    playerProgressId: number,
+    currentUserId: number,
+  ) {
+    const answer = new Answers();
+    const addedAt = new Date().toISOString();
+    const allPossibleQuestionsFromGame =
+      await this.quizGameRepository.getCurrentQuestionToAnswerOnIt(
+        playerProgressId,
+      );
+    const whatAnswerAddingNow =
+      await this.quizGameRepository.whatAnswerAddingNow(playerProgressId);
+
+    const answerCount = whatAnswerAddingNow!.answers.length;
+    if (answerCount === 5) {
+      throw new ForbiddenException();
+    }
+    const questionIndex = Math.min(answerCount, 4); // Limiting the question index to 4
+
+    const question = allPossibleQuestionsFromGame!.questions[questionIndex];
+    const IsItCorrectAnswer = question?.correctAnswers.some(
+      (q) => q === answerDto.answer,
+    );
+
+    let answerStatus;
+    if (IsItCorrectAnswer === true) {
+      answerStatus = IsCorrectAnswer.Correct;
+    } else {
+      answerStatus = IsCorrectAnswer.Incorrect;
+    }
+
+    const questionId = question!.id;
+    answer.questionId = questionId;
+    answer.playerProgressId = playerProgressId;
+    answer.answerStatus = answerStatus;
+    answer.addedAt = addedAt;
+
+    const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
+    console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
+
+    // НУЖНО БУДЕТ ОБНОВИТЬ SCORE
+  }
+
   //   async addAnswer(
   //     answerDto: AnswerDto,
   //     playerProgressId: number,
@@ -178,47 +222,4 @@ export class QuizGameService {
   //     }
   //   }
   // }
-  async addAnswer(
-    answerDto: AnswerDto,
-    playerProgressId: number,
-    currentUserId: number,
-  ) {
-    const answer = new Answers();
-    const addedAt = new Date().toISOString();
-    const allPossibleQuestionsFromGame =
-      await this.quizGameRepository.getCurrentQuestionToAnswerOnIt(
-        playerProgressId,
-      );
-    const whatAnswerAddingNow =
-      await this.quizGameRepository.whatAnswerAddingNow(playerProgressId);
-
-    const answerCount = whatAnswerAddingNow!.answers.length;
-    if (answerCount === 5) {
-      throw new ForbiddenException();
-    }
-    const questionIndex = Math.min(answerCount, 4); // Limiting the question index to 4
-
-    const question = allPossibleQuestionsFromGame!.questions[questionIndex];
-    const IsItCorrectAnswer = question?.correctAnswers.some(
-      (q) => q === answerDto.answer,
-    );
-
-    let answerStatus;
-    if (IsItCorrectAnswer === true) {
-      answerStatus = IsCorrectAnswer.Correct;
-    } else {
-      answerStatus = IsCorrectAnswer.Incorrect;
-    }
-
-    const questionId = question!.id;
-    answer.questionId = questionId;
-    answer.playerProgressId = playerProgressId;
-    answer.answerStatus = answerStatus;
-    answer.addedAt = addedAt;
-
-    const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
-    console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
-
-    // НУЖНО БУДЕТ ОБНОВИТЬ SCORE
-  }
 }
