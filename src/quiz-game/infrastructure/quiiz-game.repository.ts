@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game, GameStatus } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
@@ -56,17 +56,29 @@ export class QuizGameRepository {
     status: GameStatus,
     quizQuestion,
   ) {
-    const result = await this.quizGameRepository
-      .createQueryBuilder()
-      .update()
-      .set({
-        secondPlayerProgress: secondPlayer,
-        startGameDate: startGameDate,
-        status: status,
-        questions: quizQuestion,
-      })
-      .execute();
-    return result.affected === 1;
+    const game = await this.quizGameRepository.findOne({
+      where: { status: GameStatus.PendingSecondPlayer },
+    });
+    if (!game) {
+      throw new NotFoundException();
+    }
+    game.secondPlayerProgress = secondPlayer;
+    game.startGameDate = startGameDate;
+    game.status = status;
+    game.questions = quizQuestion;
+
+    return await this.quizGameRepository.save(game);
+    // const result = await this.quizGameRepository
+    //   .createQueryBuilder()
+    //   .update()
+    //   .set({
+    //     secondPlayerProgress: secondPlayer,
+    //     startGameDate: startGameDate,
+    //     status: status,
+    //     questions: quizQuestion,
+    //   })
+    //   .execute();
+    // return result.affected === 1;
   }
 
   async getQuizQuestions() {

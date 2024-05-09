@@ -32,10 +32,6 @@ export class QuizGameOutputModel {
 }
 
 export const quizGameOutputModel = (game: Game) => {
-  console.log(
-    '🚀 ~ quizGameOutputModel ~ game:',
-    game.secondPlayerProgress.answers,
-  );
   let mappedQuestions;
   if (game.questions) {
     mappedQuestions = game.questions.map((q) => ({

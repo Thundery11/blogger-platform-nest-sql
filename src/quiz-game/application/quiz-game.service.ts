@@ -50,6 +50,10 @@ export class QuizGameService {
 
       const gameId = isGameWithPandingPlayerExist!.id;
       const quizQuestion = await this.quizGameRepository.getQuizQuestions();
+      console.log(
+        '🚀 ~ QuizGameService ~ connectToTheGame ~ quizQuestion:',
+        quizQuestion,
+      );
 
       const startGameDate = new Date().toISOString();
       const status = GameStatus.Active;
