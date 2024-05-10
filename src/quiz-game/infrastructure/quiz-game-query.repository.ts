@@ -97,4 +97,17 @@ export class QuizGameQueryRepository {
     // console.log('🚀 ~ QuizGameQueryRepository ~ findGame ~ game:', game);
     return quizGameOutputModel(game);
   }
+
+  async isGameStarted(id: number) {
+    const game = await this.quizGameQueryRepo
+      .createQueryBuilder('game')
+      .select(['game.id'])
+      .where(
+        `(game.firstPlayerProgressId = :id OR game.secondPlayerProgressId = :id)`,
+      )
+      .andWhere(`game.startGameDate IS NOT NULL`)
+      .setParameters({ id: id })
+      .getOne();
+    return game;
+  }
 }

@@ -33,7 +33,6 @@ export class QuizGameController {
   async getMyCurrentGame(@CurrentUserId() currentUserId: number) {
     const user =
       await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
-    console.log('🚀 ~ QuizGameController ~ getMyCurrentGame ~ user:', user);
 
     if (!user) {
       if (!user) {
@@ -62,8 +61,6 @@ export class QuizGameController {
     @Param('id', ParseIntPipe) id: number,
     @CurrentUserId() currentUserId: number,
   ) {
-    console.log('🚀 ~ QuizGameController ~ currentUserId:', currentUserId);
-
     // const gameId = Number(id.id);
     const user =
       await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
@@ -85,18 +82,20 @@ export class QuizGameController {
     @CurrentUserId() currentUserId: number,
     @Body() answerDto: AnswerDto,
   ) {
-    console.log('🚀 ~ QuizGameController ~ currentUserId:', currentUserId);
     const user =
       await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
     if (!user) {
       throw new ForbiddenException();
     }
-    console.log('🚀 ~ QuizGameController ~ user:', user);
+    const isGameStarted = await this.quizGameQueryRepo.isGameStarted(user.id);
+    if (!isGameStarted) {
+      throw new ForbiddenException('The game doesnt start yet');
+    }
     const answerStatus = await this.quizGameService.addAnswer(
       answerDto,
       user.id,
       currentUserId,
     );
-    return true;
+    return answerStatus;
   }
 }
