@@ -96,7 +96,7 @@ export class QuizGameRepository {
       .createQueryBuilder('pp')
       .select([
         'pp.playerId',
-        'playerAnswers.id as questionId', //не работает алиас
+        'playerAnswers.questionId', //не работает алиас
         'playerAnswers.answerStatus',
         'playerAnswers.addedAt',
       ])

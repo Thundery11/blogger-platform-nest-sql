@@ -85,6 +85,10 @@ export class QuizGameService {
       );
     const whatAnswerAddingNow =
       await this.quizGameRepository.whatAnswerAddingNow(playerProgressId);
+    console.log(
+      '🚀 ~ QuizGameService ~ whatAnswerAddingNow:',
+      whatAnswerAddingNow,
+    );
 
     const answerCount = whatAnswerAddingNow!.answers.length;
     if (answerCount === 5) {

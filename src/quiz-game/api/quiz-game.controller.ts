@@ -79,7 +79,7 @@ export class QuizGameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/answers')
+  @Post('/my-current/answers')
   @HttpCode(HttpStatus.OK)
   async sendAnswer(
     @CurrentUserId() currentUserId: number,

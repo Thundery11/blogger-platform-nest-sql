@@ -19,6 +19,7 @@ export class Answers {
 
   @Column()
   questionId: number;
+
   @Column()
   playerProgressId: number;
 
