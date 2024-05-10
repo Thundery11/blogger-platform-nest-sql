@@ -88,6 +88,7 @@ export class QuizQuestionsController {
     return await this.commandBus.execute(
       new PublishQuestionCommand(id, publishQuestionUpdateModel),
     );
+    //нужно ли изменять updatedAt при этом запросе???
   }
 
   @UseGuards(BasicAuthGuard)

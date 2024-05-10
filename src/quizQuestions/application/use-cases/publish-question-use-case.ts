@@ -14,10 +14,12 @@ export class PublishQuestionCommand {
 export class PublishQuestionUseCase implements ICommandHandler {
   constructor(private quizQuestionsRepository: QuizQuestionsRepository) {}
   async execute(command: PublishQuestionCommand): Promise<boolean> {
+    const updatedAt = new Date().toISOString();
     const isPublishedQuestion =
       await this.quizQuestionsRepository.publishQuestion(
         command.id,
         command.publishQuestionUpdateModel.published,
+        updatedAt,
       );
     if (!isPublishedQuestion) {
       throw new NotFoundException();
