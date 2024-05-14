@@ -101,7 +101,7 @@ export const quizGameOutputModel = (game: Game) => {
 
 export const answersOutput = (answer: Answers) => {
   const output = new AnswersOutput();
-  output.questionId = answer.id.toString();
+  output.questionId = answer.questionId.toString();
   output.answerStatus = answer.answerStatus;
   output.addedAt = answer.addedAt;
   return output;

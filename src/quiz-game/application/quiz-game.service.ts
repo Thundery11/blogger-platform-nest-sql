@@ -111,6 +111,7 @@ export class QuizGameService {
     answer.addedAt = addedAt;
 
     const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
+    console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
     const addPlayerScoreToDb = await this.quizGameRepository.addPlayerScoreToDb(
       playerProgressId,
       score,

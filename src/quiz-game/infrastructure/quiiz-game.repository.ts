@@ -117,6 +117,11 @@ export class QuizGameRepository {
       .leftJoin('pp.answers', 'playerAnswers')
       .where(`pp.id = :id`, { id: playerProgressId })
       .getOne();
+    console.log(
+      '🚀 ~ QuizGameRepository ~ whatAnswerAddingNow ~ answers:',
+      answers,
+    );
+
     return answers;
   }
 
