@@ -155,8 +155,26 @@ export class QuizGameService {
       let addFinalPointToScore;
       const firstPlayerAnswersCount =
         isThatWasLastUnswer?.firstPlayerProgress.answers[4];
+      const doesFirstPlayerHasOneCorrectAnswer =
+        isThatWasLastUnswer.firstPlayerProgress.answers.some(
+          (a) => a.answerStatus === IsCorrectAnswer.Correct,
+        );
+      console.log(
+        '🚀 ~ QuizGameService ~ doesFirstPlayerHasOneCorrectAnswer:',
+        doesFirstPlayerHasOneCorrectAnswer,
+      );
+
       const secondPlayerAnswersCount =
         isThatWasLastUnswer.secondPlayerProgress.answers[4];
+      const doesSecondPlayerHasOneCorrectAnswer =
+        isThatWasLastUnswer.secondPlayerProgress.answers.some(
+          (a) => a.answerStatus === IsCorrectAnswer.Correct,
+        );
+      console.log(
+        '🚀 ~ QuizGameService ~ doesSecondPlayerHasOneCorrectAnswer:',
+        doesSecondPlayerHasOneCorrectAnswer,
+      );
+
       const firstPlayerLastAnswerDate = new Date(
         firstPlayerAnswersCount.addedAt,
       );
@@ -164,17 +182,25 @@ export class QuizGameService {
         secondPlayerAnswersCount.addedAt,
       );
 
-      if (firstPlayerLastAnswerDate < secondPlayerLastAnswerDate) {
+      if (
+        firstPlayerLastAnswerDate < secondPlayerLastAnswerDate &&
+        doesFirstPlayerHasOneCorrectAnswer === true
+      ) {
         addFinalPointToScore = await this.quizGameRepository.addPlayerScoreToDb(
           firstPlayerProgressId!,
           finalScorePoint,
         );
         await this.quizGameRepository.endTheGame(addedAt, gameId);
-      } else if (firstPlayerLastAnswerDate > secondPlayerLastAnswerDate) {
+      } else if (
+        firstPlayerLastAnswerDate > secondPlayerLastAnswerDate &&
+        doesSecondPlayerHasOneCorrectAnswer === true
+      ) {
         addFinalPointToScore = await this.quizGameRepository.addPlayerScoreToDb(
           secondPlayerProgressId!,
           finalScorePoint,
         );
+        await this.quizGameRepository.endTheGame(addedAt, gameId);
+      } else {
         await this.quizGameRepository.endTheGame(addedAt, gameId);
       }
     }
