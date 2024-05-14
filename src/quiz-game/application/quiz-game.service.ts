@@ -75,7 +75,7 @@ export class QuizGameService {
   async addAnswer(
     answerDto: AnswerDto,
     playerProgressId: number,
-    currentUserId: number,
+    gameId: number,
   ) {
     const answer = new Answers();
     const addedAt = new Date().toISOString();
@@ -169,19 +169,13 @@ export class QuizGameService {
           firstPlayerProgressId!,
           finalScorePoint,
         );
-        await this.quizGameRepository.endTheGame(
-          addedAt,
-          firstPlayerProgressId!,
-        );
+        await this.quizGameRepository.endTheGame(addedAt, gameId);
       } else if (firstPlayerLastAnswerDate > secondPlayerLastAnswerDate) {
         addFinalPointToScore = await this.quizGameRepository.addPlayerScoreToDb(
           secondPlayerProgressId!,
           finalScorePoint,
         );
-        await this.quizGameRepository.endTheGame(
-          addedAt,
-          secondPlayerProgressId!,
-        );
+        await this.quizGameRepository.endTheGame(addedAt, gameId);
       }
     }
     return addAnswerToDb;

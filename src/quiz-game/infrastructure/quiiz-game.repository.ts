@@ -83,6 +83,17 @@ export class QuizGameRepository {
     //   .execute();
     // return result.affected === 1;
   }
+  //   async getQuizQuestions() {
+  //   const quizQuestions = await this.quizQuestionsRepository
+  //     .createQueryBuilder('qq')
+  //     .select(['qq.id', 'qq.body', 'qq.correctAnswers'])
+  //     .where({ published: true })
+  //     .orderBy('RANDOM()')
+  //     .addOrderBy('qq.addedAt', 'DESC')
+  //     .take(5)
+  //     .getMany();
+  //   return quizQuestions;
+  // }
 
   async getQuizQuestions() {
     const quizQuestions = await this.quizQuestionsRepository
@@ -132,17 +143,18 @@ export class QuizGameRepository {
       .execute();
     return playerScore.affected === 1;
   }
-  async endTheGame(addedAt: string, playerProgressId: number) {
+  async endTheGame(addedAt: string, gameId: number) {
     const endedGame = await this.quizGameRepository
       .createQueryBuilder('game')
       .update()
       .set({ finishGameDate: addedAt })
       // .where(`game.firstPlayerProgressId = :id`, { id: playerProgressId })
       // .orWhere(`game.secondPlayerProgressId = :id`, { id: playerProgressId })
-      .where(
-        `(game.firstPlayerProgressId = :id OR game.secondPlayerProgressId = :id)`,
-      )
-      .setParameters({ id: playerProgressId })
+      // .where(
+      //   `(game.firstPlayerProgressId = :id OR game.secondPlayerProgressId = :id)`,
+      // )
+      .where(`game.id = :id`)
+      .setParameters({ id: gameId })
       .execute();
     return endedGame.affected === 1;
   }

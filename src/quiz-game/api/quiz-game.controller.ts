@@ -44,6 +44,9 @@ export class QuizGameController {
     if (!game) {
       throw new NotFoundException('Game not found');
     }
+    if (game.finishGameDate !== null) {
+      throw new NotFoundException();
+    }
     return game;
   }
 
@@ -68,14 +71,14 @@ export class QuizGameController {
       throw new ForbiddenException();
     }
     const isGameStarted = await this.quizGameQueryRepo.isGameStarted(user.id);
-    console.log('🚀 ~ QuizGameController ~ isGameStarted:', isGameStarted);
     if (!isGameStarted) {
       throw new ForbiddenException('The game doesnt start yet');
     }
+    const gameId = isGameStarted.id;
     const answerStatus = await this.quizGameService.addAnswer(
       answerDto,
       user.id,
-      currentUserId,
+      gameId,
     );
     return answerStatus;
   }
