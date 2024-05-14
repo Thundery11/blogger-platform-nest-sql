@@ -143,6 +143,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
   database: 'BankSystem',
   autoLoadEntities: true,
   synchronize: true,
+  // logging: ['query'],
   ssl: false,
 };
 @Module({

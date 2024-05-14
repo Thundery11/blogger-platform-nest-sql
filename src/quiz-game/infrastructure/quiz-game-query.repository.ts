@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
 import { PlayerProgress } from '../domain/player-progress.entity';
-import { quizGameOutputModel } from '../api/models/output/quiz-game.output.model';
+import {
+  getPlayerProgressId,
+  quizGameOutputModel,
+} from '../api/models/output/quiz-game.output.model';
 
 @Injectable()
 export class QuizGameQueryRepository {
@@ -108,6 +111,50 @@ export class QuizGameQueryRepository {
       .andWhere(`game.startGameDate IS NOT NULL`)
       .setParameters({ id: id })
       .getOne();
+    return game;
+  }
+
+  async findNotMappedGameForCurrentUser(id: number) {
+    const game = await this.quizGameQueryRepo
+      .createQueryBuilder('game')
+      .select([
+        'game.id',
+        'game.status',
+        'game.pairCreatedDate',
+        'game.startGameDate',
+        'game.finishGameDate',
+        'game.firstPlayerProgressId',
+        'game.secondPlayerProgressId',
+        'firstPlayerAnswers.questionId',
+        'firstPlayerAnswers.answerStatus',
+        'firstPlayerAnswers.addedAt',
+        'firstPlayer.login',
+        'firstPlayer.id',
+        'firstPlayerProgress.score',
+        'firstPlayerProgress.id',
+        'secondPlayerAnswers.questionId',
+        'secondPlayerAnswers.answerStatus',
+        'secondPlayerAnswers.addedAt',
+        'secondPlayer.login',
+        'secondPlayer.id',
+        'secondPlayerProgress.score',
+        'secondPlayerProgress.id',
+        'game.questions',
+      ])
+      .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+      .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
+      .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+      .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
+      .where(`game.firstPlayerProgressId = :id`, { id: id })
+      .orWhere(`game.secondPlayerProgressId = :id`, { id: id })
+      .getOne();
+    if (!game) {
+      return null;
+    }
+
+    console.log('🚀 ~ QuizGameQueryRepository ~ findGame ~ game:', game);
     return game;
   }
 }

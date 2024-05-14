@@ -103,6 +103,7 @@ export class QuizGameService {
 
     let answerStatus;
     let score;
+    const finalScorePoint = 1;
     if (IsItCorrectAnswer === true) {
       answerStatus = IsCorrectAnswer.Correct;
       score = 1;
@@ -127,118 +128,63 @@ export class QuizGameService {
       addPlayerScoreToDb,
     );
     console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
+    const isThatWasLastUnswer =
+      await this.quizGameQueryRepository.findNotMappedGameForCurrentUser(
+        playerProgressId,
+      );
+    console.log(
+      '🚀 ~ QuizGameService ~ isThatWasLastUnswer:',
+      isThatWasLastUnswer,
+    );
+
+    const firstPlayerProgressId = isThatWasLastUnswer?.firstPlayerProgress.id;
+    console.log(
+      '🚀 ~ QuizGameService ~ firstPlayerProgressId:',
+      firstPlayerProgressId,
+    );
+    const secondPlayerProgressId = isThatWasLastUnswer?.secondPlayerProgress.id;
+    console.log(
+      '🚀 ~ QuizGameService ~ secondPlayerProgressId:',
+      secondPlayerProgressId,
+    );
+
+    if (
+      isThatWasLastUnswer?.firstPlayerProgress.answers.length === 5 &&
+      isThatWasLastUnswer?.secondPlayerProgress?.answers.length === 5
+    ) {
+      let addFinalPointToScore;
+      const firstPlayerAnswersCount =
+        isThatWasLastUnswer?.firstPlayerProgress.answers[4];
+      const secondPlayerAnswersCount =
+        isThatWasLastUnswer.secondPlayerProgress.answers[4];
+      const firstPlayerLastAnswerDate = new Date(
+        firstPlayerAnswersCount.addedAt,
+      );
+      const secondPlayerLastAnswerDate = new Date(
+        secondPlayerAnswersCount.addedAt,
+      );
+
+      if (firstPlayerLastAnswerDate < secondPlayerLastAnswerDate) {
+        addFinalPointToScore = await this.quizGameRepository.addPlayerScoreToDb(
+          firstPlayerProgressId!,
+          finalScorePoint,
+        );
+        await this.quizGameRepository.endTheGame(
+          addedAt,
+          firstPlayerProgressId!,
+        );
+      } else if (firstPlayerLastAnswerDate > secondPlayerLastAnswerDate) {
+        addFinalPointToScore = await this.quizGameRepository.addPlayerScoreToDb(
+          secondPlayerProgressId!,
+          finalScorePoint,
+        );
+        await this.quizGameRepository.endTheGame(
+          addedAt,
+          secondPlayerProgressId!,
+        );
+      }
+    }
     return addAnswerToDb;
-    // НУЖНО БУДЕТ ОБНОВИТЬ SCORE
+    // НУЖНО БУДЕТ ОБНОВИТЬ SCORE/
   }
-
-  //   async addAnswer(
-  //     answerDto: AnswerDto,
-  //     playerProgressId: number,
-  //     currentUserId: number,
-  //   ) {
-  //     const answer = new Answers();
-  //     let answerStatus;
-  //     const addedAt = new Date().toISOString();
-  //     const allPossibleQuestionsFromGame =
-  //       await this.quizGameRepository.getCurrentQuestionToAnswerOnIt(
-  //         playerProgressId,
-  //       );
-  //     const whatAnswerAddingNow =
-  //       await this.quizGameRepository.whatAnswerAddingNow(playerProgressId);
-
-  //     if (whatAnswerAddingNow!.answers.length === 0) {
-  //       const question = allPossibleQuestionsFromGame!.questions[0];
-  //       const IsItCorrectAnswer = question?.correctAnswers.some(
-  //         (q) => q === answerDto.answer,
-  //       );
-  //       if (IsItCorrectAnswer === true) {
-  //         answerStatus = IsCorrectAnswer.Correct;
-  //       } else {
-  //         answerStatus = IsCorrectAnswer.Incorrect;
-  //       }
-  //       const questionId = question!.id;
-  //       answer.questionId = questionId;
-  //       answer.playerProgressId = playerProgressId;
-  //       answer.answerStatus = answerStatus;
-  //       answer.addedAt = addedAt;
-  //       const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
-  //       console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
-
-  //       //НУЖНО БУДЕТ ОБНОВИТЬ SCORE
-  //     } else if (whatAnswerAddingNow?.answers.length === 1) {
-  //       const question = allPossibleQuestionsFromGame!.questions[1];
-  //       const IsItCorrectAnswer = question?.correctAnswers.some(
-  //         (q) => q === answerDto.answer,
-  //       );
-  //       if (IsItCorrectAnswer === true) {
-  //         answerStatus = IsCorrectAnswer.Correct;
-  //       } else {
-  //         answerStatus = IsCorrectAnswer.Incorrect;
-  //       }
-  //       const questionId = question!.id;
-  //       answer.questionId = questionId;
-  //       answer.playerProgressId = playerProgressId;
-  //       answer.answerStatus = answerStatus;
-  //       answer.addedAt = addedAt;
-  //       const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
-  //       console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
-  //       //НУЖНО БУДЕТ ОБНОВИТЬ SCORE
-  //     } else if (whatAnswerAddingNow?.answers.length === 2) {
-  //       const question = allPossibleQuestionsFromGame!.questions[2];
-  //       const IsItCorrectAnswer = question?.correctAnswers.some(
-  //         (q) => q === answerDto.answer,
-  //       );
-  //       if (IsItCorrectAnswer === true) {
-  //         answerStatus = IsCorrectAnswer.Correct;
-  //       } else {
-  //         answerStatus = IsCorrectAnswer.Incorrect;
-  //       }
-  //       const questionId = question!.id;
-  //       answer.questionId = questionId;
-  //       answer.playerProgressId = playerProgressId;
-  //       answer.answerStatus = answerStatus;
-  //       answer.addedAt = addedAt;
-  //       const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
-  //       console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
-  //       //НУЖНО БУДЕТ ОБНОВИТЬ SCORE
-  //     } else if (whatAnswerAddingNow?.answers.length === 3) {
-  //       const question = allPossibleQuestionsFromGame!.questions[3];
-  //       const IsItCorrectAnswer = question?.correctAnswers.some(
-  //         (q) => q === answerDto.answer,
-  //       );
-  //       if (IsItCorrectAnswer === true) {
-  //         answerStatus = IsCorrectAnswer.Correct;
-  //       } else {
-  //         answerStatus = IsCorrectAnswer.Incorrect;
-  //       }
-  //       const questionId = question!.id;
-  //       answer.questionId = questionId;
-  //       answer.playerProgressId = playerProgressId;
-  //       answer.answerStatus = answerStatus;
-  //       answer.addedAt = addedAt;
-  //       const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
-  //       console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
-  //     } else if (whatAnswerAddingNow?.answers.length === 4) {
-  //       const question = allPossibleQuestionsFromGame!.questions[4];
-  //       const IsItCorrectAnswer = question?.correctAnswers.some(
-  //         (q) => q === answerDto.answer,
-  //       );
-  //       if (IsItCorrectAnswer === true) {
-  //         answerStatus = IsCorrectAnswer.Correct;
-  //       } else {
-  //         answerStatus = IsCorrectAnswer.Incorrect;
-  //       }
-  //       const questionId = question!.id;
-  //       answer.questionId = questionId;
-  //       answer.playerProgressId = playerProgressId;
-  //       answer.answerStatus = answerStatus;
-  //       answer.addedAt = addedAt;
-  //       const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
-  //       console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
-  //       //НУЖНО БУДЕТ ОБНОВИТЬ SCORE
-  //     } else if (whatAnswerAddingNow?.answers.length === 5) {
-  //       throw new ForbiddenException();
-  //     }
-  //   }
-  // }
 }

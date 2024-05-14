@@ -20,9 +20,15 @@ export class Game {
   @PrimaryGeneratedColumn('increment')
   public id: number;
 
+  // @Column()
+  // firstPlayerProgressId: number;
+
   @OneToOne(() => PlayerProgress)
   @JoinColumn()
   firstPlayerProgress: PlayerProgress;
+
+  // @Column()
+  // secondPlayerProgressId: number;
 
   @OneToOne(() => PlayerProgress, { nullable: true })
   @JoinColumn()

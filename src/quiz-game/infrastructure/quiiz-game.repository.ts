@@ -99,7 +99,7 @@ export class QuizGameRepository {
       .createQueryBuilder('pp')
       .select([
         'pp.playerId',
-        'playerAnswers.questionId', //не работает алиас
+        'playerAnswers.questionId',
         'playerAnswers.answerStatus',
         'playerAnswers.addedAt',
       ])
@@ -131,6 +131,20 @@ export class QuizGameRepository {
       .where('id =:id', { id: playerProgressId })
       .execute();
     return playerScore.affected === 1;
+  }
+  async endTheGame(addedAt: string, playerProgressId: number) {
+    const endedGame = await this.quizGameRepository
+      .createQueryBuilder('game')
+      .update()
+      .set({ finishGameDate: addedAt })
+      // .where(`game.firstPlayerProgressId = :id`, { id: playerProgressId })
+      // .orWhere(`game.secondPlayerProgressId = :id`, { id: playerProgressId })
+      .where(
+        `(game.firstPlayerProgressId = :id OR game.secondPlayerProgressId = :id)`,
+      )
+      .setParameters({ id: playerProgressId })
+      .execute();
+    return endedGame.affected === 1;
   }
 
   // async addQuestion(gameId: number){

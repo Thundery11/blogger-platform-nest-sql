@@ -68,6 +68,7 @@ export class QuizGameController {
       throw new ForbiddenException();
     }
     const isGameStarted = await this.quizGameQueryRepo.isGameStarted(user.id);
+    console.log('🚀 ~ QuizGameController ~ isGameStarted:', isGameStarted);
     if (!isGameStarted) {
       throw new ForbiddenException('The game doesnt start yet');
     }

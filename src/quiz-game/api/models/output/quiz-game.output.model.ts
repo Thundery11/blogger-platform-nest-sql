@@ -37,6 +37,18 @@ export class AnswersOutput {
   addedAt: string;
 }
 
+class PlayerPgrogressIdsInTheGame {
+  firstPlayerProgressId: number;
+  secondPlayerProgressId: number;
+}
+
+export const getPlayerProgressId = (game: Game) => {
+  const output = new PlayerPgrogressIdsInTheGame();
+  output.firstPlayerProgressId = game.firstPlayerProgress.id;
+  output.secondPlayerProgressId = game.secondPlayerProgress.id;
+  return output;
+};
+
 export const quizGameOutputModel = (game: Game) => {
   let mappedQuestions;
   if (game.questions) {
