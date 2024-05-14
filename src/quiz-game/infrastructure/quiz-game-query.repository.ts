@@ -52,6 +52,7 @@ export class QuizGameQueryRepository {
       .leftJoin('secondPlayerProgress.player', 'secondPlayer')
       .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
       .where(`game.id = :id`, { id: id })
+      .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
       .getOne();
     if (!game) {
       return null;
@@ -92,6 +93,7 @@ export class QuizGameQueryRepository {
       .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
       .where(`game.firstPlayerProgressId = :id`, { id: id })
       .orWhere(`game.secondPlayerProgressId = :id`, { id: id })
+      .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
       .getOne();
     if (!game) {
       return null;
@@ -149,6 +151,7 @@ export class QuizGameQueryRepository {
       .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
       .where(`game.firstPlayerProgressId = :id`, { id: id })
       .orWhere(`game.secondPlayerProgressId = :id`, { id: id })
+      .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
       .getOne();
     if (!game) {
       return null;

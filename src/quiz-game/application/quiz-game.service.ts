@@ -50,10 +50,6 @@ export class QuizGameService {
 
       const gameId = isGameWithPandingPlayerExist!.id;
       const quizQuestion = await this.quizGameRepository.getQuizQuestions();
-      console.log(
-        '🚀 ~ QuizGameService ~ connectToTheGame ~ quizQuestion:',
-        quizQuestion,
-      );
 
       const startGameDate = new Date().toISOString();
       const status = GameStatus.Active;
@@ -85,10 +81,6 @@ export class QuizGameService {
       );
     const whatAnswerAddingNow =
       await this.quizGameRepository.whatAnswerAddingNow(playerProgressId);
-    console.log(
-      '🚀 ~ QuizGameService ~ whatAnswerAddingNow:',
-      whatAnswerAddingNow,
-    );
 
     const answerCount = whatAnswerAddingNow!.answers.length;
     if (answerCount === 5) {
@@ -123,30 +115,14 @@ export class QuizGameService {
       playerProgressId,
       score,
     );
-    console.log(
-      '🚀 ~ QuizGameService ~ addPlayerScoreToDb:',
-      addPlayerScoreToDb,
-    );
-    console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
+
     const isThatWasLastUnswer =
       await this.quizGameQueryRepository.findNotMappedGameForCurrentUser(
         playerProgressId,
       );
-    console.log(
-      '🚀 ~ QuizGameService ~ isThatWasLastUnswer:',
-      isThatWasLastUnswer,
-    );
 
     const firstPlayerProgressId = isThatWasLastUnswer?.firstPlayerProgress.id;
-    console.log(
-      '🚀 ~ QuizGameService ~ firstPlayerProgressId:',
-      firstPlayerProgressId,
-    );
     const secondPlayerProgressId = isThatWasLastUnswer?.secondPlayerProgress.id;
-    console.log(
-      '🚀 ~ QuizGameService ~ secondPlayerProgressId:',
-      secondPlayerProgressId,
-    );
 
     if (
       isThatWasLastUnswer?.firstPlayerProgress.answers.length === 5 &&
@@ -159,21 +135,14 @@ export class QuizGameService {
         isThatWasLastUnswer.firstPlayerProgress.answers.some(
           (a) => a.answerStatus === IsCorrectAnswer.Correct,
         );
-      console.log(
-        '🚀 ~ QuizGameService ~ doesFirstPlayerHasOneCorrectAnswer:',
-        doesFirstPlayerHasOneCorrectAnswer,
-      );
 
       const secondPlayerAnswersCount =
         isThatWasLastUnswer.secondPlayerProgress.answers[4];
+
       const doesSecondPlayerHasOneCorrectAnswer =
         isThatWasLastUnswer.secondPlayerProgress.answers.some(
           (a) => a.answerStatus === IsCorrectAnswer.Correct,
         );
-      console.log(
-        '🚀 ~ QuizGameService ~ doesSecondPlayerHasOneCorrectAnswer:',
-        doesSecondPlayerHasOneCorrectAnswer,
-      );
 
       const firstPlayerLastAnswerDate = new Date(
         firstPlayerAnswersCount.addedAt,
