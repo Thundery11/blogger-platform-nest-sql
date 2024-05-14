@@ -17,7 +17,6 @@ import { JwtAuthGuard } from '../../features/auth/guards/jwt-auth.guard';
 import { CurrentUserId } from '../../features/auth/decorators/current-user-id-param.decorator';
 import { QuizGameService } from '../application/quiz-game.service';
 import { QuizGameQueryRepository } from '../infrastructure/quiz-game-query.repository';
-import { use } from 'passport';
 import { AnswerDto } from './models/input/quiz-game.input.model';
 
 @Controller('pair-game-quiz/pairs')
@@ -27,6 +26,28 @@ export class QuizGameController {
     private quizGameService: QuizGameService,
     private quizGameQueryRepo: QuizGameQueryRepository,
   ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  async getGameById(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUserId() currentUserId: number,
+  ) {
+    // const gameId = Number(id.id);
+
+    const game = await this.quizGameQueryRepo.findGame(id);
+    if (!game) {
+      throw new NotFoundException();
+    }
+    const user =
+      await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
+    if (!user) {
+      throw new ForbiddenException();
+    }
+    return game;
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/my-current')
   @HttpCode(HttpStatus.OK)
@@ -52,27 +73,6 @@ export class QuizGameController {
   @HttpCode(HttpStatus.OK)
   async connectToTheGame(@CurrentUserId() currentUserId: number) {
     const game = await this.quizGameService.connectToTheGame(currentUserId);
-    return game;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  async getGameById(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUserId() currentUserId: number,
-  ) {
-    // const gameId = Number(id.id);
-    const user =
-      await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
-    if (!user) {
-      throw new ForbiddenException();
-    }
-
-    const game = await this.quizGameQueryRepo.findGame(id);
-    if (!game) {
-      throw new NotFoundException();
-    }
     return game;
   }
 
