@@ -4,7 +4,10 @@ import { Game, GameStatus } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
 import { PlayerProgress } from '../domain/player-progress.entity';
 import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity';
-import { quizGameOutputModel } from '../api/models/output/quiz-game.output.model';
+import {
+  answersOutput,
+  quizGameOutputModel,
+} from '../api/models/output/quiz-game.output.model';
 import { Answers } from '../domain/quiz-answers.entity';
 
 @Injectable()
@@ -107,7 +110,8 @@ export class QuizGameRepository {
   }
 
   async addAnswerToDb(answer: Answers) {
-    return await this.answersRepository.save(answer);
+    const addedAnswer = await this.answersRepository.save(answer);
+    return answersOutput(addedAnswer);
   }
   async getCurrentQuestionToAnswerOnIt(playerProgressId: number) {
     const questions = await this.quizGameRepository
@@ -118,6 +122,17 @@ export class QuizGameRepository {
       .getOne();
     return questions;
   }
+
+  async addPlayerScoreToDb(playerProgressId: number, score: number) {
+    const playerScore = await this.playerProgressRepo
+      .createQueryBuilder()
+      .update()
+      .set({ score: () => `"score" + ${score}` })
+      .where('id =:id', { id: playerProgressId })
+      .execute();
+    return playerScore.affected === 1;
+  }
+
   // async addQuestion(gameId: number){
   //   const question = await this.quizQuestionsRepository.save
   // }

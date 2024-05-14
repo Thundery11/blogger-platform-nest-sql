@@ -102,10 +102,13 @@ export class QuizGameService {
     );
 
     let answerStatus;
+    let score;
     if (IsItCorrectAnswer === true) {
       answerStatus = IsCorrectAnswer.Correct;
+      score = 1;
     } else {
       answerStatus = IsCorrectAnswer.Incorrect;
+      score = 0;
     }
 
     const questionId = question!.id;
@@ -115,8 +118,16 @@ export class QuizGameService {
     answer.addedAt = addedAt;
 
     const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
+    const addPlayerScoreToDb = await this.quizGameRepository.addPlayerScoreToDb(
+      playerProgressId,
+      score,
+    );
+    console.log(
+      '🚀 ~ QuizGameService ~ addPlayerScoreToDb:',
+      addPlayerScoreToDb,
+    );
     console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
-
+    return addAnswerToDb;
     // НУЖНО БУДЕТ ОБНОВИТЬ SCORE
   }
 

@@ -28,27 +28,6 @@ export class QuizGameController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  async getGameById(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUserId() currentUserId: number,
-  ) {
-    // const gameId = Number(id.id);
-
-    const game = await this.quizGameQueryRepo.findGame(id);
-    if (!game) {
-      throw new NotFoundException();
-    }
-    const user =
-      await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
-    if (!user) {
-      throw new ForbiddenException();
-    }
-    return game;
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('/my-current')
   @HttpCode(HttpStatus.OK)
   async getMyCurrentGame(@CurrentUserId() currentUserId: number) {
@@ -98,5 +77,25 @@ export class QuizGameController {
       currentUserId,
     );
     return answerStatus;
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  async getGameById(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUserId() currentUserId: number,
+  ) {
+    // const gameId = Number(id.id);
+
+    const game = await this.quizGameQueryRepo.findGame(id);
+    if (!game) {
+      throw new NotFoundException();
+    }
+    const user =
+      await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
+    if (!user) {
+      throw new ForbiddenException();
+    }
+    return game;
   }
 }

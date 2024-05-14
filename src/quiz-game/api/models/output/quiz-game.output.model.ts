@@ -31,6 +31,12 @@ export class QuizGameOutputModel {
   finishGameDate: string | null;
 }
 
+export class AnswersOutput {
+  questionId: string;
+  answerStatus: IsCorrectAnswer;
+  addedAt: string;
+}
+
 export const quizGameOutputModel = (game: Game) => {
   let mappedQuestions;
   if (game.questions) {
@@ -79,4 +85,12 @@ export const quizGameOutputModel = (game: Game) => {
     outputGame.secondPlayerProgress = null;
   }
   return outputGame;
+};
+
+export const answersOutput = (answer: Answers) => {
+  const output = new AnswersOutput();
+  output.questionId = answer.id.toString();
+  output.answerStatus = answer.answerStatus;
+  output.addedAt = answer.addedAt;
+  return output;
 };
