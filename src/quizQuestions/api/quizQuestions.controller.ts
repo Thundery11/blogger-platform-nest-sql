@@ -82,8 +82,9 @@ export class QuizQuestionsController {
     @Body() publishQuestionUpdateModel: PublishQuestionUpdateModel,
   ): Promise<boolean> {
     const isQuestionExist = await this.quizQueryRepo.findQuestion(id);
+
     if (!isQuestionExist) {
-      throw new NotFoundException();
+      throw new NotFoundException('Question not found');
     }
     return await this.commandBus.execute(
       new PublishQuestionCommand(id, publishQuestionUpdateModel),

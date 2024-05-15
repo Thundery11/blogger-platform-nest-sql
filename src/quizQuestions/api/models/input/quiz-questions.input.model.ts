@@ -1,5 +1,6 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
   IsArray,
   IsBoolean,
   IsString,
@@ -17,8 +18,15 @@ export class QuizQuestionsCreateModel {
   body: string;
 
   @IsArray()
-  @IsArrayOfStringsValidator()
-  readonly correctAnswers: string[];
+  @ArrayNotEmpty()
+  @Transform(({ value }) => {
+    if (!Array.isArray(value)) {
+      return false;
+    } else {
+      return value.map((a) => a.toString().trim());
+    }
+  })
+  correctAnswers: string[];
 }
 
 export class PublishQuestionUpdateModel {
