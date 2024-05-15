@@ -1,39 +1,39 @@
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule, options } from '../src/app.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Blogs } from '../src/features/blogs/domain/blogs.entity';
-import { CreateBlogCommand } from '../src/features/blogs/application/use-cases/create-blog-use-case';
+// import { INestApplication } from '@nestjs/common';
+// import { Test, TestingModule } from '@nestjs/testing';
+// import { AppModule, options } from '../src/app.module';
+// import { TypeOrmModule } from '@nestjs/typeorm';
+// import { Blogs } from '../src/features/blogs/domain/blogs.entity';
+// import { CreateBlogCommand } from '../src/features/blogs/application/use-cases/create-blog-use-case';
 
-describe('Integration test for Create-blog-use-case', () => {
-  let app: INestApplication;
+// describe('Integration test for Create-blog-use-case', () => {
+//   let app: INestApplication;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, TypeOrmModule.forRoot(options)],
-    }).compile();
+//   beforeEach(async () => {
+//     const moduleFixture: TestingModule = await Test.createTestingModule({
+//       imports: [AppModule, TypeOrmModule.forRoot(options)],
+//     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
-  });
-  const createdAt = new Date().toISOString();
-  const isMembership = false;
-  const newBlog = new Blogs();
-  newBlog.description = 'blogsCreateModel.description';
-  newBlog.websiteUrl = 'blogsCreateModel.websiteUrl';
-  newBlog.name = 'ddd';
-  newBlog.createdAt = createdAt;
-  newBlog.isMembership = isMembership;
-  // const createBlogUseCase =new CreateBlogCommand(newBlog: Blogs)
+//     app = moduleFixture.createNestApplication();
+//     await app.init();
+//   });
+//   const createdAt = new Date().toISOString();
+//   const isMembership = false;
+//   const newBlog = new Blogs();
+//   newBlog.description = 'blogsCreateModel.description';
+//   newBlog.websiteUrl = 'blogsCreateModel.websiteUrl';
+//   newBlog.name = 'ddd';
+//   newBlog.createdAt = createdAt;
+//   newBlog.isMembership = isMembership;
+//   // const createBlogUseCase =new CreateBlogCommand(newBlog: Blogs)
 
-  it('should create blog', async () => {
-    // createBlogUseCase.execute()
-    expect(5).toBe(5);
-  });
-  afterAll(async () => {
-    await app.close();
-  });
-});
+//   it('should create blog', async () => {
+//     // createBlogUseCase.execute()
+//     expect(5).toBe(5);
+//   });
+//   afterAll(async () => {
+//     await app.close();
+//   });
+// });
 // import { INestApplication } from '@nestjs/common';
 // import { Test, TestingModule } from '@nestjs/testing';
 // import { AppModule, options } from '../src/app.module';

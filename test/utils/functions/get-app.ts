@@ -14,12 +14,11 @@ import { HttpExceptionFilter } from '../../../src/infrastucture/exception-filter
 
 export const getAppAndClearDb = async () => {
   const moduleRef = await Test.createTestingModule({
-    imports: [TypeOrmModule.forRoot(localDbOptions), AppModule],
+    imports: [TypeOrmModule.forRoot(options), AppModule],
   }).compile();
 
   const app: INestApplication = moduleRef.createNestApplication();
   const agent = supertest.agent(app.getHttpServer());
-
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.use(cookieParser());
   app.useGlobalPipes(
