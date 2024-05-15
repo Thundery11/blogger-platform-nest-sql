@@ -10,3 +10,8 @@ export const postContent = 'Test content';
 export const postUpdatedTitle = 'New title';
 export const postUpdatedShortDescription = 'New short description';
 export const postUpdatedContent = 'New content';
+
+//Post error 400 string
+
+export const errorPostTitle =
+  'sdsdsdnsvjkvknfvkjfvjkfbvhbfhvbsdfvsldfvkjfdbvfdhvbjdsbvjhfvbjdfhbvhdh';

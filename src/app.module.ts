@@ -129,7 +129,7 @@ export const options: TypeOrmModuleOptions = {
   port: 5432,
   autoLoadEntities: true,
   synchronize: true,
-  logging: ['query'],
+  // logging: ['query'],
   ssl: true,
   // ssl: false, //менять на true, когда подключаешь NeonDb
 };

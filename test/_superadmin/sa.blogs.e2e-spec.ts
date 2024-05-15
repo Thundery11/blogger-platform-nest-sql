@@ -33,6 +33,7 @@ import {
 } from '../utils/objects/blogs.objects';
 import { isBannedField } from '../utils/constants/exceptions.constants';
 import {
+  errorPostTitle,
   postContent,
   postShortDescription,
   postTitle,
@@ -79,7 +80,6 @@ describe('Super admin blogs testing', () => {
         .expect(201);
 
       user01Id = user01.body.id;
-      console.log('🚀 ~ it ~ user01Id:', user01Id);
 
       const user02 = await agent
         .post(saUsersURI)
@@ -92,357 +92,423 @@ describe('Super admin blogs testing', () => {
         .expect(201);
 
       user02Id = user02.body.id;
-      console.log('🚀 ~ it ~ user02Id:', user02Id);
     });
-    //     it(`should log in user 01`, async () => {
-    //       const response = await agent
-    //         .post(publicLoginUri)
-    //         .send({
-    //           loginOrEmail: user01Login,
-    //           password: userPassword,
-    //         })
-    //         .expect(200);
-    //       aTokenUser01 = response.body.accessToken;
-    //     });
-    //     it(`should log in user 02`, async () => {
-    //       const response = await agent
-    //         .post(publicLoginUri)
-    //         .send({
-    //           loginOrEmail: user02Login,
-    //           password: userPassword,
-    //         })
-    //         .expect(200);
-    //       aTokenUser02 = response.body.accessToken;
-    //     });
-    //   });
-    //   describe.skip('Bind blog', () => {
-    //     it(`should create new blog by user 01`, async () => {
-    //       const blog = await agent
-    //         .post(bloggerBlogsURI)
-    //         .auth(aTokenUser01, { type: 'bearer' })
-    //         .send({
-    //           name: blog01Name,
-    //           description: blogDescription,
-    //           websiteUrl: blogWebsite,
-    //         })
-    //         .expect(201);
 
-    //       blogId = blog.body.id;
-    //     });
-
-    //     // Validation errors [400]
-    //     it(`should return 400 when trying to bind nonexistent blog`, async () => {
-    //       const response = await agent
-    //         .put(saBlogsURI + randomUUID() + blogBindURI + user01Id)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .expect(400);
-
-    //       expect(response.body).toEqual(exceptionObject(blogIDField));
-    //     });
-    //     it(`should return 400 when trying to bind blog to nonexistent user`, async () => {
-    //       const response = await agent
-    //         .put(saBlogsURI + blogId + blogBindURI + randomUUID())
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .expect(400);
-
-    //       expect(response.body).toEqual(exceptionObject(userIDField));
-    //     });
-    //     it(`should return 400 when trying to bind blog that is already bound`, async () => {
-    //       const response = await agent
-    //         .put(saBlogsURI + blogId + blogBindURI + user02Id)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .expect(400);
-
-    //       expect(response.body).toEqual(exceptionObject(blogIDField));
-    //     });
-
-    //     // Auth errors [401]
-    //     it(`should return 401 when trying to bind blog with incorrect credentials`, async () => {
-    //       await agent
-    //         .put(saBlogsURI + blogId + blogBindURI + user02Id)
-    //         .auth(basicAuthLogin, randomUUID())
-    //         .expect(401);
-    //     });
-
-    //     // Success
-    //     it(`should delete user 01`, async () => {
-    //       return agent
-    //         .delete(saUsersURI + user01Id)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .expect(204);
-    //     });
-    //     it(`should bind blog to user 02 and get all blogs`, async () => {
-    //       await agent
-    //         .put(saBlogsURI + blogId + blogBindURI + user02Id)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .expect(204);
-
-    //       const blogs = await agent
-    //         .get(saBlogsURI)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .expect(200);
-
-    //       expect(blogs.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 1,
-    //         items: [saUnbannedBlogObject],
-    //       });
-    //       expect(blogs.body.items[0].blogOwnerInfo.userId).toBe(user02Id);
-    //       expect(blogs.body.items[0].blogOwnerInfo.userLogin).toBe(user02Login);
-    //     });
-    //   });
-    //   describe('Ban blog', () => {
-    //     it(`should create new blog by user 01`, async () => {
-    //       const blog = await agent
-    //         .post(bloggerBlogsURI)
-    //         .auth(aTokenUser02, { type: 'bearer' })
-    //         .send({
-    //           name: blog01Name,
-    //           description: blogDescription,
-    //           websiteUrl: blogWebsite,
-    //         })
-    //         .expect(201);
-
-    //       blogId = blog.body.id;
-    //     });
-    //     it(`should create two posts`, async () => {
-    //       const post01 = await agent
-    //         .post(bloggerBlogsURI + blogId + publicPostsURI)
-    //         .auth(aTokenUser02, { type: 'bearer' })
-    //         .send({
-    //           title: postTitle,
-    //           shortDescription: postShortDescription,
-    //           content: postContent,
-    //         })
-    //         .expect(201);
-
-    //       post01Id = post01.body.id;
-
-    //       const post02 = await agent
-    //         .post(bloggerBlogsURI + blogId + publicPostsURI)
-    //         .auth(aTokenUser02, { type: 'bearer' })
-    //         .send({
-    //           title: postTitle,
-    //           shortDescription: postShortDescription,
-    //           content: postContent,
-    //         })
-    //         .expect(201);
-
-    //       post02Id = post02.body.id;
-    //     });
-
-    //     // Validation errors [400]
-    //     it(`should return 400 when trying to ban blog without isBanned field`, async () => {
-    //       const response = await agent
-    //         .put(saBlogsURI + blogId + banURI)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .expect(400);
-
-    //       expect(response.body).toEqual(exceptionObject(isBannedField));
-    //     });
-    //     it(`should return 400 when trying to ban blog with incorrect isBanned type`, async () => {
-    //       const response = await agent
-    //         .put(saBlogsURI + blogId + banURI)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .send({
-    //           isBanned: 123,
-    //         })
-    //         .expect(400);
-
-    //       expect(response.body).toEqual(exceptionObject(isBannedField));
-    //     });
-
-    //     // Auth errors [401]
-    //     it(`should return 401 when trying to ban blog with incorrect credentials`, async () => {
-    //       await agent
-    //         .put(saBlogsURI + blogId + banURI)
-    //         .auth(randomUUID(), basicAuthPassword)
-    //         .send({
-    //           isBanned: true,
-    //         })
-    //         .expect(401);
-    //     });
-
-    //     // Success
-    //     it(`should return created blogs`, async () => {
-    //       const blogs = await agent.get(publicBlogsURI).expect(200);
-
-    //       expect(blogs.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 1,
-    //         items: [createdBlogObject],
-    //       });
-    //     });
-    //     it(`should return created posts`, async () => {
-    //       const posts = await agent.get(publicPostsURI).expect(200);
-
-    //       expect(posts.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 2,
-    //         items: [createdPostObject, createdPostObject],
-    //       });
-    //     });
-    //     it(`should return created posts for blog`, async () => {
-    //       const posts = await agent
-    //         .get(publicBlogsURI + blogId + publicPostsURI)
-    //         .expect(200);
-
-    //       expect(posts.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 2,
-    //         items: [createdPostObject, createdPostObject],
-    //       });
-    //     });
-    //     it(`should return created blog by ID`, async () => {
-    //       const blog = await agent.get(publicBlogsURI + blogId).expect(200);
-    //       expect(blog.body).toEqual(createdBlogObject);
-    //     });
-    //     it(`should return created post by ID`, async () => {
-    //       const post01 = await agent.get(publicPostsURI + post01Id).expect(200);
-    //       const post02 = await agent.get(publicPostsURI + post02Id).expect(200);
-    //       expect(post01.body).toEqual(createdPostObject);
-    //       expect(post02.body).toEqual(createdPostObject);
-    //     });
-
-    //     it(`should ban blog`, async () => {
-    //       return agent
-    //         .put(saBlogsURI + blogId + banURI)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .send({
-    //           isBanned: true,
-    //         })
-    //         .expect(204);
-    //     });
-
-    //     it(`should return created blogs for blogger`, async () => {
-    //       const blogs = await agent
-    //         .get(bloggerBlogsURI)
-    //         .auth(aTokenUser02, { type: 'bearer' })
-    //         .expect(200);
-
-    //       expect(blogs.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 1,
-    //         items: [createdBlogObject],
-    //       });
-    //     });
-    //     it(`should return created blogs for super admin`, async () => {
-    //       const blogs = await agent
-    //         .get(saBlogsURI)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .expect(200);
-
-    //       expect(blogs.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 1,
-    //         items: [saBannedBlogObject],
-    //       });
-    //     });
-    //     it(`should NOT return created blogs for public user`, async () => {
-    //       const posts = await agent.get(publicBlogsURI).expect(200);
-
-    //       expect(posts.body).toEqual({
-    //         pagesCount: 0,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 0,
-    //         items: [],
-    //       });
-    //     });
-    //     it(`should NOT return created blog by ID`, async () => {
-    //       return agent.get(publicBlogsURI + blogId).expect(404);
-    //     });
-    //     it(`should NOT return created posts after blog ban`, async () => {
-    //       const posts = await agent.get(publicPostsURI).expect(200);
-
-    //       expect(posts.body).toEqual({
-    //         pagesCount: 0,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 0,
-    //         items: [],
-    //       });
-    //     });
-    //     it(`should NOT return created posts for blog after blog ban`, async () => {
-    //       return agent.get(publicBlogsURI + blogId + publicPostsURI).expect(404);
-    //     });
-    //     it(`should NOT return created post by ID after blog ban`, async () => {
-    //       await agent.get(publicPostsURI + post01Id).expect(404);
-    //       await agent.get(publicPostsURI + post02Id).expect(404);
-    //     });
-    //   });
-    //   describe('Unban blog', () => {
-    //     // Success
-    //     it(`should unban blog`, async () => {
-    //       return agent
-    //         .put(saBlogsURI + blogId + banURI)
-    //         .auth(basicAuthLogin, basicAuthPassword)
-    //         .send({
-    //           isBanned: false,
-    //         })
-    //         .expect(204);
-    //     });
-
-    //     it(`should return created blogs for public user`, async () => {
-    //       const posts = await agent.get(publicBlogsURI).expect(200);
-
-    //       expect(posts.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 1,
-    //         items: [createdBlogObject],
-    //       });
-    //     });
-    //     it(`should return created blog by ID`, async () => {
-    //       const blog = await agent.get(publicBlogsURI + blogId).expect(200);
-    //       expect(blog.body).toEqual(createdBlogObject);
-    //     });
-    //     it(`should return created posts`, async () => {
-    //       const posts = await agent.get(publicPostsURI).expect(200);
-
-    //       expect(posts.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 2,
-    //         items: [createdPostObject, createdPostObject],
-    //       });
-    //     });
-    //     it(`should return created posts for blog`, async () => {
-    //       const posts = await agent
-    //         .get(publicBlogsURI + blogId + publicPostsURI)
-    //         .expect(200);
-
-    //       expect(posts.body).toEqual({
-    //         pagesCount: 1,
-    //         page: 1,
-    //         pageSize: 10,
-    //         totalCount: 2,
-    //         items: [createdPostObject, createdPostObject],
-    //       });
-    //     });
-    //     it(`should return created post by ID`, async () => {
-    //       const post01 = await agent.get(publicPostsURI + post01Id).expect(200);
-    //       const post02 = await agent.get(publicPostsURI + post02Id).expect(200);
-    //       expect(post01.body).toEqual(createdPostObject);
-    //       expect(post02.body).toEqual(createdPostObject);
-    //     });
+    it(`should log in user 01`, async () => {
+      const response = await agent
+        .post(publicLoginUri)
+        .send({ loginOrEmail: user01Login, password: userPassword })
+        .expect(200);
+      aTokenUser01 = response.body.accessToken;
+    });
+    it(`should log in user 2`, async () => {
+      const responce = await agent
+        .post(publicLoginUri)
+        .send({ loginOrEmail: user02Login, password: userPassword })
+        .expect(200);
+      aTokenUser02 = responce.body.accessToken;
+    });
   });
+  describe('Super admin blogs', () => {
+    it(`Should create blog for super admin`, async () => {
+      const blogs = await agent
+        .post(saBlogsURI)
+        .auth(basicAuthLogin, basicAuthPassword)
+        .send({
+          name: blog01Name,
+          description: blogDescription,
+          websiteUrl: blogWebsite,
+        })
+        .expect(201);
+      blogId = blogs.body.id;
+    });
+
+    // describe('Super admin blogs', () => {
+    //   const numberOfBlogs = 10;
+    //   const blogsCreated: { id: number }[] = [];
+
+    //   beforeAll(async () => {
+    //     for (let i = 0; i < numberOfBlogs; i++) {
+    //       const blog = await agent
+    //         .post(saBlogsURI)
+    //         .auth(basicAuthLogin, basicAuthPassword)
+    //         .send({
+    //           name: `Blog ${i + 1}`,
+    //           description: `Description for Blog ${i + 1}`,
+    //           websiteUrl: `https://blog${i + 1}.com`,
+    //         })
+    //         .expect(201);
+
+    //       blogsCreated.push(blog.body as { id: number });
+    //     }
+    //   });
+
+    //   it(`Should create ${numberOfBlogs} blogs for super admin`, async () => {
+    //     expect(blogsCreated.length).toBe(numberOfBlogs);
+    //   });
+
+    // });
+
+    it(`should return created blogs for super admin`, async () => {
+      const blogs = await agent
+        .get(saBlogsURI)
+        .auth(basicAuthLogin, basicAuthPassword)
+        .expect(200);
+
+      expect(blogs.body).toEqual({
+        pagesCount: 1,
+        page: 1,
+        pageSize: 10,
+        totalCount: 1,
+        items: [saBannedBlogObject],
+      });
+    });
+  });
+
+  describe('Super admin posts tsting', () => {
+    it(`should create post, status 201`, async () => {
+      const post = await agent
+        .post(saBlogsURI + blogId + publicPostsURI)
+        .auth(basicAuthLogin, basicAuthPassword)
+        .send({
+          title: postTitle,
+          shortDescription: postShortDescription,
+          content: postContent,
+        })
+        .expect(201);
+      post01Id = post.body.id;
+    });
+  });
+
+  it(`should NOT create post , status 400, because of incorrect data`, async () => {
+    const post = await agent
+      .post(saBlogsURI + blogId + publicPostsURI)
+      .auth(basicAuthLogin, basicAuthPassword)
+      .send({
+        title: errorPostTitle,
+        shortDescription: postShortDescription,
+        content: postContent,
+      });
+
+    expect(post.status).toBe(400);
+  });
+
+  //     it(`should NOT return created blogs for public user`, async () => {
+  //       const posts = await agent.get(publicBlogsURI).expect(200);
+
+  //       expect(posts.body).toEqual({
+  //         pagesCount: 0,
+  //         page: 1,
+  //         pageSize: 10,
+  //         totalCount: 0,
+  //         items: [],
+  //       });
+  //     });
+  //     it(`should NOT return created blog by ID`, async () => {
+  //       return agent.get(publicBlogsURI + blogId).expect(404);
+  //     });
+  //     it(`should NOT return created posts after blog ban`, async () => {
+  //       const posts = await agent.get(publicPostsURI).expect(200);
+
+  //       expect(posts.body).toEqual({
+  //         pagesCount: 0,
+  //         page: 1,
+  //         pageSize: 10,
+  //         totalCount: 0,
+  //         items: [],
+  //       });
+  //     });
+  //     it(`should NOT return created posts for blog after blog ban`, async () => {
+  //       return agent.get(publicBlogsURI + blogId + publicPostsURI).expect(404);
+  //     });
+  //     it(`should NOT return created post by ID after blog ban`, async () => {
+  //       await agent.get(publicPostsURI + post01Id).expect(404);
+  //       await agent.get(publicPostsURI + post02Id).expect(404);
+  //     });
+  //   });
+  //   describe('Unban blog', () => {
+  //     // Success
+  //     it(`should unban blog`, async () => {
+  //       return agent
+  //         .put(saBlogsURI + blogId + banURI)
+  //         .auth(basicAuthLogin, basicAuthPassword)
+  //         .send({
+  //           isBanned: false,
+  //         })
+  //         .expect(204);
+  //     });
+
+  //     it(`should return created blogs for public user`, async () => {
+  //       const posts = await agent.get(publicBlogsURI).expect(200);
+
+  //       expect(posts.body).toEqual({
+  //         pagesCount: 1,
+  //         page: 1,
+  //         pageSize: 10,
+  //         totalCount: 1,
+  //         items: [createdBlogObject],
+  //       });
+  //     });
+  //     it(`should return created blog by ID`, async () => {
+  //       const blog = await agent.get(publicBlogsURI + blogId).expect(200);
+  //       expect(blog.body).toEqual(createdBlogObject);
+  //     });
+  //     it(`should return created posts`, async () => {
+  //       const posts = await agent.get(publicPostsURI).expect(200);
+
+  //       expect(posts.body).toEqual({
+  //         pagesCount: 1,
+  //         page: 1,
+  //         pageSize: 10,
+  //         totalCount: 2,
+  //         items: [createdPostObject, createdPostObject],
+  //       });
+  //     });
+  //     it(`should return created posts for blog`, async () => {
+  //       const posts = await agent
+  //         .get(publicBlogsURI + blogId + publicPostsURI)
+  //         .expect(200);
+
+  //       expect(posts.body).toEqual({
+  //         pagesCount: 1,
+  //         page: 1,
+  //         pageSize: 10,
+  //         totalCount: 2,
+  //         items: [createdPostObject, createdPostObject],
+  //       });
+  //     });
+  //     it(`should return created post by ID`, async () => {
+  //       const post01 = await agent.get(publicPostsURI + post01Id).expect(200);
+  //       const post02 = await agent.get(publicPostsURI + post02Id).expect(200);
+  //       expect(post01.body).toEqual(createdPostObject);
+  //       expect(post02.body).toEqual(createdPostObject);
+  //     });
 
   afterAll(async () => {
     await app.close();
   });
 });
+
+//это код для блоггера
+
+//   describe.skip('Bind blog', () => {
+//     it(`should create new blog by user 01`, async () => {
+//       const blog = await agent
+//         .post(bloggerBlogsURI)
+//         .auth(aTokenUser01, { type: 'bearer' })
+//         .send({
+//           name: blog01Name,
+//           description: blogDescription,
+//           websiteUrl: blogWebsite,
+//         })
+//         .expect(201);
+
+//       blogId = blog.body.id;
+//     });
+
+//     // Validation errors [400]
+//     it(`should return 400 when trying to bind nonexistent blog`, async () => {
+//       const response = await agent
+//         .put(saBlogsURI + randomUUID() + blogBindURI + user01Id)
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .expect(400);
+
+//       expect(response.body).toEqual(exceptionObject(blogIDField));
+//     });
+//     it(`should return 400 when trying to bind blog to nonexistent user`, async () => {
+//       const response = await agent
+//         .put(saBlogsURI + blogId + blogBindURI + randomUUID())
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .expect(400);
+
+//       expect(response.body).toEqual(exceptionObject(userIDField));
+//     });
+//     it(`should return 400 when trying to bind blog that is already bound`, async () => {
+//       const response = await agent
+//         .put(saBlogsURI + blogId + blogBindURI + user02Id)
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .expect(400);
+
+//       expect(response.body).toEqual(exceptionObject(blogIDField));
+//     });
+
+//     // Auth errors [401]
+//     it(`should return 401 when trying to bind blog with incorrect credentials`, async () => {
+//       await agent
+//         .put(saBlogsURI + blogId + blogBindURI + user02Id)
+//         .auth(basicAuthLogin, randomUUID())
+//         .expect(401);
+//     });
+
+//     // Success
+//     it(`should delete user 01`, async () => {
+//       return agent
+//         .delete(saUsersURI + user01Id)
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .expect(204);
+//     });
+//     it(`should bind blog to user 02 and get all blogs`, async () => {
+//       await agent
+//         .put(saBlogsURI + blogId + blogBindURI + user02Id)
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .expect(204);
+
+//       const blogs = await agent
+//         .get(saBlogsURI)
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .expect(200);
+
+//       expect(blogs.body).toEqual({
+//         pagesCount: 1,
+//         page: 1,
+//         pageSize: 10,
+//         totalCount: 1,
+//         items: [saUnbannedBlogObject],
+//       });
+//       expect(blogs.body.items[0].blogOwnerInfo.userId).toBe(user02Id);
+//       expect(blogs.body.items[0].blogOwnerInfo.userLogin).toBe(user02Login);
+//     });
+//   });
+//   describe('Ban blog', () => {
+//     it(`should create new blog by user 01`, async () => {
+//       const blog = await agent
+//         .post(bloggerBlogsURI)
+//         .auth(aTokenUser02, { type: 'bearer' })
+//         .send({
+//           name: blog01Name,
+//           description: blogDescription,
+//           websiteUrl: blogWebsite,
+//         })
+//         .expect(201);
+
+//       blogId = blog.body.id;
+//     });
+//     it(`should create two posts`, async () => {
+//       const post01 = await agent
+//         .post(bloggerBlogsURI + blogId + publicPostsURI)
+//         .auth(aTokenUser02, { type: 'bearer' })
+//         .send({
+//           title: postTitle,
+//           shortDescription: postShortDescription,
+//           content: postContent,
+//         })
+//         .expect(201);
+
+//       post01Id = post01.body.id;
+
+//       const post02 = await agent
+//         .post(bloggerBlogsURI + blogId + publicPostsURI)
+//         .auth(aTokenUser02, { type: 'bearer' })
+//         .send({
+//           title: postTitle,
+//           shortDescription: postShortDescription,
+//           content: postContent,
+//         })
+//         .expect(201);
+
+//       post02Id = post02.body.id;
+//     });
+
+//     // Validation errors [400]
+//     it(`should return 400 when trying to ban blog without isBanned field`, async () => {
+//       const response = await agent
+//         .put(saBlogsURI + blogId + banURI)
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .expect(400);
+
+//       expect(response.body).toEqual(exceptionObject(isBannedField));
+//     });
+//     it(`should return 400 when trying to ban blog with incorrect isBanned type`, async () => {
+//       const response = await agent
+//         .put(saBlogsURI + blogId + banURI)
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .send({
+//           isBanned: 123,
+//         })
+//         .expect(400);
+
+//       expect(response.body).toEqual(exceptionObject(isBannedField));
+//     });
+
+//     // Auth errors [401]
+//     it(`should return 401 when trying to ban blog with incorrect credentials`, async () => {
+//       await agent
+//         .put(saBlogsURI + blogId + banURI)
+//         .auth(randomUUID(), basicAuthPassword)
+//         .send({
+//           isBanned: true,
+//         })
+//         .expect(401);
+//     });
+
+//     // Success
+//     it(`should return created blogs`, async () => {
+//       const blogs = await agent.get(publicBlogsURI).expect(200);
+
+//       expect(blogs.body).toEqual({
+//         pagesCount: 1,
+//         page: 1,
+//         pageSize: 10,
+//         totalCount: 1,
+//         items: [createdBlogObject],
+//       });
+//     });
+//     it(`should return created posts`, async () => {
+//       const posts = await agent.get(publicPostsURI).expect(200);
+
+//       expect(posts.body).toEqual({
+//         pagesCount: 1,
+//         page: 1,
+//         pageSize: 10,
+//         totalCount: 2,
+//         items: [createdPostObject, createdPostObject],
+//       });
+//     });
+//     it(`should return created posts for blog`, async () => {
+//       const posts = await agent
+//         .get(publicBlogsURI + blogId + publicPostsURI)
+//         .expect(200);
+
+//       expect(posts.body).toEqual({
+//         pagesCount: 1,
+//         page: 1,
+//         pageSize: 10,
+//         totalCount: 2,
+//         items: [createdPostObject, createdPostObject],
+//       });
+//     });
+//     it(`should return created blog by ID`, async () => {
+//       const blog = await agent.get(publicBlogsURI + blogId).expect(200);
+//       expect(blog.body).toEqual(createdBlogObject);
+//     });
+//     it(`should return created post by ID`, async () => {
+//       const post01 = await agent.get(publicPostsURI + post01Id).expect(200);
+//       const post02 = await agent.get(publicPostsURI + post02Id).expect(200);
+//       expect(post01.body).toEqual(createdPostObject);
+//       expect(post02.body).toEqual(createdPostObject);
+//     });
+
+//     it(`should ban blog`, async () => {
+//       return agent
+//         .put(saBlogsURI + blogId + banURI)
+//         .auth(basicAuthLogin, basicAuthPassword)
+//         .send({
+//           isBanned: true,
+//         })
+//         .expect(204);
+//     });
+
+//     it(`should return created blogs for blogger`, async () => {
+//       const blogs = await agent
+//         .get(bloggerBlogsURI)
+//         .auth(aTokenUser02, { type: 'bearer' })
+//         .expect(200);
+
+//       expect(blogs.body).toEqual({
+//         pagesCount: 1,
+//         page: 1,
+//         pageSize: 10,
+//         totalCount: 1,
+//         items: [createdBlogObject],
+//       });
+//     });

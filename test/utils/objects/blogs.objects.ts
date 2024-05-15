@@ -152,14 +152,14 @@ export const saBannedBlogObject = {
   websiteUrl: blogWebsite,
   createdAt: expect.any(String),
   isMembership: false,
-  blogOwnerInfo: {
-    userId: expect.any(String),
-    userLogin: expect.any(String),
-  },
-  banInfo: {
-    isBanned: true,
-    banDate: expect.any(String),
-  },
+  // blogOwnerInfo: {
+  //   userId: expect.any(String),
+  //   userLogin: expect.any(String),
+  // },
+  // banInfo: {
+  //   isBanned: true,
+  //   banDate: expect.any(String),
+  // },
 };
 
 export const uploadedWallpaperObject = {
