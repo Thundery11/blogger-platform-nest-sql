@@ -201,84 +201,58 @@ describe('Super admin quiz questions testing', () => {
         .expect(200);
       expect(check.body.items[0]).toEqual(questionUpdatedObject);
     });
+    it('Should update publish status', async () => {
+      await agent
+        .put(saQuestionsURI + questionId + saQuestionsPublishURI)
+        .auth(basicAuthLogin, basicAuthPassword)
+        .send({ published: true })
+        .expect(204);
+      const check = await agent
+        .get(saQuestionsURI)
+        .auth(basicAuthLogin, basicAuthPassword)
+        .expect(200);
+      expect(check.body.items[0].published).toBeTruthy();
+    });
   });
+  describe('Delete question', () => {
+    // Auth errors [401]
 
-  //     // Success
-  //     it(`should update question by ID`, async () => {
-  //       await agent
-  //         .put(saQuestionsURI + questionId)
-  //         .auth(basicAuthLogin, basicAuthPassword)
-  //         .send({
-  //           body: questionUpdatedBody,
-  //           correctAnswers: [
-  //             questionCorrectAnswer01,
-  //             questionCorrectAnswer02,
-  //             questionCorrectAnswer03,
-  //             questionCorrectAnswerNumeric,
-  //           ],
-  //         })
-  //         .expect(204);
+    it('Should return 401 when trying delete question with incorrect auth', async () => {
+      return agent
+        .delete(saQuestionsURI + questionId)
+        .auth(basicAuthLogin, randomUUID())
+        .expect(401);
+    });
 
-  //       const check = await agent
-  //         .get(saQuestionsURI)
-  //         .auth(basicAuthLogin, basicAuthPassword)
-  //         .expect(200);
-  //       expect(check.body.items[0]).toEqual(questionUpdatedObject);
-  //     });
-  //     it(`should update published status`, async () => {
-  //       await agent
-  //         .put(saQuestionsURI + questionId + saQuestionsPublishURI)
-  //         .auth(basicAuthLogin, basicAuthPassword)
-  //         .send({
-  //           published: true,
-  //         })
-  //         .expect(204);
+    // Not found errors [404]
 
-  //       const check = await agent
-  //         .get(saQuestionsURI)
-  //         .auth(basicAuthLogin, basicAuthPassword)
-  //         .expect(200);
-  //       expect(check.body.items[0].published).toBeTruthy();
-  //     });
-  //   });
+    it('Should return 404 if trying to delete not exist question', async () => {
+      await agent
+        .delete(saQuestionsURI + randomUUID())
+        .auth(basicAuthLogin, basicAuthPassword)
+        .expect(400);
+    });
 
-  //   describe('Delete question', () => {
-  //     // Auth errors [401]
-  //     it(`should return 401 when trying to delete question with incorrect credentials`, async () => {
-  //       return agent
-  //         .delete(saQuestionsURI + questionId)
-  //         .auth(basicAuthLogin, randomUUID())
-  //         .expect(401);
-  //     });
+    //Success
+    it('Should delete question by Id', async () => {
+      await agent
+        .delete(saQuestionsURI + questionId)
+        .auth(basicAuthLogin, basicAuthPassword)
+        .expect(204);
+      const response = await agent
+        .get(saQuestionsURI)
+        .auth(basicAuthLogin, basicAuthPassword)
+        .expect(200);
 
-  //     // Not found errors [404]
-  //     it(`should return 404 when trying to delete nonexistent question`, async () => {
-  //       await agent
-  //         .delete(saQuestionsURI + randomUUID())
-  //         .auth(basicAuthLogin, basicAuthPassword)
-  //         .expect(404);
-  //     });
-
-  //     // Success
-  //     it(`should delete question by ID`, async () => {
-  //       await agent
-  //         .delete(saQuestionsURI + questionId)
-  //         .auth(basicAuthLogin, basicAuthPassword)
-  //         .expect(204);
-
-  //       const response = await agent
-  //         .get(saQuestionsURI)
-  //         .auth(basicAuthLogin, basicAuthPassword)
-  //         .expect(200);
-  //       expect(response.body).toEqual({
-  //         pagesCount: 0,
-  //         page: 1,
-  //         pageSize: 10,
-  //         totalCount: 0,
-  //         items: [],
-  //       });
-  //     });
-  //   });
+      expect(response.body).toEqual({
+        pagesCount: 0,
+        page: 1,
+        pageSize: 10,
+        totalCount: 0,
+        items: [],
+      });
+    });
+  });
 
   afterAll(async () => {
     await app.close();
