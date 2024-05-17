@@ -29,8 +29,8 @@ import {
 
 describe('Super admin quiz questions testing', () => {
   let app: INestApplication;
+  // let agent: SuperAgentTest;
   let agent;
-
   beforeAll(async () => {
     const data = await getAppAndClearDb();
     app = data.app;

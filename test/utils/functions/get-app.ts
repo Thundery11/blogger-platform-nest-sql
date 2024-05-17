@@ -19,6 +19,7 @@ export const getAppAndClearDb = async () => {
 
   const app: INestApplication = moduleRef.createNestApplication();
   const agent = supertest.agent(app.getHttpServer());
+  // const agent: SuperAgentTest = supertest.agent(app.getHttpServer());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.use(cookieParser());
   app.useGlobalPipes(
