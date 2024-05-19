@@ -152,7 +152,7 @@ export class QuizGameRepository {
     const endedGame = await this.quizGameRepository
       .createQueryBuilder('game')
       .update()
-      .set({ finishGameDate: addedAt })
+      .set({ finishGameDate: addedAt, status: GameStatus.Finished })
       // .where(`game.firstPlayerProgressId = :id`, { id: playerProgressId })
       // .orWhere(`game.secondPlayerProgressId = :id`, { id: playerProgressId })
       // .where(

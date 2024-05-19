@@ -80,6 +80,8 @@ import { QuizGameService } from './quiz-game/application/quiz-game.service';
 import { QuizGameRepository } from './quiz-game/infrastructure/quiiz-game.repository';
 import { QuizGameQueryRepository } from './quiz-game/infrastructure/quiz-game-query.repository';
 import { QuizGameController } from './quiz-game/api/quiz-game.controller';
+import { AddAnswerUseCase } from './quiz-game/application/use-cases/add-answer.use-case';
+import { ConnectToTheGameUseCase } from './quiz-game/application/use-cases/connect-to-the-game.use-case';
 
 const useCases = [
   CreateBlogUseCase,
@@ -105,6 +107,8 @@ const useCases = [
   UpdateQuizQuestionUseCase,
   PublishQuestionUseCase,
   FindAllQuestionsUseCase,
+  AddAnswerUseCase,
+  ConnectToTheGameUseCase,
 ];
 const {
   PGHOST,
@@ -151,7 +155,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     AuthModule,
     UsersModule,
     CqrsModule,
-    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forRoot(localDbOptions),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,
