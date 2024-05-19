@@ -35,7 +35,6 @@ export class QuizGameController {
   async getMyCurrentGame(@CurrentUserId() currentUserId: number) {
     const user =
       await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
-    console.log('🚀 ~ QuizGameController ~ getMyCurrentGame ~ user:', user);
 
     if (!user) {
       if (!user) {

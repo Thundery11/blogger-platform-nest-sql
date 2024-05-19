@@ -42,7 +42,7 @@ export class QuizGameRepository {
         'a.answerStatus',
         'a.addedAt',
       ])
-      .where(`p.playerId = :userId`, { userId: id })
+      .where(`p.id = :userId`, { userId: id })
       .getOneOrFail();
 
     return player;
