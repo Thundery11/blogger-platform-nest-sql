@@ -18,6 +18,8 @@ import { CurrentUserId } from '../../features/auth/decorators/current-user-id-pa
 import { QuizGameService } from '../application/quiz-game.service';
 import { QuizGameQueryRepository } from '../infrastructure/quiz-game-query.repository';
 import { AnswerDto } from './models/input/quiz-game.input.model';
+import { ConnectToTheGameCommand } from '../application/use-cases/connect-to-the-game.use-case';
+import { AddAnswerCommand } from '../application/use-cases/add-answer.use-case';
 
 @Controller('pair-game-quiz/pairs')
 export class QuizGameController {
@@ -54,7 +56,9 @@ export class QuizGameController {
   @Post('/connection')
   @HttpCode(HttpStatus.OK)
   async connectToTheGame(@CurrentUserId() currentUserId: number) {
-    const game = await this.quizGameService.connectToTheGame(currentUserId);
+    const game = await this.commandBus.execute(
+      new ConnectToTheGameCommand(currentUserId),
+    );
     return game;
   }
 
@@ -75,10 +79,8 @@ export class QuizGameController {
       throw new ForbiddenException('The game doesnt start yet');
     }
     const gameId = isGameStarted.id;
-    const answerStatus = await this.quizGameService.addAnswer(
-      answerDto,
-      user.id,
-      gameId,
+    const answerStatus = await this.commandBus.execute(
+      new AddAnswerCommand(answerDto, user.id, gameId),
     );
     return answerStatus;
   }
