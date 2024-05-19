@@ -24,14 +24,9 @@ export class ConnectToTheGameUseCase
     const currentUserId = command.currentUserId;
     const isGameWithPandingPlayerExist =
       await this.quizGameRepository.isGameWithPandingPlayerExist();
-    console.log(
-      '🚀 ~ execute ~ isGameWithPandingPlayerExist:',
-      isGameWithPandingPlayerExist,
-    );
 
     const isUserAlreadyInGame =
       await this.quizGameQueryRepository.isUserAlreadyInGame(currentUserId);
-    console.log('🚀 ~ execute ~ isUserAlreadyInGame:', isUserAlreadyInGame);
 
     if (isUserAlreadyInGame) {
       throw new ForbiddenException('u are allready in game');
@@ -39,22 +34,15 @@ export class ConnectToTheGameUseCase
 
     if (!isGameWithPandingPlayerExist) {
       const firstPlayerProgress = PlayerProgress.addPlayer(currentUserId);
-      console.log('🚀 ~ execute ~ firstPlayerProgress:', firstPlayerProgress);
 
       const addFirstplayerToDb =
         await this.quizGameRepository.addPlayerToTheGame(firstPlayerProgress);
-      console.log('🚀 ~ execute ~ addFirstplayerToDb:', addFirstplayerToDb);
 
       const firstPlayer = await this.quizGameRepository.getPlayer(
         addFirstplayerToDb.id,
       );
-      console.log('🚀 ~ execute ~ firstPlayer:', firstPlayer);
-
       const newGame = Game.createGame(firstPlayer);
-      console.log('🚀 ~ execute ~ newGame:', newGame);
-
       const createdGame = await this.quizGameRepository.startGame(newGame);
-      console.log('🚀 ~ execute ~ createdGame:', createdGame);
 
       return createdGame;
     } else if (isGameWithPandingPlayerExist) {
