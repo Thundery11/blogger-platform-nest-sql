@@ -33,7 +33,7 @@ export class PlayerProgress {
   @OneToOne(() => Game)
   game: Game;
 
-  @Column()
+  @Column({ nullable: true })
   status: PlayerStatus;
 
   static addPlayer(currentUserId: number) {
