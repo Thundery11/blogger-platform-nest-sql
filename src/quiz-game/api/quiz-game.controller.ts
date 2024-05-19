@@ -91,14 +91,13 @@ export class QuizGameController {
     @Param('id', ParseIntPipe) id: number,
     @CurrentUserId() currentUserId: number,
   ) {
-    // const gameId = Number(id.id);
-
     const game = await this.quizGameQueryRepo.findGame(id);
     if (!game) {
       throw new NotFoundException();
     }
-    const user =
-      await this.quizGameQueryRepo.isUserAlreadyInGame(currentUserId);
+
+    //тут исправить назад если что
+    const user = await this.quizGameQueryRepo.findGameById(currentUserId);
     if (!user) {
       throw new ForbiddenException();
     }

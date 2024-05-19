@@ -15,10 +15,20 @@ export class QuizGameQueryRepository {
     private playerProgressRepo: Repository<PlayerProgress>,
     @InjectRepository(Game) private quizGameQueryRepo: Repository<Game>,
   ) {}
-  async isUserAlreadyInGame(id: number): Promise<PlayerProgress | null> {
+  async findGameById(id: number): Promise<PlayerProgress | null> {
     const game = await this.playerProgressRepo.findOne({
-      where: { playerId: id, status: PlayerStatus.Active },
+      where: { playerId: id },
     });
+    return game;
+  }
+  async isUserAlreadyInGame(id: number): Promise<PlayerProgress | null> {
+    const game = await this.playerProgressRepo
+      .createQueryBuilder('playerProgress')
+      .where('playerProgress.playerId = :playerId', { playerId: id })
+      .andWhere('playerProgress.status = :status', {
+        status: PlayerStatus.Active,
+      })
+      .getOne();
     return game;
   }
 

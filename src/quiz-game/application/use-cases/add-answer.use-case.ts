@@ -111,14 +111,14 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
           firstPlayerProgressId!,
           finalScorePoint,
         );
+
+        await this.quizGameRepository.endTheGame(addedAt, gameId);
         await this.quizGameRepository.finishPlayerProgress(
           firstPlayerProgressId,
         );
         await this.quizGameRepository.finishPlayerProgress(
           secondPlayerProgressId,
         );
-
-        await this.quizGameRepository.endTheGame(addedAt, gameId);
       } else if (
         firstPlayerLastAnswerDate > secondPlayerLastAnswerDate &&
         doesSecondPlayerHasOneCorrectAnswer === true
@@ -128,23 +128,21 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
           finalScorePoint,
         );
 
+        await this.quizGameRepository.endTheGame(addedAt, gameId);
         await this.quizGameRepository.finishPlayerProgress(
           firstPlayerProgressId,
         );
         await this.quizGameRepository.finishPlayerProgress(
           secondPlayerProgressId,
         );
-
-        await this.quizGameRepository.endTheGame(addedAt, gameId);
       } else {
+        await this.quizGameRepository.endTheGame(addedAt, gameId);
         await this.quizGameRepository.finishPlayerProgress(
           firstPlayerProgressId,
         );
         await this.quizGameRepository.finishPlayerProgress(
           secondPlayerProgressId,
         );
-
-        await this.quizGameRepository.endTheGame(addedAt, gameId);
       }
     }
     return addAnswerToDb;

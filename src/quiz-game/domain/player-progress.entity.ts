@@ -4,9 +4,11 @@ import {
   ManyToOne,
   Column,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { Users } from '../../features/users/domain/users.entity';
 import { Answers } from './quiz-answers.entity';
+import { Game } from './quiz-game.entity';
 export enum PlayerStatus {
   Active = 'Active',
   Finished = 'Finished',
@@ -27,6 +29,9 @@ export class PlayerProgress {
 
   @Column()
   score: number;
+
+  @OneToOne(() => Game)
+  game: Game;
 
   @Column()
   status: PlayerStatus;

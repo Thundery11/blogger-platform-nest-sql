@@ -23,7 +23,6 @@ export class SecurityDevicesRepository {
 
   async addDevice(device: SecurityDevices): Promise<string> {
     const result = await this.securityDevicesRepo.save(device);
-    console.log('🚀 ~ SecurityDevicesRepository ~ addDevice ~ result:', result);
     return result.deviceId;
     //   const insertQuery = `INSERT INTO public."Devices"("deviceId", "userId", "ip", "title", "lastActiveDate")
     //  VALUES ('${device.deviceId}', '${device.userId}', '${device.ip}', '${device.title}', '${device.lastActiveDate}') RETURNING "deviceId";`;
