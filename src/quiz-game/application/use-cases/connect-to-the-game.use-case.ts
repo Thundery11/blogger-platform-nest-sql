@@ -2,7 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizGameRepository } from '../../infrastructure/quiiz-game.repository';
 import { QuizGameQueryRepository } from '../../infrastructure/quiz-game-query.repository';
 import { ForbiddenException } from '@nestjs/common';
-import { PlayerProgress } from '../../domain/player-progress.entity';
+import {
+  PlayerProgress,
+  PlayerStatus,
+} from '../../domain/player-progress.entity';
 import { Game, GameStatus } from '../../domain/quiz-game.entity';
 
 export class ConnectToTheGameCommand {
@@ -33,6 +36,7 @@ export class ConnectToTheGameUseCase
       const firstPlayerProgress = new PlayerProgress();
       firstPlayerProgress.playerId = currentUserId;
       firstPlayerProgress.score = 0;
+      firstPlayerProgress.status = PlayerStatus.Active;
       const addFirstplayerToDb =
         await this.quizGameRepository.addPlayerToTheGame(firstPlayerProgress);
 

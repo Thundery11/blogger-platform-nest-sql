@@ -7,7 +7,10 @@ import {
 } from 'typeorm';
 import { Users } from '../../features/users/domain/users.entity';
 import { Answers } from './quiz-answers.entity';
-
+export enum PlayerStatus {
+  Active = 'Active',
+  Finished = 'Finished',
+}
 @Entity()
 export class PlayerProgress {
   @PrimaryGeneratedColumn('increment')
@@ -25,10 +28,14 @@ export class PlayerProgress {
   @Column()
   score: number;
 
+  @Column()
+  status: PlayerStatus;
+
   static addPlayer(currentUserId: number) {
     const addedPlayer = new PlayerProgress();
     addedPlayer.playerId = currentUserId;
     addedPlayer.score = 0;
+    addedPlayer.status = PlayerStatus.Active;
 
     return addedPlayer;
   }

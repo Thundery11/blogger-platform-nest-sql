@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game, GameStatus } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
-import { PlayerProgress } from '../domain/player-progress.entity';
+import { PlayerProgress, PlayerStatus } from '../domain/player-progress.entity';
 import { QuizQuestions } from '../../quizQuestions/domain/quiz-questions.entity';
 import {
   answersOutput,
@@ -159,7 +159,13 @@ export class QuizGameRepository {
       .execute();
     return endedGame.affected === 1;
   }
-
+  async finishPlayerProgress(playerProgressId: number | undefined) {
+    const result = await this.playerProgressRepo.update(
+      { id: playerProgressId },
+      { status: PlayerStatus.Finished },
+    );
+    return result.affected === 1;
+  }
   // async addQuestion(gameId: number){
   //   const question = await this.quizQuestionsRepository.save
   // }

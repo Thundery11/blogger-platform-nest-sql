@@ -20,6 +20,10 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
   ) {}
   async execute(command: AddAnswerCommand): Promise<any> {
     const { answerDto, playerProgressId, gameId } = command;
+    console.log(
+      '🚀 ~ AddAnswerUseCase ~ execute ~ playerProgressId:',
+      playerProgressId,
+    );
     const answer = new Answers();
     const addedAt = new Date().toISOString();
     const allPossibleQuestionsFromGame =
@@ -107,6 +111,13 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
           firstPlayerProgressId!,
           finalScorePoint,
         );
+        await this.quizGameRepository.finishPlayerProgress(
+          firstPlayerProgressId,
+        );
+        await this.quizGameRepository.finishPlayerProgress(
+          secondPlayerProgressId,
+        );
+
         await this.quizGameRepository.endTheGame(addedAt, gameId);
       } else if (
         firstPlayerLastAnswerDate > secondPlayerLastAnswerDate &&
@@ -116,8 +127,23 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
           secondPlayerProgressId!,
           finalScorePoint,
         );
+
+        await this.quizGameRepository.finishPlayerProgress(
+          firstPlayerProgressId,
+        );
+        await this.quizGameRepository.finishPlayerProgress(
+          secondPlayerProgressId,
+        );
+
         await this.quizGameRepository.endTheGame(addedAt, gameId);
       } else {
+        await this.quizGameRepository.finishPlayerProgress(
+          firstPlayerProgressId,
+        );
+        await this.quizGameRepository.finishPlayerProgress(
+          secondPlayerProgressId,
+        );
+
         await this.quizGameRepository.endTheGame(addedAt, gameId);
       }
     }

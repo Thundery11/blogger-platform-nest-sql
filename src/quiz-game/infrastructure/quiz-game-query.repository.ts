@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
-import { PlayerProgress } from '../domain/player-progress.entity';
+import { PlayerProgress, PlayerStatus } from '../domain/player-progress.entity';
 import {
   getPlayerProgressId,
   quizGameOutputModel,
@@ -17,7 +17,7 @@ export class QuizGameQueryRepository {
   ) {}
   async isUserAlreadyInGame(id: number): Promise<PlayerProgress | null> {
     const game = await this.playerProgressRepo.findOne({
-      where: { playerId: id },
+      where: { playerId: id, status: PlayerStatus.Active },
     });
     return game;
   }
