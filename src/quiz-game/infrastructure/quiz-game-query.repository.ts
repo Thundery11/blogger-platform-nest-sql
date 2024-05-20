@@ -4,9 +4,11 @@ import { Game } from '../domain/quiz-game.entity';
 import { Repository } from 'typeorm';
 import { PlayerProgress, PlayerStatus } from '../domain/player-progress.entity';
 import {
+  QuizGameOutputModel,
   getPlayerProgressId,
   quizGameOutputModel,
 } from '../api/models/output/quiz-game.output.model';
+import { skip } from 'node:test';
 
 @Injectable()
 export class QuizGameQueryRepository {
@@ -32,7 +34,7 @@ export class QuizGameQueryRepository {
     return game;
   }
 
-  async findGame(id: number) {
+  async findGame(id: number): Promise<QuizGameOutputModel | null> {
     const game = await this.quizGameQueryRepo
       .createQueryBuilder('game')
       .select([
@@ -68,12 +70,12 @@ export class QuizGameQueryRepository {
     if (!game) {
       return null;
     }
-
-    console.log('🚀 ~ QuizGameQueryRepository ~ findGame ~ game:', game);
     return quizGameOutputModel(game);
   }
 
-  async findGameForCurrentUser(id: number) {
+  async findGameForCurrentUser(
+    id: number,
+  ): Promise<QuizGameOutputModel | null> {
     const game = await this.quizGameQueryRepo
       .createQueryBuilder('game')
       .select([
@@ -129,7 +131,7 @@ export class QuizGameQueryRepository {
     return game;
   }
 
-  async findNotMappedGameForCurrentUser(id: number) {
+  async findNotMappedGameForCurrentUser(id: number): Promise<Game | null> {
     const game = await this.quizGameQueryRepo
       .createQueryBuilder('game')
       .select([
@@ -171,8 +173,58 @@ export class QuizGameQueryRepository {
     if (!game) {
       return null;
     }
-
-    console.log('🚀 ~ QuizGameQueryRepository ~ findGame ~ game:', game);
     return game;
+  }
+
+  async findMyGames(
+    sortBy: string,
+    sortDirection: string,
+    pageSize: number,
+    skip: number,
+    currentUserId: number,
+  ) {
+    const queryBuilder = this.quizGameQueryRepo
+      .createQueryBuilder('game')
+      .select([
+        'game.id',
+        'game.status',
+        'game.pairCreatedDate',
+        'game.startGameDate',
+        'game.finishGameDate',
+        'firstPlayerAnswers.questionId',
+        'firstPlayerAnswers.answerStatus',
+        'firstPlayerAnswers.addedAt',
+        'firstPlayer.login',
+        'firstPlayer.id',
+        'firstPlayerProgress.score',
+        'secondPlayerAnswers.questionId',
+        'secondPlayerAnswers.answerStatus',
+        'secondPlayerAnswers.addedAt',
+        'secondPlayer.login',
+        'secondPlayer.id',
+        'secondPlayerProgress.score',
+        'game.questions',
+      ])
+      .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+      .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
+      .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+      .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
+      .where(`firstPlayer.id = :id`, { id: currentUserId })
+      .orWhere(`secondPlayer.id = :id`, { id: currentUserId })
+      .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
+      .addOrderBy('secondPlayerAnswers.addedAt', 'ASC')
+      .addOrderBy(`game.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
+      .addOrderBy(`game.pairCreatedDate`, 'DESC')
+      .skip(skip)
+      .take(pageSize);
+
+    console.log(queryBuilder.getSql());
+    const myGames = queryBuilder.getMany();
+    if (!myGames) {
+      return null;
+    }
+    return myGames;
   }
 }

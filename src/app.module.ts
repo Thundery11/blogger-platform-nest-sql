@@ -82,6 +82,7 @@ import { QuizGameQueryRepository } from './quiz-game/infrastructure/quiz-game-qu
 import { QuizGameController } from './quiz-game/api/quiz-game.controller';
 import { AddAnswerUseCase } from './quiz-game/application/use-cases/add-answer.use-case';
 import { ConnectToTheGameUseCase } from './quiz-game/application/use-cases/connect-to-the-game.use-case';
+import { GetMyGamesUseCase } from './quiz-game/application/use-cases/get-my-games-use-case';
 
 const useCases = [
   CreateBlogUseCase,
@@ -109,6 +110,7 @@ const useCases = [
   FindAllQuestionsUseCase,
   AddAnswerUseCase,
   ConnectToTheGameUseCase,
+  GetMyGamesUseCase,
 ];
 const {
   PGHOST,
@@ -133,7 +135,7 @@ export const options: TypeOrmModuleOptions = {
   port: 5432,
   autoLoadEntities: true,
   synchronize: true,
-  logging: ['query'],
+  // logging: ['query'],
   ssl: true,
   // ssl: false, //менять на true, когда подключаешь NeonDb
 };
@@ -155,7 +157,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     AuthModule,
     UsersModule,
     CqrsModule,
-    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forRoot(localDbOptions),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,

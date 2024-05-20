@@ -9,6 +9,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -20,6 +21,9 @@ import { QuizGameQueryRepository } from '../infrastructure/quiz-game-query.repos
 import { AnswerDto } from './models/input/quiz-game.input.model';
 import { ConnectToTheGameCommand } from '../application/use-cases/connect-to-the-game.use-case';
 import { AddAnswerCommand } from '../application/use-cases/add-answer.use-case';
+import { SortingQueryParamsForUsers } from '../../features/users/api/models/query/query-for-sorting';
+import { SortingQueryParamsForQuizGame } from './models/query/sorting-query-params-quiz';
+import { GetMyGamesCommand } from '../application/use-cases/get-my-games-use-case';
 
 @Controller('pair-game-quiz/pairs')
 export class QuizGameController {
@@ -83,6 +87,27 @@ export class QuizGameController {
     );
     return answerStatus;
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('/my')
+  @HttpCode(HttpStatus.OK)
+  async myGames(
+    @Query() sortingQueryParamsForQuiz: SortingQueryParamsForQuizGame,
+    @CurrentUserId() currentUserId: number,
+  ) {
+    console.log('🚀 ~ QuizGameController ~ currentUserId:', currentUserId);
+    const user = await this.quizGameQueryRepo.findGameById(currentUserId);
+
+    if (!user) {
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+    }
+    const myGames = await this.commandBus.execute(
+      new GetMyGamesCommand(sortingQueryParamsForQuiz, currentUserId),
+    );
+    return myGames;
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
