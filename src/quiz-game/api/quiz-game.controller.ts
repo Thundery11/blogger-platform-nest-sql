@@ -102,6 +102,8 @@ export class QuizGameController {
         throw new NotFoundException('User not found');
       }
     }
+    const userId = user.id;
+    console.log('🚀 ~ QuizGameController ~ userId:', userId);
     const myGames = await this.commandBus.execute(
       new GetMyGamesCommand(sortingQueryParamsForQuiz, currentUserId),
     );

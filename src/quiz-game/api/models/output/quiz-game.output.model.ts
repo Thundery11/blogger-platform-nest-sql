@@ -106,3 +106,46 @@ export const answersOutput = (answer: Answers) => {
   output.addedAt = answer.addedAt;
   return output;
 };
+
+export const allGamesOutputMapper = (games: Game[]) => {
+  const outputGames = games.map((game) => ({
+    id: game.id.toString(),
+    questions:
+      game.questions.map((q) => ({
+        id: q.id.toString(),
+        body: q.body,
+      })) ?? null,
+    pairCreatedDate: game.pairCreatedDate,
+    status: game.status,
+    startGameDate: game.startGameDate,
+    finishGameDate: game.finishGameDate,
+    firstPlayerProgress: {
+      answers: game.firstPlayerProgress.answers
+        ? game.firstPlayerProgress.answers.map((answer) => ({
+            ...answer,
+            questionId: answer.questionId.toString(),
+          }))
+        : [],
+      player: {
+        id: game.firstPlayerProgress.player.id.toString(),
+        login: game.firstPlayerProgress.player.login,
+      },
+      score: game.firstPlayerProgress.score,
+    },
+    secondPlayerProgress:
+      {
+        answers: game.secondPlayerProgress.answers
+          ? game.secondPlayerProgress.answers.map((answer) => ({
+              ...answer,
+              questionId: answer.questionId.toString(),
+            }))
+          : [],
+        player: {
+          id: game.secondPlayerProgress.player.id.toString(),
+          login: game.secondPlayerProgress.player.login,
+        },
+        score: game.secondPlayerProgress.score,
+      } ?? null,
+  }));
+  return outputGames;
+};
