@@ -30,15 +30,12 @@ export class FindAllPostsUseCase
     const skip = (pageNumber - 1) * pageSize;
     const countedDocuments = await this.postsRepository.countAllDocuments();
     const pagesCount: number = Math.ceil(countedDocuments / pageSize);
-    console.log('🚀 ~ execute ~ pagesCount:', pagesCount);
-    //ss
     const allPosts = await this.postsRepository.getAllPosts(
       sortBy,
       sortDirection,
       pageSize,
       skip,
     );
-    console.log('🚀 ~ execute ~ allPosts:', allPosts);
     if (command.userId === null) {
       const result = await Promise.all(
         allPosts.map(

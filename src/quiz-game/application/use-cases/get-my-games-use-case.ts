@@ -22,8 +22,14 @@ export class GetMyGamesUseCase implements ICommandHandler<GetMyGamesCommand> {
     } = sortingQueryParamsForQuiz;
 
     const skip = (pageNumber - 1) * pageSize;
-    // const countedDocuments = await this.postsRepository.countAllDocuments();
-    // const pagesCount: number = Math.ceil(countedDocuments / pageSize);
+    const countedDocuments =
+      await this.quizGameQueryRepository.countAllDocuments(currentUserId);
+    console.log(
+      '🚀 ~ GetMyGamesUseCase ~ execute ~ countedDocuments:',
+      countedDocuments,
+    );
+
+    const pagesCount: number = Math.ceil(countedDocuments / pageSize);
     const myGames = await this.quizGameQueryRepository.findMyGames(
       sortBy,
       sortDirection,
@@ -31,6 +37,14 @@ export class GetMyGamesUseCase implements ICommandHandler<GetMyGamesCommand> {
       skip,
       currentUserId,
     );
-    return myGames;
+
+    const presentationalAllQuizGames = {
+      pagesCount,
+      page: Number(pageNumber),
+      pageSize: Number(pageSize),
+      totalCount: countedDocuments,
+      items: myGames,
+    };
+    return presentationalAllQuizGames;
   }
 }

@@ -177,59 +177,19 @@ export class QuizGameQueryRepository {
     return game;
   }
 
-  // async findMyGames(
-  //   sortBy: string,
-  //   sortDirection: string,
-  //   pageSize: number,
-  //   skip: number,
-  //   currentUserId: number,
-  // ) {
-  //   const queryBuilder = this.quizGameQueryRepo
-  //     .createQueryBuilder('game')
-  //     .select([
-  //       'game.id',
-  //       'game.status',
-  //       'game.pairCreatedDate',
-  //       'game.startGameDate',
-  //       'game.finishGameDate',
-  //       'firstPlayerAnswers.questionId',
-  //       'firstPlayerAnswers.answerStatus',
-  //       'firstPlayerAnswers.addedAt',
-  //       'firstPlayer.login',
-  //       'firstPlayer.id',
-  //       'firstPlayerProgress.score',
-  //       'secondPlayerAnswers.questionId',
-  //       'secondPlayerAnswers.answerStatus',
-  //       'secondPlayerAnswers.addedAt',
-  //       'secondPlayer.login',
-  //       'secondPlayer.id',
-  //       'secondPlayerProgress.score',
-  //       'game.questions',
-  //     ])
-  //     .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
-  //     .leftJoin('firstPlayerProgress.player', 'firstPlayer')
-  //     .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
-  //     .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
-  //     .leftJoin('secondPlayerProgress.player', 'secondPlayer')
-  //     .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
-  //     .where(`firstPlayer.id = :id`, { id: currentUserId })
-  //     .orWhere(`secondPlayer.id = :id`, { id: currentUserId })
-  //     .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
-  //     .addOrderBy('secondPlayerAnswers.addedAt', 'ASC')
-  //     .addOrderBy(`game.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
-  //     .addOrderBy(`game.pairCreatedDate`, 'DESC')
-  //     .skip(skip)
-  //     .take(pageSize);
-
-  //   console.log(queryBuilder.getSql());
-  //   const myGames = await queryBuilder.getMany();
-  //   console.log('🚀 ~ QuizGameQueryRepository ~ myGames:', myGames);
-
-  //   if (!myGames) {
-  //     return null;
-  //   }
-  //   return myGames;
-  // }
+  async countAllDocuments(currentUserId: number) {
+    const count = await this.quizGameQueryRepo
+      .createQueryBuilder('game')
+      .select('game.id')
+      .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+      .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+      .where('firstPlayer.id = :id', { id: currentUserId })
+      .orWhere('secondPlayer.id = :id', { id: currentUserId })
+      .getCount();
+    return count;
+  }
 
   async findMyGames(
     sortBy: string,
