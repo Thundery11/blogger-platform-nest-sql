@@ -191,6 +191,71 @@ export class QuizGameQueryRepository {
     return count;
   }
 
+  //   async findMyGames(
+  //     sortBy: string,
+  //     sortDirection: string,
+  //     pageSize: number,
+  //     skip: number,
+  //     currentUserId: number,
+  //   ) {
+  //     const subQuery = this.quizGameQueryRepo
+  //       .createQueryBuilder('game')
+  //       .select('game.id')
+  //       .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+  //       .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+  //       .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+  //       .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+  //       .where('firstPlayer.id = :id', { id: currentUserId })
+  //       .orWhere('secondPlayer.id = :id', { id: currentUserId })
+  //       // .orderBy(`game.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
+  //       // .addOrderBy('game.pairCreatedDate', 'DESC')
+  //       .skip(skip)
+  //       .take(pageSize);
+
+  //     const queryBuilder = this.quizGameQueryRepo
+  //       .createQueryBuilder('game')
+  //       .select([
+  //         'game.id',
+  //         'game.status',
+  //         'game.pairCreatedDate',
+  //         'game.startGameDate',
+  //         'game.finishGameDate',
+  //         'firstPlayerAnswers.questionId',
+  //         'firstPlayerAnswers.answerStatus',
+  //         'firstPlayerAnswers.addedAt',
+  //         'firstPlayer.login',
+  //         'firstPlayer.id',
+  //         'firstPlayerProgress.score',
+  //         'secondPlayerAnswers.questionId',
+  //         'secondPlayerAnswers.answerStatus',
+  //         'secondPlayerAnswers.addedAt',
+  //         'secondPlayer.login',
+  //         'secondPlayer.id',
+  //         'secondPlayerProgress.score',
+  //         'game.questions',
+  //       ])
+  //       .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+  //       .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+  //       .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
+  //       .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+  //       .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+  //       .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
+  //       .where(`game.id IN (${subQuery.getQuery()})`)
+  //       .setParameters(subQuery.getParameters())
+  //       .orderBy('firstPlayerAnswers.addedAt', 'ASC')
+  //       .addOrderBy('secondPlayerAnswers.addedAt', 'ASC')
+  //       .addOrderBy(`game.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
+  //       .addOrderBy('game.pairCreatedDate', 'DESC');
+
+  //     console.log(queryBuilder.getSql());
+  //     const myGames = await queryBuilder.getMany();
+  //     console.log('🚀 ~ QuizGameQueryRepository ~ myGames:', myGames);
+
+  //     if (!myGames) {
+  //       return null;
+  //     }
+  //     return allGamesOutputMapper(myGames);
+  //   }
   async findMyGames(
     sortBy: string,
     sortDirection: string,
@@ -207,8 +272,6 @@ export class QuizGameQueryRepository {
       .leftJoin('secondPlayerProgress.player', 'secondPlayer')
       .where('firstPlayer.id = :id', { id: currentUserId })
       .orWhere('secondPlayer.id = :id', { id: currentUserId })
-      .orderBy(`game.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
-      .addOrderBy('game.pairCreatedDate', 'DESC')
       .skip(skip)
       .take(pageSize);
 
@@ -247,7 +310,9 @@ export class QuizGameQueryRepository {
       .addOrderBy(`game.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
       .addOrderBy('game.pairCreatedDate', 'DESC');
 
+    // Логируем SQL-запрос для отладки
     console.log(queryBuilder.getSql());
+
     const myGames = await queryBuilder.getMany();
     console.log('🚀 ~ QuizGameQueryRepository ~ myGames:', myGames);
 

@@ -20,14 +20,11 @@ export class GetMyGamesUseCase implements ICommandHandler<GetMyGamesCommand> {
       pageNumber = 1,
       pageSize = 10,
     } = sortingQueryParamsForQuiz;
+    console.log('🚀 ~ GetMyGamesUseCase ~ execute ~ sortBy:', sortBy);
 
     const skip = (pageNumber - 1) * pageSize;
     const countedDocuments =
       await this.quizGameQueryRepository.countAllDocuments(currentUserId);
-    console.log(
-      '🚀 ~ GetMyGamesUseCase ~ execute ~ countedDocuments:',
-      countedDocuments,
-    );
 
     const pagesCount: number = Math.ceil(countedDocuments / pageSize);
     const myGames = await this.quizGameQueryRepository.findMyGames(
