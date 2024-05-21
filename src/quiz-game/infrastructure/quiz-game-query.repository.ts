@@ -238,13 +238,14 @@ export class QuizGameQueryRepository {
       .setParameters(subQuery.getParameters())
       .orderBy(`game.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
       .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
-      .addOrderBy('secondPlayerAnswers.addedAt', 'ASC')
-      .addOrderBy('game.pairCreatedDate', 'DESC');
+      .addOrderBy('secondPlayerAnswers.addedAt', 'ASC');
 
     // Логируем SQL-запрос для отладки
     console.log(queryBuilder.getSql());
 
-    const myGames = await queryBuilder.getMany();
+    const myGames = await queryBuilder
+      .addOrderBy('game.pairCreatedDate', 'DESC')
+      .getMany();
     console.log('🚀 ~ QuizGameQueryRepository ~ myGames:', myGames);
 
     if (!myGames) {
