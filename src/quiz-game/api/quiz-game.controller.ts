@@ -22,7 +22,10 @@ import { AnswerDto } from './models/input/quiz-game.input.model';
 import { ConnectToTheGameCommand } from '../application/use-cases/connect-to-the-game.use-case';
 import { AddAnswerCommand } from '../application/use-cases/add-answer.use-case';
 import { SortingQueryParamsForUsers } from '../../features/users/api/models/query/query-for-sorting';
-import { SortingQueryParamsForQuizGame } from './models/query/sorting-query-params-quiz';
+import {
+  SortingQueryParamsForQuizGame,
+  SortingQueryParamsForTopScoreUsers,
+} from './models/query/sorting-query-params-quiz';
 import { GetMyGamesCommand } from '../application/use-cases/get-my-games-use-case';
 import { GetMyStatisticCommand } from '../application/use-cases/get-my-statistic-use-case';
 
@@ -142,5 +145,17 @@ export class QuizGameController {
       throw new NotFoundException();
     }
     return statistic;
+  }
+  @Get('/users/top')
+  @HttpCode(HttpStatus.OK)
+  async getTopScoreUsers(
+    @Query()
+    sortingQueryParamsForTopScoreUsers: SortingQueryParamsForTopScoreUsers,
+  ) {
+    console.log(
+      '🚀 ~ QuizGameController ~ getTopScoreUsers ~ sortingQueryParamsForTopScoreUsers:',
+      sortingQueryParamsForTopScoreUsers,
+    );
+    return true;
   }
 }

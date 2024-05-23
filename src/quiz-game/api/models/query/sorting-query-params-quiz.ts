@@ -4,3 +4,9 @@ export class SortingQueryParamsForQuizGame {
   pageNumber: number;
   pageSize: number;
 }
+
+export class SortingQueryParamsForTopScoreUsers {
+  sort: string | string[];
+  pageNumber: number;
+  pageSize: number;
+}
