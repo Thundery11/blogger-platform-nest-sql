@@ -307,7 +307,7 @@ export class QuizGameQueryRepository {
     const gamesCount = parseInt(result.totalGames);
     const winsCount = parseInt(result.winscount);
     const lossesCount = parseInt(result.lossescount);
-    const drowsCount = parseInt(result.drowscount);
+    const drawsCount = parseInt(result.drowscount);
     const avgScores = parseFloat(formatAvgScore(sumScore / gamesCount));
 
     return {
@@ -316,7 +316,7 @@ export class QuizGameQueryRepository {
       gamesCount,
       winsCount,
       lossesCount,
-      drowsCount,
+      drawsCount,
     };
   }
 }
