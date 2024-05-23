@@ -162,7 +162,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     AuthModule,
     UsersModule,
     CqrsModule,
-    TypeOrmModule.forRoot(localDbOptions),
+    TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,
