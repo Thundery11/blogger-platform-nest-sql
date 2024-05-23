@@ -9,6 +9,7 @@ import {
   quizGameOutputModel,
 } from '../api/models/output/quiz-game.output.model';
 import { Answers } from '../domain/quiz-answers.entity';
+import { Statistics } from '../domain/statistics-quiz-game.entity';
 
 @Injectable()
 export class QuizGameRepository {
@@ -19,6 +20,7 @@ export class QuizGameRepository {
     @InjectRepository(QuizQuestions)
     private quizQuestionsRepository: Repository<QuizQuestions>,
     @InjectRepository(Answers) private answersRepository: Repository<Answers>,
+    @InjectRepository(Statistics) private statsRepo: Repository<Statistics>,
   ) {}
 
   async isGameWithPandingPlayerExist() {
@@ -165,6 +167,25 @@ export class QuizGameRepository {
       { status: PlayerStatus.Finished },
     );
     return result.affected === 1;
+  }
+
+  async setStatistcsOfUsers(playerId: number, statsForPlayer) {
+    const isStatsTableExist = await this.statsRepo.findOne({
+      where: { playerId: playerId },
+    });
+    if (!isStatsTableExist) {
+      const stats = Statistics.addStats(playerId, statsForPlayer);
+      this.statsRepo.save(stats);
+    } else {
+      isStatsTableExist.sumScore = statsForPlayer.sumScore;
+      isStatsTableExist.avgScores = statsForPlayer.avgScores;
+      isStatsTableExist.gamesCount = statsForPlayer.gamesCount;
+      isStatsTableExist.winsCount = statsForPlayer.winsCount;
+      isStatsTableExist.lossesCount = statsForPlayer.lossesCount;
+      isStatsTableExist.drawsCount = statsForPlayer.drawsCount;
+      isStatsTableExist.playerId = statsForPlayer;
+      await this.statsRepo.save(isStatsTableExist);
+    }
   }
   // async addQuestion(gameId: number){
   //   const question = await this.quizQuestionsRepository.save
