@@ -12,7 +12,7 @@ export class GetMyStatisticUseCase
   async execute(command: GetMyStatisticCommand): Promise<any> {
     const { currentUserId } = command;
     const totalScore =
-      await this.quizGameQueryRepository.getTotalScore(currentUserId);
+      await this.quizGameQueryRepository.getMyStatistic(currentUserId);
 
     return totalScore;
   }

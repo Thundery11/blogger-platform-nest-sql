@@ -10,6 +10,7 @@ import {
   quizGameOutputModel,
 } from '../api/models/output/quiz-game.output.model';
 import { formatAvgScore } from '../helper-functions/avg-score-function';
+import { Statistics } from '../domain/statistics-quiz-game.entity';
 
 @Injectable()
 export class QuizGameQueryRepository {
@@ -17,6 +18,7 @@ export class QuizGameQueryRepository {
     @InjectRepository(PlayerProgress)
     private playerProgressRepo: Repository<PlayerProgress>,
     @InjectRepository(Game) private quizGameQueryRepo: Repository<Game>,
+    @InjectRepository(Statistics) private statsRepo: Repository<Statistics>,
   ) {}
   async findGameById(id: number): Promise<PlayerProgress | null> {
     const game = await this.playerProgressRepo.findOne({
@@ -320,5 +322,21 @@ export class QuizGameQueryRepository {
       lossesCount,
       drawsCount,
     };
+  }
+  async getMyStatistic(currentUserId: number) {
+    const statistic = await this.statsRepo
+      .createQueryBuilder('stats')
+      .select([
+        'stats.sumScore',
+        'stats.avgScores',
+        'stats.gamesCount',
+        'stats.winsCount',
+        'stats.lossesCount',
+        'stats.drawsCount',
+      ])
+      .leftJoin('stats.player', 'player')
+      .where('stats.playerId = :id', { id: currentUserId })
+      .getOne();
+    return statistic;
   }
 }

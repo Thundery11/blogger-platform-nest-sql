@@ -7,7 +7,7 @@ export class Statistics {
   id: number;
   @Column()
   sumScore: number;
-  @Column()
+  @Column('float', { nullable: true })
   avgScores: number;
   @Column()
   gamesCount: number;
