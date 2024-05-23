@@ -29,6 +29,7 @@ import {
 import { GetMyGamesCommand } from '../application/use-cases/get-my-games-use-case';
 import { GetMyStatisticCommand } from '../application/use-cases/get-my-statistic-use-case';
 import { parseSortParams } from '../helper-functions/sorting-params-function';
+import { GetTopScoresCommand } from '../application/use-cases/get-top-scores-use-case';
 
 @Controller('pair-game-quiz')
 export class QuizGameController {
@@ -99,7 +100,6 @@ export class QuizGameController {
     @Query() sortingQueryParamsForQuiz: SortingQueryParamsForQuizGame,
     @CurrentUserId() currentUserId: number,
   ) {
-    console.log('🚀 ~ QuizGameController ~ currentUserId:', currentUserId);
     const user = await this.quizGameQueryRepo.findGameById(currentUserId);
 
     if (!user) {
@@ -108,7 +108,6 @@ export class QuizGameController {
       }
     }
     const userId = user.id;
-    console.log('🚀 ~ QuizGameController ~ userId:', userId);
     const myGames = await this.commandBus.execute(
       new GetMyGamesCommand(sortingQueryParamsForQuiz, currentUserId),
     );
@@ -153,17 +152,10 @@ export class QuizGameController {
     @Query()
     sortingQueryParamsForTopScoreUsers: SortingQueryParamsForTopScoreUsers,
   ) {
-    const {
-      sort = ['sumScore desc', 'avgScores desc'],
-      pageNumber = 1,
-      pageSize = 10,
-    } = sortingQueryParamsForTopScoreUsers;
-    const sortingParams = parseSortParams(sort);
-    console.log('🚀 ~ QuizGameController ~ sortingParams:', sortingParams);
-    console.log(
-      '🚀 ~ QuizGameController ~ getTopScoreUsers ~ sortingQueryParamsForTopScoreUsers:',
-      sortingQueryParamsForTopScoreUsers,
+    const statistics = await this.commandBus.execute(
+      new GetTopScoresCommand(sortingQueryParamsForTopScoreUsers),
     );
-    return true;
+
+    return statistics;
   }
 }

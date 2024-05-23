@@ -85,6 +85,7 @@ import { ConnectToTheGameUseCase } from './quiz-game/application/use-cases/conne
 import { GetMyGamesUseCase } from './quiz-game/application/use-cases/get-my-games-use-case';
 import { GetMyStatisticUseCase } from './quiz-game/application/use-cases/get-my-statistic-use-case';
 import { GetTopScoresUseCase } from './quiz-game/application/use-cases/get-top-scores-use-case';
+import { Statistics } from './quiz-game/domain/statistics-quiz-game.entity';
 
 const useCases = [
   CreateBlogUseCase,
@@ -175,6 +176,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
       Game,
       Answers,
       PlayerProgress,
+      Statistics,
     ]),
     // ConfigModule.forRoot(),
     //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули

@@ -4,6 +4,9 @@ import { QuizGameQueryRepository } from '../../infrastructure/quiz-game-query.re
 import { AnswerDto } from '../../api/models/input/quiz-game.input.model';
 import { Answers, IsCorrectAnswer } from '../../domain/quiz-answers.entity';
 import { ForbiddenException } from '@nestjs/common';
+import { Statistics } from '../../domain/statistics-quiz-game.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 export class AddAnswerCommand {
   constructor(
@@ -17,13 +20,11 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
   constructor(
     private quizGameRepository: QuizGameRepository,
     private quizGameQueryRepository: QuizGameQueryRepository,
+    @InjectRepository(Statistics) private statsRepo: Repository<Statistics>,
   ) {}
   async execute(command: AddAnswerCommand): Promise<any> {
     const { answerDto, playerProgressId, gameId } = command;
-    console.log(
-      '🚀 ~ AddAnswerUseCase ~ execute ~ playerProgressId:',
-      playerProgressId,
-    );
+
     const answer = new Answers();
     const addedAt = new Date().toISOString();
     const allPossibleQuestionsFromGame =
@@ -62,7 +63,6 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
     answer.addedAt = addedAt;
 
     const addAnswerToDb = await this.quizGameRepository.addAnswerToDb(answer);
-    console.log('🚀 ~ QuizGameService ~ addAnswerToDb:', addAnswerToDb);
     const addPlayerScoreToDb = await this.quizGameRepository.addPlayerScoreToDb(
       playerProgressId,
       score,
@@ -72,6 +72,10 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
       await this.quizGameQueryRepository.findNotMappedGameForCurrentUser(
         playerProgressId,
       );
+
+    //получим id игроков, чтобы записать статистику в базу данных
+    const firstPlayerId = isThatWasLastUnswer!.firstPlayerProgress.player.id;
+    const secondPlayerId = isThatWasLastUnswer!.secondPlayerProgress.player.id;
 
     const firstPlayerProgressId = isThatWasLastUnswer?.firstPlayerProgress.id;
     const secondPlayerProgressId = isThatWasLastUnswer?.secondPlayerProgress.id;
@@ -119,6 +123,19 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
         await this.quizGameRepository.finishPlayerProgress(
           secondPlayerProgressId,
         );
+        const statsForFirstPlayer =
+          await this.quizGameQueryRepository.getTotalScore(firstPlayerId);
+
+        await this.quizGameRepository.setStatistcsOfUsers(
+          firstPlayerId,
+          statsForFirstPlayer,
+        );
+        const statsForSecondPlayer =
+          await this.quizGameQueryRepository.getTotalScore(secondPlayerId);
+        await this.quizGameRepository.setStatistcsOfUsers(
+          secondPlayerId,
+          statsForSecondPlayer,
+        );
       } else if (
         firstPlayerLastAnswerDate > secondPlayerLastAnswerDate &&
         doesSecondPlayerHasOneCorrectAnswer === true
@@ -135,6 +152,19 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
         await this.quizGameRepository.finishPlayerProgress(
           secondPlayerProgressId,
         );
+        const statsForFirstPlayer =
+          await this.quizGameQueryRepository.getTotalScore(firstPlayerId);
+
+        await this.quizGameRepository.setStatistcsOfUsers(
+          firstPlayerId,
+          statsForFirstPlayer,
+        );
+        const statsForSecondPlayer =
+          await this.quizGameQueryRepository.getTotalScore(secondPlayerId);
+        await this.quizGameRepository.setStatistcsOfUsers(
+          secondPlayerId,
+          statsForSecondPlayer,
+        );
       } else {
         await this.quizGameRepository.endTheGame(addedAt, gameId);
         await this.quizGameRepository.finishPlayerProgress(
@@ -142,6 +172,19 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
         );
         await this.quizGameRepository.finishPlayerProgress(
           secondPlayerProgressId,
+        );
+        const statsForFirstPlayer =
+          await this.quizGameQueryRepository.getTotalScore(firstPlayerId);
+
+        await this.quizGameRepository.setStatistcsOfUsers(
+          firstPlayerId,
+          statsForFirstPlayer,
+        );
+        const statsForSecondPlayer =
+          await this.quizGameQueryRepository.getTotalScore(secondPlayerId);
+        await this.quizGameRepository.setStatistcsOfUsers(
+          secondPlayerId,
+          statsForSecondPlayer,
         );
       }
     }

@@ -8,6 +8,7 @@ import { LastLiked } from '../../likes/domain/last-liked.entity';
 import { Comments } from '../../comments/domain/comments.entity';
 import { SecurityDevices } from '../../security-devices/domain/security-devices.entity';
 import { PlayerProgress } from '../../../quiz-game/domain/player-progress.entity';
+import { Statistics } from '../../../quiz-game/domain/statistics-quiz-game.entity';
 
 // export type UsersDocument = HydratedDocument<Users>;
 // export type UsersModelType = Model<UsersDocument> & typeof statics;
@@ -42,6 +43,8 @@ export class Users {
   securityDevices: SecurityDevices[];
   @OneToMany(() => PlayerProgress, (pp) => pp.player)
   playerProgress: PlayerProgress[];
+  @OneToMany(() => Statistics, (s) => s.player)
+  statistics: Statistics[];
 }
 
 // @Schema({ _id: false })

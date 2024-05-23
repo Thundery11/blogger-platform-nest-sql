@@ -13,6 +13,7 @@ export class GetMyStatisticUseCase
     const { currentUserId } = command;
     const totalScore =
       await this.quizGameQueryRepository.getTotalScore(currentUserId);
+
     return totalScore;
   }
 }

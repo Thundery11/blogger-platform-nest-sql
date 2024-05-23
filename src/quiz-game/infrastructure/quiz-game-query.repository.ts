@@ -302,7 +302,7 @@ export class QuizGameQueryRepository {
       .leftJoin('secondPlayerProgress.player', 'secondPlayer')
       .where('game.finishGameDate IS NOT NULL')
       .setParameter('playerId', playerId);
-    console.log(queryBuilder.getSql());
+    // console.log(queryBuilder.getSql());
     const result = await queryBuilder.getRawOne(); //написать функцию которая добавляет orderBy
 
     const sumScore = parseInt(result.totalScore) || 0;
@@ -310,7 +310,7 @@ export class QuizGameQueryRepository {
     const winsCount = parseInt(result.winscount);
     const lossesCount = parseInt(result.lossescount);
     const drawsCount = parseInt(result.drowscount);
-    const avgScores = parseFloat(formatAvgScore(sumScore / gamesCount));
+    const avgScores = parseFloat(formatAvgScore(sumScore / gamesCount)) || 0;
 
     return {
       sumScore,
