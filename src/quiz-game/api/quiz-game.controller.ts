@@ -28,6 +28,7 @@ import {
 } from './models/query/sorting-query-params-quiz';
 import { GetMyGamesCommand } from '../application/use-cases/get-my-games-use-case';
 import { GetMyStatisticCommand } from '../application/use-cases/get-my-statistic-use-case';
+import { parseSortParams } from '../helper-functions/sorting-params-function';
 
 @Controller('pair-game-quiz')
 export class QuizGameController {
@@ -152,6 +153,13 @@ export class QuizGameController {
     @Query()
     sortingQueryParamsForTopScoreUsers: SortingQueryParamsForTopScoreUsers,
   ) {
+    const {
+      sort = ['sumScore desc', 'avgScores desc'],
+      pageNumber = 1,
+      pageSize = 10,
+    } = sortingQueryParamsForTopScoreUsers;
+    const sortingParams = parseSortParams(sort);
+    console.log('🚀 ~ QuizGameController ~ sortingParams:', sortingParams);
     console.log(
       '🚀 ~ QuizGameController ~ getTopScoreUsers ~ sortingQueryParamsForTopScoreUsers:',
       sortingQueryParamsForTopScoreUsers,

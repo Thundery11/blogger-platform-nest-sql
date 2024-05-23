@@ -241,6 +241,8 @@ export class QuizGameQueryRepository {
       .addOrderBy('game.pairCreatedDate', 'DESC')
       .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
       .addOrderBy('secondPlayerAnswers.addedAt', 'ASC');
+
+    console.log(queryBuilder.getSql());
     const myGames = await queryBuilder.getMany();
     if (!myGames) {
       return null;
@@ -301,7 +303,7 @@ export class QuizGameQueryRepository {
       .where('game.finishGameDate IS NOT NULL')
       .setParameter('playerId', playerId);
     console.log(queryBuilder.getSql());
-    const result = await queryBuilder.getRawOne();
+    const result = await queryBuilder.getRawOne(); //написать функцию которая добавляет orderBy
 
     const sumScore = parseInt(result.totalScore) || 0;
     const gamesCount = parseInt(result.totalGames);

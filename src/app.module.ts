@@ -84,6 +84,7 @@ import { AddAnswerUseCase } from './quiz-game/application/use-cases/add-answer.u
 import { ConnectToTheGameUseCase } from './quiz-game/application/use-cases/connect-to-the-game.use-case';
 import { GetMyGamesUseCase } from './quiz-game/application/use-cases/get-my-games-use-case';
 import { GetMyStatisticUseCase } from './quiz-game/application/use-cases/get-my-statistic-use-case';
+import { GetTopScoresUseCase } from './quiz-game/application/use-cases/get-top-scores-use-case';
 
 const useCases = [
   CreateBlogUseCase,
@@ -113,6 +114,7 @@ const useCases = [
   ConnectToTheGameUseCase,
   GetMyGamesUseCase,
   GetMyStatisticUseCase,
+  GetTopScoresUseCase,
 ];
 const {
   PGHOST,

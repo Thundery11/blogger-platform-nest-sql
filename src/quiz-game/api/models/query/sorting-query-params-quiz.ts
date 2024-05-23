@@ -6,7 +6,7 @@ export class SortingQueryParamsForQuizGame {
 }
 
 export class SortingQueryParamsForTopScoreUsers {
-  sort: string | string[];
+  sort: string[] | string;
   pageNumber: number;
   pageSize: number;
 }
