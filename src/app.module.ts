@@ -83,6 +83,7 @@ import { QuizGameController } from './quiz-game/api/quiz-game.controller';
 import { AddAnswerUseCase } from './quiz-game/application/use-cases/add-answer.use-case';
 import { ConnectToTheGameUseCase } from './quiz-game/application/use-cases/connect-to-the-game.use-case';
 import { GetMyGamesUseCase } from './quiz-game/application/use-cases/get-my-games-use-case';
+import { GetMyStatisticUseCase } from './quiz-game/application/use-cases/get-my-statistic-use-case';
 
 const useCases = [
   CreateBlogUseCase,
@@ -111,6 +112,7 @@ const useCases = [
   AddAnswerUseCase,
   ConnectToTheGameUseCase,
   GetMyGamesUseCase,
+  GetMyStatisticUseCase,
 ];
 const {
   PGHOST,

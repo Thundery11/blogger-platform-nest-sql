@@ -20,7 +20,6 @@ export class GetMyGamesUseCase implements ICommandHandler<GetMyGamesCommand> {
       pageNumber = 1,
       pageSize = 10,
     } = sortingQueryParamsForQuiz;
-    console.log('🚀 ~ GetMyGamesUseCase ~ execute ~ sortBy:', sortBy);
 
     const skip = (pageNumber - 1) * pageSize;
     const countedDocuments =

@@ -9,6 +9,7 @@ import {
   getPlayerProgressId,
   quizGameOutputModel,
 } from '../api/models/output/quiz-game.output.model';
+import { formatAvgScore } from '../helper-functions/avg-score-function';
 
 @Injectable()
 export class QuizGameQueryRepository {
@@ -240,68 +241,82 @@ export class QuizGameQueryRepository {
       .addOrderBy('game.pairCreatedDate', 'DESC')
       .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
       .addOrderBy('secondPlayerAnswers.addedAt', 'ASC');
-
-    // Логируем SQL-запрос для отладки
-    console.log(queryBuilder.getSql());
-
     const myGames = await queryBuilder.getMany();
-    console.log('🚀 ~ QuizGameQueryRepository ~ myGames:', myGames);
-
     if (!myGames) {
       return null;
     }
     return allGamesOutputMapper(myGames);
   }
 
-  // async findMyGames(
-  //   sortBy: string,
-  //   sortDirection: string,
-  //   pageSize: number,
-  //   skip: number,
-  //   currentUserId: number,
-  // ) {
-  //   const queryBuilder = this.quizGameQueryRepo
-  //     .createQueryBuilder('game')
-  //     .select([
-  //       'game.id',
-  //       'game.status',
-  //       'game.pairCreatedDate',
-  //       'game.startGameDate',
-  //       'game.finishGameDate',
-  //       'firstPlayerAnswers.questionId',
-  //       'firstPlayerAnswers.answerStatus',
-  //       'firstPlayerAnswers.addedAt',
-  //       'firstPlayer.login',
-  //       'firstPlayer.id',
-  //       'firstPlayerProgress.score',
-  //       'secondPlayerAnswers.questionId',
-  //       'secondPlayerAnswers.answerStatus',
-  //       'secondPlayerAnswers.addedAt',
-  //       'secondPlayer.login',
-  //       'secondPlayer.id',
-  //       'secondPlayerProgress.score',
-  //       'game.questions',
-  //     ])
-  //     .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
-  //     .leftJoin('firstPlayerProgress.player', 'firstPlayer')
-  //     .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
-  //     .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
-  //     .leftJoin('secondPlayerProgress.player', 'secondPlayer')
-  //     .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
-  //     .where(`firstPlayer.id = :id`, { id: currentUserId })
-  //     .orWhere(`secondPlayer.id = :id`, { id: currentUserId })
-  //     .addOrderBy('firstPlayerAnswers.addedAt', 'ASC')
-  //     .addOrderBy('secondPlayerAnswers.addedAt', 'ASC')
-  //     .addOrderBy(`game.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
-  //     .addOrderBy(`game.pairCreatedDate`, 'DESC');
+  async getTotalScore(playerId: number) {
+    const queryBuilder = this.quizGameQueryRepo
+      .createQueryBuilder('game')
+      .select(
+        'SUM(CASE WHEN firstPlayer.id = :playerId THEN firstPlayerProgress.score ELSE 0 END) + ' +
+          'SUM(CASE WHEN secondPlayer.id = :playerId THEN secondPlayerProgress.score ELSE 0 END)',
+        'totalScore',
+      )
+      .addSelect(
+        '(COUNT( CASE WHEN firstPlayer.id = :playerId THEN game.id ELSE NULL END) + ' +
+          'COUNT( CASE WHEN secondPlayer.id = :playerId THEN game.id ELSE NULL END))',
+        'totalGames',
+      )
+      .addSelect(
+        `
+      SUM(
+          CASE 
+              WHEN firstPlayer.id = :playerId AND firstPlayerProgress.score > secondPlayerProgress.score THEN 1 
+              WHEN secondPlayer.id = :playerId AND secondPlayerProgress.score > firstPlayerProgress.score THEN 1 
+              ELSE 0 
+          END
+      ) AS winsCount
+  `,
+      )
+      .addSelect(
+        `
+      SUM(
+          CASE 
+              WHEN firstPlayer.id = :playerId AND firstPlayerProgress.score < secondPlayerProgress.score THEN 1 
+              WHEN secondPlayer.id = :playerId AND secondPlayerProgress.score < firstPlayerProgress.score THEN 1 
+              ELSE 0 
+          END
+      ) AS lossesCount
+  `,
+      )
+      .addSelect(
+        `
+      SUM(
+          CASE 
+              WHEN firstPlayer.id = :playerId AND firstPlayerProgress.score = secondPlayerProgress.score THEN 1 
+              WHEN secondPlayer.id = :playerId AND secondPlayerProgress.score = firstPlayerProgress.score THEN 1 
+              ELSE 0 
+          END
+      ) AS drowsCount
+  `,
+      )
+      .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+      .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+      .where('game.finishGameDate IS NOT NULL')
+      .setParameter('playerId', playerId);
+    console.log(queryBuilder.getSql());
+    const result = await queryBuilder.getRawOne();
 
-  //   console.log(queryBuilder.getSql());
-  //   const myGames = await queryBuilder.getMany();
-  //   console.log('🚀 ~ QuizGameQueryRepository ~ myGames:', myGames);
+    const sumScore = parseInt(result.totalScore) || 0;
+    const gamesCount = parseInt(result.totalGames);
+    const winsCount = parseInt(result.winscount);
+    const lossesCount = parseInt(result.lossescount);
+    const drowsCount = parseInt(result.drowscount);
+    const avgScores = parseFloat(formatAvgScore(sumScore / gamesCount));
 
-  //   if (!myGames) {
-  //     return null;
-  //   }
-  //   return myGames;
-  // }
+    return {
+      sumScore,
+      avgScores,
+      gamesCount,
+      winsCount,
+      lossesCount,
+      drowsCount,
+    };
+  }
 }

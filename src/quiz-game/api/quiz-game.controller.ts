@@ -24,8 +24,9 @@ import { AddAnswerCommand } from '../application/use-cases/add-answer.use-case';
 import { SortingQueryParamsForUsers } from '../../features/users/api/models/query/query-for-sorting';
 import { SortingQueryParamsForQuizGame } from './models/query/sorting-query-params-quiz';
 import { GetMyGamesCommand } from '../application/use-cases/get-my-games-use-case';
+import { GetMyStatisticCommand } from '../application/use-cases/get-my-statistic-use-case';
 
-@Controller('pair-game-quiz/pairs')
+@Controller('pair-game-quiz')
 export class QuizGameController {
   constructor(
     private commandBus: CommandBus,
@@ -34,7 +35,7 @@ export class QuizGameController {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('/my-current')
+  @Get('/pairs/my-current')
   @HttpCode(HttpStatus.OK)
   async getMyCurrentGame(@CurrentUserId() currentUserId: number) {
     const user =
@@ -56,7 +57,7 @@ export class QuizGameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/connection')
+  @Post('/pairs/connection')
   @HttpCode(HttpStatus.OK)
   async connectToTheGame(@CurrentUserId() currentUserId: number) {
     const game = await this.commandBus.execute(
@@ -66,7 +67,7 @@ export class QuizGameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/my-current/answers')
+  @Post('/pairs/my-current/answers')
   @HttpCode(HttpStatus.OK)
   async sendAnswer(
     @CurrentUserId() currentUserId: number,
@@ -88,7 +89,7 @@ export class QuizGameController {
     return answerStatus;
   }
   @UseGuards(JwtAuthGuard)
-  @Get('/my')
+  @Get('/pairs/my')
   @HttpCode(HttpStatus.OK)
   async myGames(
     @Query() sortingQueryParamsForQuiz: SortingQueryParamsForQuizGame,
@@ -111,7 +112,7 @@ export class QuizGameController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
+  @Get('/pairs/:id')
   @HttpCode(HttpStatus.OK)
   async getGameById(
     @Param('id', ParseIntPipe) id: number,
@@ -128,5 +129,18 @@ export class QuizGameController {
       throw new ForbiddenException();
     }
     return game;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/users/my-statistic')
+  @HttpCode(HttpStatus.OK)
+  async getMyStatistic(@CurrentUserId() currentUserId: number) {
+    const statistic = await this.commandBus.execute(
+      new GetMyStatisticCommand(currentUserId),
+    );
+    if (!statistic) {
+      throw new NotFoundException();
+    }
+    return statistic;
   }
 }
