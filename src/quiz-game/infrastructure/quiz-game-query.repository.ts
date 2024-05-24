@@ -306,7 +306,7 @@ export class QuizGameQueryRepository {
       .leftJoin('secondPlayerProgress.player', 'secondPlayer')
       .where('game.finishGameDate IS NOT NULL')
       .setParameter('playerId', playerId);
-    // console.log(queryBuilder.getSql());
+    console.log(queryBuilder.getSql());
     const result = await queryBuilder.getRawOne(); //написать функцию которая добавляет orderBy
 
     const sumScore = parseInt(result.totalScore) || 0;
@@ -354,6 +354,7 @@ export class QuizGameQueryRepository {
     skip: number,
   ) {
     const sortingParams = parseSortParams(sort);
+    console.log('🚀 ~ QuizGameQueryRepository ~ sortingParams:', sortingParams);
     const queryBuilder = this.statsRepo.createQueryBuilder('stats');
     queryBuilder
       .select([
@@ -367,9 +368,10 @@ export class QuizGameQueryRepository {
         'player.login',
       ])
       .leftJoin('stats.player', 'player')
+      .orderBy(sortingParams)
       .offset(skip)
       .limit(pageSize);
-
+    console.log(queryBuilder.getSql());
     const result = await queryBuilder.getMany();
 
     return topStatisticsOutputMapper(result);
