@@ -1,7 +1,14 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Users } from '../../features/users/domain/users.entity';
 
-@Entity()
+@Entity({
+  orderBy: {
+    avgScores: 'DESC',
+    sumScore: 'DESC',
+    winsCount: 'DESC',
+    lossesCount: 'ASC',
+  },
+})
 export class Statistics {
   @PrimaryGeneratedColumn('increment')
   id: number;

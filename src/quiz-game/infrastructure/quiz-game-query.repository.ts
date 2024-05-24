@@ -8,9 +8,11 @@ import {
   allGamesOutputMapper,
   getPlayerProgressId,
   quizGameOutputModel,
+  topStatisticsOutputMapper,
 } from '../api/models/output/quiz-game.output.model';
 import { formatAvgScore } from '../helper-functions/avg-score-function';
 import { Statistics } from '../domain/statistics-quiz-game.entity';
+import { parseSortParams } from '../helper-functions/sorting-params-function';
 
 @Injectable()
 export class QuizGameQueryRepository {
@@ -337,6 +339,39 @@ export class QuizGameQueryRepository {
       .leftJoin('stats.player', 'player')
       .where('stats.playerId = :id', { id: currentUserId })
       .getOne();
+
     return statistic;
+  }
+
+  async countAllDocumentsStatistic() {
+    const count = await this.statsRepo.count();
+    return Number(count);
+  }
+
+  async getTopStatistic(
+    sort: string | string[],
+    pageSize: number,
+    skip: number,
+  ) {
+    const sortingParams = parseSortParams(sort);
+    const queryBuilder = this.statsRepo.createQueryBuilder('stats');
+    queryBuilder
+      .select([
+        'stats.sumScore',
+        'stats.avgScores',
+        'stats.gamesCount',
+        'stats.winsCount',
+        'stats.lossesCount',
+        'stats.drawsCount',
+        'player.id',
+        'player.login',
+      ])
+      .leftJoin('stats.player', 'player')
+      .offset(skip)
+      .limit(pageSize);
+
+    const result = await queryBuilder.getMany();
+
+    return topStatisticsOutputMapper(result);
   }
 }

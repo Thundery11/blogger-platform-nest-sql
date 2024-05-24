@@ -21,11 +21,22 @@ export class GetTopScoresUseCase
       pageNumber = 1,
       pageSize = 10,
     } = sortingQueryParamsForTopScoreUsers;
-    const sortingParams = parseSortParams(sort);
-    console.log('🚀 ~ QuizGameController ~ sortingParams:', sortingParams);
-    console.log(
-      '🚀 ~ QuizGameController ~ getTopScoreUsers ~ sortingQueryParamsForTopScoreUsers:',
-      sortingQueryParamsForTopScoreUsers,
+    const skip = (pageNumber - 1) * pageSize;
+    const countedDocuments =
+      await this.quizQueryRepository.countAllDocumentsStatistic();
+    const pagesCount: number = Math.ceil(countedDocuments / pageSize);
+    const statistics = await this.quizQueryRepository.getTopStatistic(
+      sort,
+      pageSize,
+      skip,
     );
+    const presentationalStatistics = {
+      pagesCount,
+      page: Number(pageNumber),
+      pageSize: Number(pageSize),
+      totalCount: countedDocuments,
+      items: statistics,
+    };
+    return presentationalStatistics;
   }
 }

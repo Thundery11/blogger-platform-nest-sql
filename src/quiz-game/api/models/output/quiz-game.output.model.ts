@@ -1,6 +1,7 @@
 import { PlayerProgress } from '../../../domain/player-progress.entity';
 import { Answers, IsCorrectAnswer } from '../../../domain/quiz-answers.entity';
 import { Game, GameStatus } from '../../../domain/quiz-game.entity';
+import { Statistics } from '../../../domain/statistics-quiz-game.entity';
 export class AnswersOutputModel {
   questionId: string;
   answerStatus: IsCorrectAnswer;
@@ -10,6 +11,15 @@ export class AnswersOutputModel {
 export class Player {
   id: string;
   login: string;
+}
+export class TopStatisticsOutputModel {
+  sumScore: number;
+  avgScores: number;
+  gamesCount: number;
+  winsCount: number;
+  lossesCount: number;
+  drawsCount: number;
+  player: Player;
 }
 export class QuizQuestionsOutput {
   id: string;
@@ -149,4 +159,22 @@ export const allGamesOutputMapper = (games: Game[]) => {
       : null,
   }));
   return outputGames;
+};
+
+export const topStatisticsOutputMapper = (
+  statistics: Statistics[],
+): TopStatisticsOutputModel[] => {
+  const outputStatistics = statistics.map((s) => ({
+    sumScore: s.sumScore,
+    avgScores: s.avgScores,
+    gamesCount: s.gamesCount,
+    winsCount: s.winsCount,
+    lossesCount: s.lossesCount,
+    drawsCount: s.drawsCount,
+    player: {
+      id: s.player.id.toString(),
+      login: s.player.login,
+    },
+  }));
+  return outputStatistics;
 };
