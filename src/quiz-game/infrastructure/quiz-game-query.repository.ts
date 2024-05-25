@@ -376,4 +376,69 @@ export class QuizGameQueryRepository {
 
     return topStatisticsOutputMapper(result);
   }
+  async findNotFinishedGames(): Promise<Game[] | null> {
+    const game = await this.quizGameQueryRepo
+      .createQueryBuilder('game')
+      .select([
+        'game.id',
+        'game.status',
+        'game.finishGameDate',
+        'firstPlayerAnswers.questionId',
+        'firstPlayerAnswers.answerStatus',
+        'firstPlayerAnswers.addedAt',
+        'firstPlayer.login',
+        'firstPlayer.id',
+        'firstPlayerProgress.score',
+        'secondPlayerAnswers.questionId',
+        'secondPlayerAnswers.answerStatus',
+        'secondPlayerAnswers.addedAt',
+        'secondPlayer.login',
+        'secondPlayer.id',
+        'secondPlayerProgress.score',
+      ])
+      .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+      .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
+      .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+      .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
+      .where('game.finishGameDate IS NULL')
+      .getMany();
+
+    return game;
+  }
+  // async findNotFinishedGames(): Promise<Game[] | null> {
+  //   const game = await this.quizGameQueryRepo
+  //     .createQueryBuilder('game')
+  //     .select([
+  //       'game.id',
+  //       'game.status',
+  //       'game.pairCreatedDate',
+  //       'game.startGameDate',
+  //       'game.finishGameDate',
+  //       'firstPlayerAnswers.questionId',
+  //       'firstPlayerAnswers.answerStatus',
+  //       'firstPlayerAnswers.addedAt',
+  //       'firstPlayer.login',
+  //       'firstPlayer.id',
+  //       'firstPlayerProgress.score',
+  //       'secondPlayerAnswers.questionId',
+  //       'secondPlayerAnswers.answerStatus',
+  //       'secondPlayerAnswers.addedAt',
+  //       'secondPlayer.login',
+  //       'secondPlayer.id',
+  //       'secondPlayerProgress.score',
+  //       'game.questions',
+  //     ])
+  //     .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
+  //     .leftJoin('firstPlayerProgress.player', 'firstPlayer')
+  //     .leftJoin('firstPlayerProgress.answers', 'firstPlayerAnswers')
+  //     .leftJoin('game.secondPlayerProgress', 'secondPlayerProgress')
+  //     .leftJoin('secondPlayerProgress.player', 'secondPlayer')
+  //     .leftJoin('secondPlayerProgress.answers', 'secondPlayerAnswers')
+  //     .where('game.finishGameDate IS NULL')
+  //     .getMany();
+
+  //   return game;
+  // }
 }

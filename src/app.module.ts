@@ -86,6 +86,8 @@ import { GetMyGamesUseCase } from './quiz-game/application/use-cases/get-my-game
 import { GetMyStatisticUseCase } from './quiz-game/application/use-cases/get-my-statistic-use-case';
 import { GetTopScoresUseCase } from './quiz-game/application/use-cases/get-top-scores-use-case';
 import { Statistics } from './quiz-game/domain/statistics-quiz-game.entity';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CloseGameWhenTimeOutUseCase } from './quiz-game/application/use-cases/close-game-when-time-out-use-case';
 
 const useCases = [
   CreateBlogUseCase,
@@ -116,6 +118,7 @@ const useCases = [
   GetMyGamesUseCase,
   GetMyStatisticUseCase,
   GetTopScoresUseCase,
+  CloseGameWhenTimeOutUseCase,
 ];
 const {
   PGHOST,
@@ -162,6 +165,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     AuthModule,
     UsersModule,
     CqrsModule,
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([
       Blogs,
@@ -178,8 +182,8 @@ export const localDbOptions: TypeOrmModuleOptions = {
       PlayerProgress,
       Statistics,
     ]),
-    // ConfigModule.forRoot(),
-    //как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
+    ConfigModule.forRoot(),
+    // как правильно импортировать МОДЕЛИ? можно ли их импортировать в разные модули
     MongooseModule.forFeature([
       {
         name: Blogs.name,

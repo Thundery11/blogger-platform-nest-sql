@@ -1650,60 +1650,60 @@ describe('Public quiz testing', () => {
     });
   });
 
-  // describe('Games statistics', () => {
-  //   it(`should return correct stats for user 01`, async () => {
-  //     const response = await agent
-  //       .get(publicMyStats)
-  //       .auth(aTokenUser01, { type: 'bearer' })
-  //       .expect(200);
+  describe('Games statistics', () => {
+    it(`should return correct stats for user 01`, async () => {
+      const response = await agent
+        .get(publicMyStats)
+        .auth(aTokenUser01, { type: 'bearer' })
+        .expect(200);
 
-  //     expect(response.body.sumScore).toBe(9);
-  //     expect(response.body.avgScores).toBe(3);
-  //     expect(response.body.gamesCount).toBe(3);
-  //     expect(response.body.winsCount).toBe(3);
-  //     expect(response.body.lossesCount).toBe(0);
-  //     expect(response.body.drawsCount).toBe(0);
-  //   });
-  //   it(`should return correct stats for user 02`, async () => {
-  //     const response = await agent
-  //       .get(publicMyStats)
-  //       .auth(aTokenUser02, { type: 'bearer' })
-  //       .expect(200);
+      expect(response.body.sumScore).toBe(9);
+      expect(response.body.avgScores).toBe(3);
+      expect(response.body.gamesCount).toBe(3);
+      expect(response.body.winsCount).toBe(3);
+      expect(response.body.lossesCount).toBe(0);
+      expect(response.body.drawsCount).toBe(0);
+    });
+    it(`should return correct stats for user 02`, async () => {
+      const response = await agent
+        .get(publicMyStats)
+        .auth(aTokenUser02, { type: 'bearer' })
+        .expect(200);
 
-  //     expect(response.body.sumScore).toBe(4);
-  //     expect(response.body.avgScores).toBe(1.33);
-  //     expect(response.body.gamesCount).toBe(3);
-  //     expect(response.body.winsCount).toBe(0);
-  //     expect(response.body.lossesCount).toBe(3);
-  //     expect(response.body.drawsCount).toBe(0);
-  //   });
-  //   it(`should return correct stats for user 03`, async () => {
-  //     const response = await agent
-  //       .get(publicMyStats)
-  //       .auth(aTokenUser03, { type: 'bearer' })
-  //       .expect(200);
+      expect(response.body.sumScore).toBe(4);
+      expect(response.body.avgScores).toBe(1.33);
+      expect(response.body.gamesCount).toBe(3);
+      expect(response.body.winsCount).toBe(0);
+      expect(response.body.lossesCount).toBe(3);
+      expect(response.body.drawsCount).toBe(0);
+    });
+    it(`should return correct stats for user 03`, async () => {
+      const response = await agent
+        .get(publicMyStats)
+        .auth(aTokenUser03, { type: 'bearer' })
+        .expect(200);
 
-  //     expect(response.body.sumScore).toBe(1);
-  //     expect(response.body.avgScores).toBe(0.5);
-  //     expect(response.body.gamesCount).toBe(2);
-  //     expect(response.body.winsCount).toBe(1);
-  //     expect(response.body.lossesCount).toBe(1);
-  //     expect(response.body.drawsCount).toBe(0);
-  //   });
-  //   it(`should return correct stats for user 04`, async () => {
-  //     const response = await agent
-  //       .get(publicMyStats)
-  //       .auth(aTokenUser04, { type: 'bearer' })
-  //       .expect(200);
+      expect(response.body.sumScore).toBe(1);
+      expect(response.body.avgScores).toBe(0.5);
+      expect(response.body.gamesCount).toBe(2);
+      expect(response.body.winsCount).toBe(1);
+      expect(response.body.lossesCount).toBe(1);
+      expect(response.body.drawsCount).toBe(0);
+    });
+    it(`should return correct stats for user 04`, async () => {
+      const response = await agent
+        .get(publicMyStats)
+        .auth(aTokenUser04, { type: 'bearer' })
+        .expect(200);
 
-  //     expect(response.body.sumScore).toBe(1);
-  //     expect(response.body.avgScores).toBe(0.5);
-  //     expect(response.body.gamesCount).toBe(2);
-  //     expect(response.body.winsCount).toBe(1);
-  //     expect(response.body.lossesCount).toBe(1);
-  //     expect(response.body.drawsCount).toBe(0);
-  //   });
-  // });
+      expect(response.body.sumScore).toBe(1);
+      expect(response.body.avgScores).toBe(0.5);
+      expect(response.body.gamesCount).toBe(2);
+      expect(response.body.winsCount).toBe(1);
+      expect(response.body.lossesCount).toBe(1);
+      expect(response.body.drawsCount).toBe(0);
+    });
+  });
 
   afterAll(async () => {
     await app.close();

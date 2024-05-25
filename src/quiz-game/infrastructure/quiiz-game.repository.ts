@@ -73,29 +73,7 @@ export class QuizGameRepository {
     game.questions = quizQuestion;
 
     return await this.quizGameRepository.save(game);
-    // const result = await this.quizGameRepository
-    //   .createQueryBuilder()
-    //   .update()
-    //   .set({
-    //     secondPlayerProgress: secondPlayer,
-    //     startGameDate: startGameDate,
-    //     status: status,
-    //     questions: quizQuestion,
-    //   })
-    //   .execute();
-    // return result.affected === 1;
   }
-  //   async getQuizQuestions() {
-  //   const quizQuestions = await this.quizQuestionsRepository
-  //     .createQueryBuilder('qq')
-  //     .select(['qq.id', 'qq.body', 'qq.correctAnswers'])
-  //     .where({ published: true })
-  //     .orderBy('RANDOM()')
-  //     .addOrderBy('qq.addedAt', 'DESC')
-  //     .take(5)
-  //     .getMany();
-  //   return quizQuestions;
-  // }
 
   async getQuizQuestions() {
     const quizQuestions = await this.quizQuestionsRepository
@@ -151,11 +129,6 @@ export class QuizGameRepository {
       .createQueryBuilder('game')
       .update()
       .set({ finishGameDate: addedAt, status: GameStatus.Finished })
-      // .where(`game.firstPlayerProgressId = :id`, { id: playerProgressId })
-      // .orWhere(`game.secondPlayerProgressId = :id`, { id: playerProgressId })
-      // .where(
-      //   `(game.firstPlayerProgressId = :id OR game.secondPlayerProgressId = :id)`,
-      // )
       .where(`game.id = :id`)
       .setParameters({ id: gameId })
       .execute();
@@ -187,16 +160,4 @@ export class QuizGameRepository {
       await this.statsRepo.save(isStatsTableExist);
     }
   }
-  // async addQuestion(gameId: number){
-  //   const question = await this.quizQuestionsRepository.save
-  // }
-
-  // async addQuestionsToTheGame(gameId: number) {
-  //   const questions = await this.questionsForUsersRepository
-  //     .createQueryBuilder('qg')
-  //     .select(['qg.question', 'question.body', 'question.id', 'qg.order'])
-  //     .leftJoin('qg.question', 'question')
-  //     .getMany();
-  //   return questions;
-  // }
 }
