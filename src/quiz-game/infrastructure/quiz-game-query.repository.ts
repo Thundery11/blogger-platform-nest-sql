@@ -389,12 +389,14 @@ export class QuizGameQueryRepository {
         'firstPlayer.login',
         'firstPlayer.id',
         'firstPlayerProgress.score',
+        'firstPlayerProgress.id',
         'secondPlayerAnswers.questionId',
         'secondPlayerAnswers.answerStatus',
         'secondPlayerAnswers.addedAt',
         'secondPlayer.login',
         'secondPlayer.id',
         'secondPlayerProgress.score',
+        'secondPlayerProgress.id',
       ])
       .leftJoin('game.firstPlayerProgress', 'firstPlayerProgress')
       .leftJoin('firstPlayerProgress.player', 'firstPlayer')

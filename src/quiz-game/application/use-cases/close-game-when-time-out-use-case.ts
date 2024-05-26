@@ -28,8 +28,10 @@ export class CloseGameWhenTimeOutUseCase
       const gameId = game.id;
       const firstPlayerId = firstPlayerProgress.player.id;
       const secondPlayerId = firstPlayerProgress.player.id;
+      const finalScorePoint = 1;
 
       const shouldEndGame = async (progress, otherProgress, progressId) => {
+        console.log('🚀 ~ shouldEndGame ~ progressId:', progressId);
         if (
           progress.answers.length === 5 &&
           otherProgress.answers.length !== 5
@@ -41,9 +43,14 @@ export class CloseGameWhenTimeOutUseCase
           }).addedAt;
 
           if (new Date(latestAddedAt).toISOString() < tenSecondsAgo) {
+            console.log('🚀 ~ shouldEndGame ~ latestAddedAt:', finalScorePoint);
+            console.log(
+              '🚀 ~ shouldEndGame ~ otherProgress ID:',
+              otherProgress.id,
+            );
             const res = await this.quizRepository.addPlayerScoreToDb(
-              progressId,
-              1,
+              progress.id,
+              finalScorePoint,
             );
             console.log('🚀 ~ shouldEndGame ~ res:', res);
             await this.quizRepository.endTheGame(date.toISOString(), gameId);
@@ -51,8 +58,18 @@ export class CloseGameWhenTimeOutUseCase
             await this.quizRepository.finishPlayerProgress(otherProgress.id);
             const statsForFirstPlayer =
               await this.quizQueryRepository.getTotalScore(firstPlayerId);
+            console.log(
+              '🚀 ~ shouldEndGame ~ statsForFirstPlayer:',
+              statsForFirstPlayer,
+            );
+
             const statsForSecondPlayer =
               await this.quizQueryRepository.getTotalScore(secondPlayerId);
+            console.log(
+              '🚀 ~ shouldEndGame ~ statsForSecondPlayer:',
+              statsForSecondPlayer,
+            );
+
             await this.quizRepository.setStatistcsOfUsers(
               firstPlayerId,
               statsForFirstPlayer,
@@ -63,8 +80,13 @@ export class CloseGameWhenTimeOutUseCase
             );
             return true;
           }
-          console.log('🚀 ~ shouldEndGame ~ latestAddedAt:', latestAddedAt);
+          console.log('🚀 ~ shouldEndGame ~ finalScorePoint:', finalScorePoint);
+          console.log('🚀 ~ shouldEndGame ~ progressId:', progressId);
+          console.log('🚀 ~ shouldEndGame ~ progressId:', progressId);
+          console.log('🚀 ~ shouldEndGame ~ progressId:', progressId);
         }
+        console.log('🚀 ~ shouldEndGame ~ progressId:', progressId);
+
         return false;
       };
 
