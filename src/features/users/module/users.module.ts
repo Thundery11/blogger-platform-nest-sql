@@ -21,6 +21,7 @@ import { QuizQuestions } from '../../../quizQuestions/domain/quiz-questions.enti
 import { PlayerProgress } from '../../../quiz-game/domain/player-progress.entity';
 import { Answers } from '../../../quiz-game/domain/quiz-answers.entity';
 import { Game } from '../../../quiz-game/domain/quiz-game.entity';
+import { Statistics } from '../../../quiz-game/domain/statistics-quiz-game.entity';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { Game } from '../../../quiz-game/domain/quiz-game.entity';
       Game,
       Answers,
       PlayerProgress,
+      Statistics,
     ]),
   ],
   controllers: [UsersController],
