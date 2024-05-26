@@ -20,7 +20,7 @@ export class CloseGameWhenTimeOutUseCase
     console.log('🚀 ~ execute ~ games:', games);
 
     const date = new Date();
-    const tenSecondsAgo = new Date(date.getTime() - 10000).toISOString();
+    const tenSecondsAgo = new Date(date.getTime() - 9000).toISOString();
     console.log('🚀 ~ execute ~ tenSecondsAgo:', tenSecondsAgo);
 
     const processGame = async (game) => {
