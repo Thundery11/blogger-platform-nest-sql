@@ -4,9 +4,6 @@ import { QuizGameQueryRepository } from '../../infrastructure/quiz-game-query.re
 import { AnswerDto } from '../../api/models/input/quiz-game.input.model';
 import { Answers, IsCorrectAnswer } from '../../domain/quiz-answers.entity';
 import { ForbiddenException } from '@nestjs/common';
-import { Statistics } from '../../domain/statistics-quiz-game.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 export class AddAnswerCommand {
   constructor(
