@@ -20,7 +20,6 @@ export class AddAnswerUseCase implements ICommandHandler<AddAnswerCommand> {
   constructor(
     private quizGameRepository: QuizGameRepository,
     private quizGameQueryRepository: QuizGameQueryRepository,
-    @InjectRepository(Statistics) private statsRepo: Repository<Statistics>,
   ) {}
   async execute(command: AddAnswerCommand): Promise<any> {
     const { answerDto, playerProgressId, gameId } = command;
