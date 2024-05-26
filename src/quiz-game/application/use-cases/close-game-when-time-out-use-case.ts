@@ -14,7 +14,7 @@ export class CloseGameWhenTimeOutUseCase
     private readonly quizRepository: QuizGameRepository,
     private readonly quizQueryRepository: QuizGameQueryRepository,
   ) {}
-  // @Cron(CronExpression.EVERY_SECOND)
+  @Cron(CronExpression.EVERY_SECOND)
   async execute(command: CloseGameWhenTimeOutCommand) {
     const games = await this.quizQueryRepository.findNotFinishedGames();
     console.log('🚀 ~ execute ~ games:', games);
