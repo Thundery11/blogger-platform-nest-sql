@@ -49,7 +49,7 @@ export class CloseGameWhenTimeOutUseCase
               otherProgress.id,
             );
             const res = await this.quizRepository.addPlayerScoreToDb(
-              progress.id,
+              progressId,
               finalScorePoint,
             );
             console.log('🚀 ~ shouldEndGame ~ res:', res);
