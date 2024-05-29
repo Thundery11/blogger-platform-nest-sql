@@ -1,9 +1,10 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { QuizQuestionAddedEvent } from './events/added-quiz-question.event';
 import { QuizQuestionsCreateModel } from '../api/models/input/quiz-questions.input.model';
+import { AggregateRoot } from '@nestjs/cqrs';
 
 @Entity()
-export class QuizQuestions {
+export class QuizQuestions extends AggregateRoot {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
@@ -19,8 +20,6 @@ export class QuizQuestions {
   @Column({ nullable: true })
   updatedAt: string;
 
-  events: any[] = [];
-
   static addQuizQuestion(quizQuestionsCreateModel: QuizQuestionsCreateModel) {
     const published = false;
     const createdAt = new Date().toISOString();
@@ -30,8 +29,7 @@ export class QuizQuestions {
     quizQuestion.createdAt = createdAt;
     quizQuestion.published = published;
 
-    const event = new QuizQuestionAddedEvent(quizQuestionsCreateModel);
-    quizQuestion.events.push(event);
+    quizQuestion.apply(new QuizQuestionAddedEvent(quizQuestionsCreateModel));
 
     return quizQuestion;
   }

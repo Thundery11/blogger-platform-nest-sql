@@ -26,7 +26,8 @@ export class CreateQuizQuestionUseCase
     );
     const createdQuestion =
       await this.quizQuestionsRepository.createQuizQuestion(quizQuestion);
-    quizQuestion.events.forEach((e) => {
+
+    quizQuestion.getUncommittedEvents().forEach((e) => {
       this.eventBus.publish(e);
     });
     return createdQuestion;
