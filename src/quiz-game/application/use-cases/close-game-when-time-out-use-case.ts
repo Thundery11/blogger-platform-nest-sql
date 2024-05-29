@@ -14,14 +14,16 @@ export class CloseGameWhenTimeOutUseCase
     private readonly quizRepository: QuizGameRepository,
     private readonly quizQueryRepository: QuizGameQueryRepository,
   ) {}
-  @Cron(CronExpression.EVERY_SECOND)
+  // @Cron(CronExpression.EVERY_SECOND)
   async execute(command: CloseGameWhenTimeOutCommand) {
     const games = await this.quizQueryRepository.findNotFinishedGames();
-
+    if (!games) {
+      return true;
+    }
     const date = new Date();
     const tenSecondsAgo = new Date(date.getTime() - 9000).toISOString();
 
-    const processGame = async (game) => {
+    const processGame = async (game: Game) => {
       const { id: gameId, firstPlayerProgress, secondPlayerProgress } = game;
       const firstPlayerId = firstPlayerProgress.player.id;
       const secondPlayerId = secondPlayerProgress.player.id;
