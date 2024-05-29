@@ -1,4 +1,4 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { QuizQuestionsCreateModel } from '../../api/models/input/quiz-questions.input.model';
 import { QuizQuestionsOutputModel } from '../../api/models/output/quizQuestions.output.model';
 import { QuizQuestions } from '../../domain/quiz-questions.entity';
@@ -12,19 +12,23 @@ export class CreateQuizQuestionCommand {
 export class CreateQuizQuestionUseCase
   implements ICommandHandler<CreateQuizQuestionCommand>
 {
-  constructor(private quizQuestionsRepository: QuizQuestionsRepository) {}
+  constructor(
+    private quizQuestionsRepository: QuizQuestionsRepository,
+    private eventBus: EventBus,
+  ) {}
   async execute(
     command: CreateQuizQuestionCommand,
   ): Promise<QuizQuestionsOutputModel> {
     const { quizQuestionsCreateModel } = command;
-    const published = false;
-    const createdAt = new Date().toISOString();
 
-    const quizQuestion = new QuizQuestions();
-    quizQuestion.body = quizQuestionsCreateModel.body;
-    quizQuestion.correctAnswers = quizQuestionsCreateModel.correctAnswers;
-    quizQuestion.createdAt = createdAt;
-    quizQuestion.published = published;
-    return await this.quizQuestionsRepository.createQuizQuestion(quizQuestion);
+    const quizQuestion = QuizQuestions.addQuizQuestion(
+      quizQuestionsCreateModel,
+    );
+    const createdQuestion =
+      await this.quizQuestionsRepository.createQuizQuestion(quizQuestion);
+    quizQuestion.events.forEach((e) => {
+      this.eventBus.publish(e);
+    });
+    return createdQuestion;
   }
 }

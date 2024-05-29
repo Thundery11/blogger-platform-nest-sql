@@ -1,4 +1,4 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { QuizQuestionsRepository } from '../../api/infrastructure/quiz-questions.repository';
 import { QuizQuestionsCreateModel } from '../../api/models/input/quiz-questions.input.model';
 import { NotFoundException } from '@nestjs/common';

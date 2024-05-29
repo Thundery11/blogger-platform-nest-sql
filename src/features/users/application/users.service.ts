@@ -67,10 +67,6 @@ export class UsersService {
       passwordSalt,
     );
     const confirmationCode = uuidv4();
-    console.log(
-      '🚀 ~ UsersService ~ createUser ~ confirmationCode:',
-      confirmationCode,
-    );
     const expirationDate = add(new Date(), {
       hours: 3,
       minutes: 3,
@@ -115,7 +111,6 @@ export class UsersService {
     // userCreateDto.isConfirmed = isConfirmed;
 
     const newUser = new Users();
-    console.log('🚀 ~ UsersService ~ createUser ~ newUser:', newUser);
     newUser.login = userCreateModel.login;
     newUser.email = userCreateModel.email;
     newUser.passwordHash = passwordHash;

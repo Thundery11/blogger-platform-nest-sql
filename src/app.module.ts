@@ -88,7 +88,10 @@ import { GetTopScoresUseCase } from './quiz-game/application/use-cases/get-top-s
 import { Statistics } from './quiz-game/domain/statistics-quiz-game.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CloseGameWhenTimeOutUseCase } from './quiz-game/application/use-cases/close-game-when-time-out-use-case';
-
+import { SendSecuriyuEmailWhenQuizQuestionAddedHandler } from './quizQuestions/application/events-handlers/send-security-email-when-question-created.event.handler';
+import { EmailsManager } from './infrastucture/managers/emails-manager';
+import { EmailAdapter } from './infrastucture/adapters/email-adapter';
+const eventHandlers = [SendSecuriyuEmailWhenQuizQuestionAddedHandler];
 const useCases = [
   CreateBlogUseCase,
   FindAllBlogsUseCase,
@@ -242,8 +245,11 @@ export const localDbOptions: TypeOrmModuleOptions = {
     QuizGameService,
     QuizGameRepository,
     QuizGameQueryRepository,
+    EmailsManager,
+    EmailAdapter,
 
     ...useCases,
+    ...eventHandlers,
   ],
 })
 export class AppModule {}
