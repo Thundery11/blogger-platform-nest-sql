@@ -17,6 +17,7 @@ export class DeleteBlogUseCase implements ICommandHandler<DeleteBlogCommand> {
 
   async execute(command: DeleteBlogCommand): Promise<boolean> {
     const isExistBlog = await this.blogsQueryRepository.getBlogById(command.id);
+    console.log('🚀 ~ DeleteBlogUseCase ~ execute ~ isExistBlog:', isExistBlog);
     if (!isExistBlog) {
       throw new NotFoundException();
     }

@@ -3,7 +3,7 @@ import { BlogsCreateModel } from '../../api/models/input/create-blog.input.model
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
 import { UsersQueryRepository } from '../../../users/infrastructure/users-query.repository';
 import { BlogsQueryRepository } from '../../infrastructure/blogs.query-repository';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, QueryRunner } from 'typeorm';
 import { Blogs } from '../../domain/blogs.entity';
@@ -25,6 +25,10 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
   ) {}
   async execute(command: UpdateBlogCommand): Promise<boolean> {
     const { currentUserId, blogsUpdateModel, id } = command;
+    const isExistBlog = await this.blogsQueryRepository.getBlogById(command.id);
+    if (!isExistBlog) {
+      throw new NotFoundException();
+    }
     const findBlogToUpdate = await this.blogsQueryRepository.getBlogByUserId(
       currentUserId,
       id,
