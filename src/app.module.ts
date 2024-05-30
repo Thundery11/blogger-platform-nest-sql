@@ -93,6 +93,7 @@ import { EmailsManager } from './infrastucture/managers/emails-manager';
 import { EmailAdapter } from './infrastucture/adapters/email-adapter';
 import { BloggerBlogsController } from './features/blogs/api/blogger-blogs.controller';
 import { ReturnTrueWhenBlogsCreatedHandler } from './features/blogs/application/use-cases/events-handlers/blog-created-event-handler';
+import { FindAllBlogsForCurrentUserUseCase } from './features/blogs/application/use-cases/find-all-blogs-for-current-user-use-case';
 const eventHandlers = [
   SendSecuriyuEmailWhenQuizQuestionAddedHandler,
   ReturnTrueWhenBlogsCreatedHandler,
@@ -127,6 +128,7 @@ const useCases = [
   GetMyStatisticUseCase,
   GetTopScoresUseCase,
   CloseGameWhenTimeOutUseCase,
+  FindAllBlogsForCurrentUserUseCase,
 ];
 const {
   PGHOST,

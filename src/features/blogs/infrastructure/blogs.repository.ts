@@ -63,13 +63,29 @@ export class BlogsRepository {
       await queryRunner.release();
     }
   }
-
   public async countDocuments(searchNameTerm: string): Promise<number> {
     try {
       const count = await this.blogsRepository
         .createQueryBuilder('b')
         .select('b')
         .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
+        .getCount();
+      return count;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
+  public async countDocumentsForBlogOfCurrentUser(
+    userId: number,
+    searchNameTerm: string,
+  ): Promise<number> {
+    try {
+      const count = await this.blogsRepository
+        .createQueryBuilder('b')
+        .select('b')
+        .where('b.name ILIKE :name', { name: `%${searchNameTerm}%` })
+        .andWhere({ userId: userId })
         .getCount();
       return count;
     } catch (e) {
@@ -139,6 +155,34 @@ export class BlogsRepository {
         .where('b.name ILIKE :searchNameTerm', {
           searchNameTerm: `%${searchNameTerm}%`,
         })
+        .orderBy(`b.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
+        .skip(skip)
+        .take(pageSize)
+        .getMany();
+      console.log('🚀 ~ BlogsRepository ~ blogs:', blogs);
+      return allBlogsOutputMapper(blogs);
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
+  public async getAllBlogsForCurrentUser(
+    userId: number,
+    searchNameTerm: string,
+    sortBy: string,
+    sortDirection: string,
+    pageSize: number,
+    skip: number,
+  ): Promise<BlogsOutputModelWithUser[]> {
+    try {
+      const blogs = await this.blogsRepository
+        .createQueryBuilder('b')
+        .select(['b', 'user.login', 'user.id'])
+        .leftJoin('b.user', 'user')
+        .where('b.name ILIKE :searchNameTerm', {
+          searchNameTerm: `%${searchNameTerm}%`,
+        })
+        .andWhere({ userId: userId })
         .orderBy(`b.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
         .skip(skip)
         .take(pageSize)

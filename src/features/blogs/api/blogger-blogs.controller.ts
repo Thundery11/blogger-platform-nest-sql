@@ -2,12 +2,15 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -20,6 +23,8 @@ import { CurrentUserId } from '../../auth/decorators/current-user-id-param.decor
 import { UpdateBlogCommand } from '../application/use-cases/update-blog-use-case';
 import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
 import { DeleteBlogCommand } from '../application/use-cases/delete-blog-use-case';
+import { SortingQueryParams } from './models/query/query-for-sorting';
+import { FindAllBlogsForCurrentUserCommand } from '../application/use-cases/find-all-blogs-for-current-user-use-case';
 
 @Controller('/blogger/blogs')
 export class BloggerBlogsController {
@@ -74,5 +79,16 @@ export class BloggerBlogsController {
       throw new NotFoundException();
     }
     return result;
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getAllBlogs(
+    @Query() blogsQueryParams: SortingQueryParams,
+    @CurrentUserId() userId: number,
+  ) {
+    return await this.commandBus.execute(
+      new FindAllBlogsForCurrentUserCommand(userId, blogsQueryParams),
+    );
   }
 }
