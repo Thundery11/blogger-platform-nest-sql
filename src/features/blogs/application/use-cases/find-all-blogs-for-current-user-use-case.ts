@@ -1,7 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SortingQueryParams } from '../../api/models/query/query-for-sorting';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
-import { AllBlogsWithUserOutputModel } from '../../api/models/output/blog.output.model';
+import {
+  AllBlogsOutputModel,
+  AllBlogsWithUserOutputModel,
+} from '../../api/models/output/blog.output.model';
 
 export class FindAllBlogsForCurrentUserCommand {
   constructor(
@@ -17,7 +20,7 @@ export class FindAllBlogsForCurrentUserUseCase
   constructor(private blogsRepository: BlogsRepository) {}
   async execute(
     command: FindAllBlogsForCurrentUserCommand,
-  ): Promise<AllBlogsWithUserOutputModel> {
+  ): Promise<AllBlogsOutputModel> {
     const searchNameTerm = command.blogsQueryParams.searchNameTerm ?? '';
     const sortBy = command.blogsQueryParams.sortBy ?? 'createdAt';
     const sortDirection = command.blogsQueryParams.sortDirection ?? 'desc';

@@ -5,6 +5,7 @@ import {
   BlogsOutputMapper,
   BlogsOutputModel,
   BlogsOutputModelWithUser,
+  allBlogsForCurrentUserOutputMapper,
   allBlogsOutputMapper,
 } from '../api/models/output/blog.output.model';
 import { BlogsCreateModel } from '../api/models/input/create-blog.input.model';
@@ -173,12 +174,11 @@ export class BlogsRepository {
     sortDirection: string,
     pageSize: number,
     skip: number,
-  ): Promise<BlogsOutputModelWithUser[]> {
+  ): Promise<BlogsOutputModel[]> {
     try {
       const blogs = await this.blogsRepository
         .createQueryBuilder('b')
-        .select(['b', 'user.login', 'user.id'])
-        .leftJoin('b.user', 'user')
+        .select('b')
         .where('b.name ILIKE :searchNameTerm', {
           searchNameTerm: `%${searchNameTerm}%`,
         })
@@ -188,7 +188,7 @@ export class BlogsRepository {
         .take(pageSize)
         .getMany();
       console.log('🚀 ~ BlogsRepository ~ blogs:', blogs);
-      return allBlogsOutputMapper(blogs);
+      return allBlogsForCurrentUserOutputMapper(blogs);
     } catch (e) {
       console.error(e);
       throw e;

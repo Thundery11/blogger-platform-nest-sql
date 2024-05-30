@@ -73,3 +73,16 @@ export const allBlogsOutputMapper = (
   }));
   return allBlogsOutput;
 };
+export const allBlogsForCurrentUserOutputMapper = (
+  blogs: Blogs[],
+): BlogsOutputModel[] => {
+  const allBlogsOutput = blogs.map((blog) => ({
+    id: blog.id.toString(),
+    name: blog.name,
+    description: blog.description,
+    websiteUrl: blog.websiteUrl,
+    createdAt: blog.createdAt,
+    isMembership: blog.isMembership,
+  }));
+  return allBlogsOutput;
+};
