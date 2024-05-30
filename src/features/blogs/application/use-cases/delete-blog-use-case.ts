@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
 import { BlogsQueryRepository } from '../../infrastructure/blogs.query-repository';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 export class DeleteBlogCommand {
   constructor(
     public userId: number,
@@ -16,6 +16,10 @@ export class DeleteBlogUseCase implements ICommandHandler<DeleteBlogCommand> {
   ) {}
 
   async execute(command: DeleteBlogCommand): Promise<boolean> {
+    const isExistBlog = await this.blogsQueryRepository.getBlogById(command.id);
+    if (!isExistBlog) {
+      throw new NotFoundException();
+    }
     const usersBlog = await this.blogsQueryRepository.getBlogByUserId(
       command.userId,
       command.id,
