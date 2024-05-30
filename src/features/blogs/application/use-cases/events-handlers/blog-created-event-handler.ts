@@ -7,7 +7,6 @@ export class ReturnTrueWhenBlogsCreatedHandler
 {
   async handle(event: BlogCreatedEvent) {
     const userId = event.userId;
-    console.log('🚀 ~ handle ~ userId:', userId);
     return true;
   }
 }
