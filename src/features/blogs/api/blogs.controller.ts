@@ -73,17 +73,6 @@ export class BlogsController {
   }
 
   @UseGuards(BasicAuthGuard)
-  @Delete(':id')
-  @HttpCode(204)
-  async deleteBlog(@Param('id', ParseIntPipe) id: number): Promise<boolean> {
-    const result = await this.commandBus.execute(new DeleteBlogCommand(id));
-    if (!result) {
-      throw new NotFoundException();
-    }
-    return result;
-  }
-
-  @UseGuards(BasicAuthGuard)
   @Post(':blogId/posts')
   @HttpCode(201)
   async createPostForSpecificBlog(

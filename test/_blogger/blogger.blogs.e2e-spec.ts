@@ -167,6 +167,22 @@ describe('Blogger blogs testing', () => {
       console.log('🚀 ~ it ~ check:', check.body);
     });
   });
+  describe('Delete blog by current User 01', () => {
+    //forbidden exception
+    it('should not delete blog, status 403', async () => {
+      await agent
+        .delete(bloggerBlogsURI + blog01Id)
+        .auth(aTokenUser02, { type: 'bearer' })
+        .expect(403);
+    });
+    //success
+    it('should delete blog, status 204', async () => {
+      await agent
+        .delete(bloggerBlogsURI + blog01Id)
+        .auth(aTokenUser01, { type: 'bearer' })
+        .expect(204);
+    });
+  });
   afterAll(async () => {
     await app.close();
   });

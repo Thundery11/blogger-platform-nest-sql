@@ -155,9 +155,12 @@ export class BlogsRepository {
     // return result[1] === 1 ? true : false;
   }
 
-  public async deleteBlog(id: number): Promise<boolean> {
+  public async deleteBlog(userId: number, id: number): Promise<boolean> {
     try {
-      const result = await this.blogsRepository.delete({ id: id });
+      const result = await this.blogsRepository.delete({
+        userId: userId,
+        id: id,
+      });
       return result.affected === 1;
     } catch (e) {
       console.error(e);

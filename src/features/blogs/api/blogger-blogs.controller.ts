@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   NotFoundException,
   Param,
@@ -18,6 +19,7 @@ import { CreateBlogCommand } from '../application/use-cases/create-blog-use-case
 import { CurrentUserId } from '../../auth/decorators/current-user-id-param.decorator';
 import { UpdateBlogCommand } from '../application/use-cases/update-blog-use-case';
 import { UsersQueryRepository } from '../../users/infrastructure/users-query.repository';
+import { DeleteBlogCommand } from '../application/use-cases/delete-blog-use-case';
 
 @Controller('/blogger/blogs')
 export class BloggerBlogsController {
@@ -52,6 +54,21 @@ export class BloggerBlogsController {
   ): Promise<boolean> {
     const result = await this.commandBus.execute(
       new UpdateBlogCommand(currentUserId, blogsUpdateModel, id),
+    );
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
+  }
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @HttpCode(204)
+  async deleteBlog(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUserId() userId: number,
+  ): Promise<boolean> {
+    const result = await this.commandBus.execute(
+      new DeleteBlogCommand(userId, id),
     );
     if (!result) {
       throw new NotFoundException();
