@@ -31,7 +31,7 @@ export class Blogs extends AggregateRoot {
   isMembership: boolean;
   @OneToMany(() => Posts, (p) => p.blog)
   posts: Posts[];
-  @Column()
+  @Column({ nullable: true })
   userId: number;
   @ManyToOne(() => Users, (u) => u.blogs)
   user: Users;
