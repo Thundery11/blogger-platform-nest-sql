@@ -4,6 +4,7 @@ import {
   AllBlogsOutputModel,
   BlogsOutputMapper,
   BlogsOutputModel,
+  BlogsOutputModelWithUser,
   allBlogsOutputMapper,
 } from '../api/models/output/blog.output.model';
 import { BlogsCreateModel } from '../api/models/input/create-blog.input.model';
@@ -123,7 +124,32 @@ export class BlogsRepository {
     // ]);
     // return allBlogsOutputMapper(blogs);
   }
-
+  public async getAllBlogsWithUser(
+    searchNameTerm: string,
+    sortBy: string,
+    sortDirection: string,
+    pageSize: number,
+    skip: number,
+  ): Promise<BlogsOutputModelWithUser[]> {
+    try {
+      const blogs = await this.blogsRepository
+        .createQueryBuilder('b')
+        .select(['b', 'user.login', 'user.id'])
+        .leftJoin('b.user', 'user')
+        .where('b.name ILIKE :searchNameTerm', {
+          searchNameTerm: `%${searchNameTerm}%`,
+        })
+        .orderBy(`b.${sortBy}`, sortDirection === 'asc' ? 'ASC' : 'DESC')
+        .skip(skip)
+        .take(pageSize)
+        .getMany();
+      console.log('🚀 ~ BlogsRepository ~ blogs:', blogs);
+      return allBlogsOutputMapper(blogs);
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
   public async updateBlog(
     id: number,
     blogsUpdateModel: BlogsCreateModel,

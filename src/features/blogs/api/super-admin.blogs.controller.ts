@@ -20,6 +20,7 @@ import { BlogsCreateModel } from './models/input/create-blog.input.model';
 import { BlogsQueryRepository } from '../infrastructure/blogs.query-repository';
 import {
   AllBlogsOutputModel,
+  AllBlogsWithUserOutputModel,
   BlogsOutputModel,
 } from './models/output/blog.output.model';
 import { SortingQueryParams } from './models/query/query-for-sorting';
@@ -59,24 +60,24 @@ export class SuperAdminBlogsController {
     private authService: AuthService,
   ) {}
 
-  @UseGuards(BasicAuthGuard)
-  @Get(':id')
-  @HttpCode(200)
-  async findBlog(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<BlogsOutputModel> {
-    const blog = await this.blogsQueryRepository.getBlogById(id);
-    if (!blog) {
-      throw new NotFoundException();
-    }
-    return blog;
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Get(':id')
+  // @HttpCode(200)
+  // async findBlog(
+  //   @Param('id', ParseIntPipe) id: number,
+  // ): Promise<BlogsOutputModel> {
+  //   const blog = await this.blogsQueryRepository.getBlogById(id);
+  //   if (!blog) {
+  //     throw new NotFoundException();
+  //   }
+  //   return blog;
+  // }
   @UseGuards(BasicAuthGuard)
   @Get()
   @HttpCode(200)
   async findAllBlogs(
     @Query() blogsQueryParams: SortingQueryParams,
-  ): Promise<AllBlogsOutputModel> {
+  ): Promise<AllBlogsWithUserOutputModel> {
     return await this.commandBus.execute(
       new FindAllBlogsCommand(blogsQueryParams),
     );

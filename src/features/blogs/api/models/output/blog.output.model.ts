@@ -16,6 +16,26 @@ export class BlogsOutputModel {
   createdAt: string;
   isMembership: boolean;
 }
+export class BlogsOutputModelWithUser {
+  id: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
+  createdAt: string;
+  isMembership: boolean;
+  blogOwnerInfo: {
+    userId: string;
+    userLogin: string;
+  };
+}
+export class AllBlogsWithUserOutputModel {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: BlogsOutputModelWithUser[];
+}
+
 export class AllBlogsOutputModel {
   pagesCount: number;
   page: number;
@@ -36,7 +56,9 @@ export const BlogsOutputMapper = (blog: Blogs): BlogsOutputModel => {
   return outputModel;
 };
 
-export const allBlogsOutputMapper = (blogs: Blogs[]): BlogsOutputModel[] => {
+export const allBlogsOutputMapper = (
+  blogs: Blogs[],
+): BlogsOutputModelWithUser[] => {
   const allBlogsOutput = blogs.map((blog) => ({
     id: blog.id.toString(),
     name: blog.name,
@@ -44,6 +66,10 @@ export const allBlogsOutputMapper = (blogs: Blogs[]): BlogsOutputModel[] => {
     websiteUrl: blog.websiteUrl,
     createdAt: blog.createdAt,
     isMembership: blog.isMembership,
+    blogOwnerInfo: {
+      userId: blog.user.id.toString(),
+      userLogin: blog.user.login,
+    },
   }));
   return allBlogsOutput;
 };

@@ -1,5 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { AllBlogsOutputModel } from '../../api/models/output/blog.output.model';
+import {
+  AllBlogsOutputModel,
+  AllBlogsWithUserOutputModel,
+} from '../../api/models/output/blog.output.model';
 import { SortingQueryParams } from '../../api/models/query/query-for-sorting';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
 
@@ -12,7 +15,9 @@ export class FindAllBlogsUseCase
   implements ICommandHandler<FindAllBlogsCommand>
 {
   constructor(private blogsRepository: BlogsRepository) {}
-  async execute(command: FindAllBlogsCommand): Promise<AllBlogsOutputModel> {
+  async execute(
+    command: FindAllBlogsCommand,
+  ): Promise<AllBlogsWithUserOutputModel> {
     const searchNameTerm = command.blogsQueryParams.searchNameTerm ?? '';
     const sortBy = command.blogsQueryParams.sortBy ?? 'createdAt';
     const sortDirection = command.blogsQueryParams.sortDirection ?? 'desc';
@@ -23,7 +28,7 @@ export class FindAllBlogsUseCase
     const countedDocuments =
       await this.blogsRepository.countDocuments(searchNameTerm);
     const pagesCount: number = Math.ceil(countedDocuments / pageSize);
-    const allBlogs = await this.blogsRepository.getAllBlogs(
+    const allBlogs = await this.blogsRepository.getAllBlogsWithUser(
       searchNameTerm,
       sortBy,
       sortDirection,
