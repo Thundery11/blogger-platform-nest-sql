@@ -166,7 +166,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
   autoLoadEntities: true,
   synchronize: true,
   // logging: ['query'],
-  entities: [Blogs],
+  // entities: [Blogs],
   ssl: false,
 };
 @Module({

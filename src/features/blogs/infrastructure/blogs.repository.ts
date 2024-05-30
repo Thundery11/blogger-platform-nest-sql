@@ -8,7 +8,8 @@ import {
 } from '../api/models/output/blog.output.model';
 import { BlogsCreateModel } from '../api/models/input/create-blog.input.model';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { log } from 'console';
 
 @Injectable()
 export class BlogsRepository {
@@ -34,6 +35,31 @@ export class BlogsRepository {
     //   const newBlog = await this.dataSource.query(insertQuery);
     //   const blogId = newBlog[0].id;
     //   return blogId;
+  }
+
+  public async handleTransaction(
+    onCommit: (queryRunner: QueryRunner) => any,
+    onError: (e: Error) => any,
+    onFinally?: () => any,
+  ) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const queryRes = await onCommit(queryRunner);
+
+      console.log(1);
+      return queryRes;
+    } catch (e) {
+      console.log(2);
+      await onError(e);
+      await queryRunner.rollbackTransaction();
+      return false;
+    } finally {
+      console.log(3);
+      await onFinally?.();
+      await queryRunner.release();
+    }
   }
 
   public async countDocuments(searchNameTerm: string): Promise<number> {

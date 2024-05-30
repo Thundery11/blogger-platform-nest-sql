@@ -50,6 +50,7 @@ export class Blogs extends AggregateRoot {
     blog.apply(new BlogCreatedEvent(userId, blogsCreateModel));
     return blog;
   }
+
   updateBlog(blogsUpdateModel: BlogsCreateModel) {
     this.description = blogsUpdateModel.description;
     this.websiteUrl = blogsUpdateModel.websiteUrl;

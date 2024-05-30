@@ -38,7 +38,7 @@ export class BlogsQueryRepository {
   }
 
   async getBlogByUserId(userId: number, blogId: number): Promise<Blogs | null> {
-    const blog = await this.blogsRepository
+    const queryBuilder = this.blogsRepository
       .createQueryBuilder('blog')
       .select([
         'blog.id',
@@ -49,8 +49,9 @@ export class BlogsQueryRepository {
         'blog.createdAt',
         'blog.isMembership',
       ])
-      .where(`blog.id = :blogId AND blog.userId = :userId`, { blogId, userId })
-      .getOne();
+      .where(`blog.id = :blogId AND blog.userId = :userId`, { blogId, userId });
+    console.log({ sql: queryBuilder.getSql() });
+    const blog = await queryBuilder.getOne();
     return blog;
   }
 }

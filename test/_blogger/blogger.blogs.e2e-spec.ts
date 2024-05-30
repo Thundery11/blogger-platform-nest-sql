@@ -4,8 +4,12 @@ import {
   blog01Name,
   blog02Name,
   blogDescription,
+  blogUpdatedDescription,
+  blogUpdatedName,
+  blogUpdatedWebsite,
   blogWebsite,
   bloggerBlogsURI,
+  publicBlogsURI,
 } from '../utils/constants/blogs.constants';
 import {
   saUsersURI,
@@ -137,7 +141,21 @@ describe('Blogger blogs testing', () => {
       return response;
     });
   });
-
+  describe('update blog by Blogger', () => {
+    it('should update blog for current user', async () => {
+      const blog = await agent
+        .put(bloggerBlogsURI + blog01Id)
+        .auth(aTokenUser01, { type: 'bearer' })
+        .send({
+          name: blogUpdatedName,
+          description: blogUpdatedDescription,
+          websiteUrl: blogUpdatedWebsite,
+        })
+        .expect(204);
+      const check = await agent.get(publicBlogsURI + blog01Id).expect(200);
+      console.log('🚀 ~ it ~ check:', check.body);
+    });
+  });
   afterAll(async () => {
     await app.close();
   });
