@@ -175,7 +175,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     UsersModule,
     CqrsModule,
     ScheduleModule.forRoot(),
-    TypeOrmModule.forRoot(localDbOptions),
+    TypeOrmModule.forRoot(options),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,

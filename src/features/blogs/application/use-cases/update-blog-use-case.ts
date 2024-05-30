@@ -15,37 +15,6 @@ export class UpdateBlogCommand {
     public id: number,
   ) {}
 }
-// @CommandHandler(UpdateBlogCommand)
-// export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
-//   constructor(
-//     private blogsRepository: BlogsRepository,
-//     private readonly blogsQueryRepository: BlogsQueryRepository,
-//     private readonly eventBus: EventBus,
-//     @InjectDataSource() private readonly dataSource: DataSource,
-//   ) {}
-//   async execute(command: UpdateBlogCommand): Promise<boolean> {
-//     const { currentUserId, blogsUpdateModel, id } = command;
-//     const findBlogToUpdate = await this.blogsQueryRepository.getBlogByUserId(
-//       currentUserId,
-//       id,
-//     );
-
-//     if (!findBlogToUpdate) {
-//       throw new ForbiddenException();
-//     }
-//     const updatedBlog = findBlogToUpdate.updateBlog(blogsUpdateModel);
-//     const blog = await this.blogsRepository.saveBlog(updatedBlog);
-
-//     updatedBlog.getUncommittedEvents().forEach((e) => {
-//       this.eventBus.publish(e);
-//     });
-
-//     if (!blog) return false;
-//     return true;
-
-//     // return await this.blogsRepository.updateBlog(id, blogsUpdateModel);
-//   }
-
 @CommandHandler(UpdateBlogCommand)
 export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
   constructor(
@@ -75,17 +44,11 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
           currentUserId,
         })
         .getOne();
-      // const findBlogToUpdate = await this.blogsQueryRepository.getBlogByUserId(
-      //   currentUserId,
-      //   id,
-      // );
       if (!findBlogToUpdate) {
         throw new ForbiddenException();
       }
       const updatedBlog = findBlogToUpdate.updateBlog(blogsUpdateModel);
       const blog = await blogsRepositoryFromQR.save(updatedBlog);
-      // const blog = await this.blogsRepository.saveBlog(updatedBlog);
-
       updatedBlog.getUncommittedEvents().forEach((e) => {
         this.eventBus.publish(e);
       });
@@ -101,6 +64,5 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
 
     const res = await this.blogsRepository.handleTransaction(onCommit, onError);
     return res;
-    // return await this.blogsRepository.updateBlog(id, blogsUpdateModel);
   }
 }

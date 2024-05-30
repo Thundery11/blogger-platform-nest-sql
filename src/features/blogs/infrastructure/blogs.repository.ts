@@ -52,8 +52,9 @@ export class BlogsRepository {
       return queryRes;
     } catch (e) {
       console.log(2);
-      await onError(e);
       await queryRunner.rollbackTransaction();
+
+      await onError(e);
       return false;
     } finally {
       console.log(3);
