@@ -14,7 +14,7 @@ export const createdBlogObject = {
   description: blogDescription,
   websiteUrl: blogWebsite,
   createdAt: expect.any(String),
-  isMembership: true,
+  isMembership: false,
 };
 export const createdBlogObjectWithWallpaper = {
   id: expect.any(String),

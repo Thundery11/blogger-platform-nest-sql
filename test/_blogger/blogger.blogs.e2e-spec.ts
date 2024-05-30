@@ -142,6 +142,17 @@ describe('Blogger blogs testing', () => {
     });
   });
   describe('update blog by Blogger', () => {
+    it('should not update blog, status 403, if user try to update not his own blog', async () => {
+      await agent
+        .put(bloggerBlogsURI + blog01Id)
+        .auth(aTokenUser02, { type: 'bearer' })
+        .send({
+          name: blogUpdatedName,
+          description: blogUpdatedDescription,
+          websiteUrl: blogUpdatedWebsite,
+        })
+        .expect(403);
+    });
     it('should update blog for current user', async () => {
       const blog = await agent
         .put(bloggerBlogsURI + blog01Id)

@@ -39,7 +39,7 @@ export class Blogs extends AggregateRoot {
 
   static createBlog(userId: number, blogsCreateModel: BlogsCreateModel) {
     const createdAt = new Date().toISOString();
-    const isMembership = true;
+    const isMembership = false;
     const blog = new this();
     blog.name = blogsCreateModel.name;
     blog.description = blogsCreateModel.description;
