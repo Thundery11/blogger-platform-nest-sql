@@ -20,7 +20,7 @@ export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
   async execute(command: CreateBlogCommand): Promise<BlogsOutputModel> {
     const newBlog = Blogs.createBlog(command.userId, command.blogsCreateModel);
 
-    const createdBlog = await this.blogsRepository.createBlog(newBlog);
+    const createdBlog = await this.blogsRepository.saveBlog(newBlog);
     newBlog.getUncommittedEvents().forEach((e) => {
       this.eventBus.publish(e);
     });

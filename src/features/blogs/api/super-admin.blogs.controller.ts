@@ -83,22 +83,6 @@ export class SuperAdminBlogsController {
   }
 
   @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(204)
-  async updateBlog(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() blogsUpdateModel: BlogsCreateModel,
-  ): Promise<boolean> {
-    const result = await this.commandBus.execute(
-      new UpdateBlogCommand(blogsUpdateModel, id),
-    );
-    if (!result) {
-      throw new NotFoundException();
-    }
-    return result;
-  }
-
-  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deleteBlog(@Param('id', ParseIntPipe) id: number): Promise<boolean> {

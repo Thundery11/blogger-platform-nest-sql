@@ -17,7 +17,7 @@ export class BlogsRepository {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  public async createBlog(newBlog: Blogs): Promise<BlogsOutputModel> {
+  public async saveBlog(newBlog: Blogs): Promise<BlogsOutputModel> {
     try {
       const blog = await this.blogsRepository.save(newBlog);
       return BlogsOutputMapper(blog);

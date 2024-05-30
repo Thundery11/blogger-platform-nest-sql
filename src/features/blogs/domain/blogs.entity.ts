@@ -12,6 +12,7 @@ import { Posts } from '../../posts/domain/posts.entity';
 import { Users } from '../../users/domain/users.entity';
 import { AggregateRoot } from '@nestjs/cqrs';
 import { BlogCreatedEvent } from './events/blog-created.event';
+import { BlogUpdatedEvent } from './events/blog-updated-event';
 export type BlogsDocument = HydratedDocument<Blogs>;
 export type BlogsModelType = Model<BlogsDocument> & typeof statics;
 
@@ -48,6 +49,13 @@ export class Blogs extends AggregateRoot {
     blog.userId = userId;
     blog.apply(new BlogCreatedEvent(userId, blogsCreateModel));
     return blog;
+  }
+  updateBlog(blogsUpdateModel: BlogsCreateModel) {
+    this.description = blogsUpdateModel.description;
+    this.websiteUrl = blogsUpdateModel.websiteUrl;
+    this.name = blogsUpdateModel.name;
+    this.apply(new BlogUpdatedEvent(this.id, this.userId));
+    return this;
   }
 }
 

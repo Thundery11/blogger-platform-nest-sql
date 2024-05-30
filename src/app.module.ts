@@ -166,6 +166,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
   autoLoadEntities: true,
   synchronize: true,
   // logging: ['query'],
+  entities: [Blogs],
   ssl: false,
 };
 @Module({
@@ -174,7 +175,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     UsersModule,
     CqrsModule,
     ScheduleModule.forRoot(),
-    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forRoot(localDbOptions),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,

@@ -36,4 +36,21 @@ export class BlogsQueryRepository {
     // }
     // return BlogsOutputMapper(blog);
   }
+
+  async getBlogByUserId(userId: number, blogId: number): Promise<Blogs | null> {
+    const blog = await this.blogsRepository
+      .createQueryBuilder('blog')
+      .select([
+        'blog.id',
+        'blog.name',
+        'blog.description',
+        'blog.websiteUrl',
+        'blog.userId',
+        'blog.createdAt',
+        'blog.isMembership',
+      ])
+      .where(`blog.id = :blogId AND blog.userId = :userId`, { blogId, userId })
+      .getOne();
+    return blog;
+  }
 }
