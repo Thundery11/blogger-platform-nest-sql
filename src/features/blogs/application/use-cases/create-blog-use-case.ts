@@ -1,26 +1,29 @@
 import { BlogsCreateModel } from '../../api/models/input/create-blog.input.model';
 import { Blogs } from '../../domain/blogs.entity';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsOutputModel } from '../../api/models/output/blog.output.model';
 
 export class CreateBlogCommand {
-  constructor(public blogsCreateModel: BlogsCreateModel) {}
+  constructor(
+    public userId: number,
+    public blogsCreateModel: BlogsCreateModel,
+  ) {}
 }
 @CommandHandler(CreateBlogCommand)
 export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
-  constructor(private blogsRepository: BlogsRepository) {}
+  constructor(
+    private blogsRepository: BlogsRepository,
+    private readonly eventBus: EventBus,
+  ) {}
 
   async execute(command: CreateBlogCommand): Promise<BlogsOutputModel> {
-    const createdAt = new Date().toISOString();
-    const isMembership = false;
-    const newBlog = new Blogs();
-    newBlog.description = command.blogsCreateModel.description;
-    newBlog.websiteUrl = command.blogsCreateModel.websiteUrl;
-    newBlog.name = command.blogsCreateModel.name;
-    newBlog.createdAt = createdAt;
-    newBlog.isMembership = isMembership;
+    const newBlog = Blogs.createBlog(command.userId, command.blogsCreateModel);
 
-    return await this.blogsRepository.createBlog(newBlog);
+    const createdBlog = await this.blogsRepository.createBlog(newBlog);
+    newBlog.getUncommittedEvents().forEach((e) => {
+      this.eventBus.publish(e);
+    });
+    return createdBlog;
   }
 }

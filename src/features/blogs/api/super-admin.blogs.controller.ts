@@ -60,21 +60,6 @@ export class SuperAdminBlogsController {
   ) {}
 
   @UseGuards(BasicAuthGuard)
-  @Post()
-  @HttpCode(201)
-  async createBlog(
-    @Body() blogsCreateModel: BlogsCreateModel,
-  ): Promise<BlogsOutputModel> {
-    const blog = await this.commandBus.execute(
-      new CreateBlogCommand(blogsCreateModel),
-    );
-    // const blog = await this.blogsQueryRepository.getBlogById(blogId);
-    // if (!blog) {
-    //   throw new NotFoundException();
-    // }
-    return blog;
-  }
-  @UseGuards(BasicAuthGuard)
   @Get(':id')
   @HttpCode(200)
   async findBlog(

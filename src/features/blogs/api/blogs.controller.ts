@@ -50,22 +50,6 @@ export class BlogsController {
     private authService: AuthService,
   ) {}
 
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  @HttpCode(201)
-  async createBlog(
-    @Body() blogsCreateModel: BlogsCreateModel,
-  ): Promise<BlogsOutputModel> {
-    const result = await this.commandBus.execute(
-      new CreateBlogCommand(blogsCreateModel),
-    );
-    const blog = await this.blogsQueryRepository.getBlogById(result._id);
-    if (!blog) {
-      throw new NotFoundException();
-    }
-    return blog;
-  }
-
   @Get(':id')
   @HttpCode(200)
   async findBlog(

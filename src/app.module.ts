@@ -91,7 +91,12 @@ import { CloseGameWhenTimeOutUseCase } from './quiz-game/application/use-cases/c
 import { SendSecuriyuEmailWhenQuizQuestionAddedHandler } from './quizQuestions/application/events-handlers/send-security-email-when-question-created.event.handler';
 import { EmailsManager } from './infrastucture/managers/emails-manager';
 import { EmailAdapter } from './infrastucture/adapters/email-adapter';
-const eventHandlers = [SendSecuriyuEmailWhenQuizQuestionAddedHandler];
+import { BloggerBlogsController } from './features/blogs/api/blogger-blogs.controller';
+import { ReturnTrueWhenBlogsCreatedHandler } from './features/blogs/application/use-cases/events-handlers/blog-created-event-handler';
+const eventHandlers = [
+  SendSecuriyuEmailWhenQuizQuestionAddedHandler,
+  ReturnTrueWhenBlogsCreatedHandler,
+];
 const useCases = [
   CreateBlogUseCase,
   FindAllBlogsUseCase,
@@ -169,7 +174,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     UsersModule,
     CqrsModule,
     ScheduleModule.forRoot(),
-    TypeOrmModule.forRoot(options),
+    TypeOrmModule.forRoot(localDbOptions),
     TypeOrmModule.forFeature([
       Blogs,
       Posts,
@@ -225,6 +230,7 @@ export const localDbOptions: TypeOrmModuleOptions = {
     SuperAdminBlogsController,
     QuizQuestionsController,
     QuizGameController,
+    BloggerBlogsController,
   ],
 
   providers: [

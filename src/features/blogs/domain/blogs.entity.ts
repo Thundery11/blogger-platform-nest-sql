@@ -1,13 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { BlogsCreateModel } from '../api/models/input/create-blog.input.model';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Posts } from '../../posts/domain/posts.entity';
+import { Users } from '../../users/domain/users.entity';
+import { AggregateRoot } from '@nestjs/cqrs';
+import { BlogCreatedEvent } from './events/blog-created.event';
 export type BlogsDocument = HydratedDocument<Blogs>;
 export type BlogsModelType = Model<BlogsDocument> & typeof statics;
 
 @Entity()
-export class Blogs {
+export class Blogs extends AggregateRoot {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
@@ -22,6 +31,24 @@ export class Blogs {
   isMembership: boolean;
   @OneToMany(() => Posts, (p) => p.blog)
   posts: Posts[];
+  @Column()
+  userId: number;
+  @ManyToOne(() => Users, (u) => u.blogs)
+  user: Users;
+
+  static createBlog(userId: number, blogsCreateModel: BlogsCreateModel) {
+    const createdAt = new Date().toISOString();
+    const isMembership = true;
+    const blog = new this();
+    blog.name = blogsCreateModel.name;
+    blog.description = blogsCreateModel.description;
+    blog.websiteUrl = blogsCreateModel.websiteUrl;
+    blog.createdAt = createdAt;
+    blog.isMembership = isMembership;
+    blog.userId = userId;
+    blog.apply(new BlogCreatedEvent(userId, blogsCreateModel));
+    return blog;
+  }
 }
 
 @Schema()

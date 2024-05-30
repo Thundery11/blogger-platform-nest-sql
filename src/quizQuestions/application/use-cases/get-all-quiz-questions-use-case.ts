@@ -17,7 +17,7 @@ export class FindAllQuestionsUseCase implements ICommandHandler {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
   async execute(command: FindAllQuestionsCommand): Promise<any> {
-    const queryRunner = await this.dataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
 
     try {
