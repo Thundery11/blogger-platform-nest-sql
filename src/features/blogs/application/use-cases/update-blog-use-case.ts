@@ -15,40 +15,6 @@ export class UpdateBlogCommand {
     public id: number,
   ) {}
 }
-@CommandHandler(UpdateBlogCommand)
-export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
-  constructor(
-    private blogsRepository: BlogsRepository,
-    private readonly blogsQueryRepository: BlogsQueryRepository,
-    private readonly eventBus: EventBus,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
-  async execute(command: UpdateBlogCommand): Promise<boolean> {
-    const { currentUserId, blogsUpdateModel, id } = command;
-    const isExistBlog = await this.blogsQueryRepository.getBlogById(command.id);
-    if (!isExistBlog) {
-      throw new NotFoundException();
-    }
-    const findBlogToUpdate = await this.blogsQueryRepository.getBlogByUserId(
-      currentUserId,
-      id,
-    );
-
-    if (!findBlogToUpdate) {
-      throw new ForbiddenException();
-    }
-    const updatedBlog = findBlogToUpdate.updateBlog(blogsUpdateModel);
-    const blog = await this.blogsRepository.saveBlog(updatedBlog);
-    updatedBlog.getUncommittedEvents().forEach((e) => {
-      this.eventBus.publish(e);
-    });
-
-    if (!blog) return false;
-
-    return true;
-  }
-}
-
 // @CommandHandler(UpdateBlogCommand)
 // export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
 //   constructor(
@@ -58,45 +24,79 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
 //     @InjectDataSource() private readonly dataSource: DataSource,
 //   ) {}
 //   async execute(command: UpdateBlogCommand): Promise<boolean> {
-//     const onCommit = async (queryRunner: QueryRunner) => {
-//       const blogsRepositoryFromQR = queryRunner.manager.getRepository(Blogs);
+//     const { currentUserId, blogsUpdateModel, id } = command;
+//     const isExistBlog = await this.blogsQueryRepository.getBlogById(command.id);
+//     if (!isExistBlog) {
+//       throw new NotFoundException();
+//     }
+//     const findBlogToUpdate = await this.blogsQueryRepository.getBlogByUserId(
+//       currentUserId,
+//       id,
+//     );
 
-//       const { currentUserId, blogsUpdateModel, id } = command;
-//       const findBlogToUpdate = await blogsRepositoryFromQR
-//         .createQueryBuilder('blog')
-//         .select([
-//           'blog.id',
-//           'blog.name',
-//           'blog.description',
-//           'blog.websiteUrl',
-//           'blog.userId',
-//           'blog.createdAt',
-//           'blog.isMembership',
-//         ])
-//         .where(`blog.id = :id AND blog.userId = :currentUserId`, {
-//           id,
-//           currentUserId,
-//         })
-//         .getOne();
-//       if (!findBlogToUpdate) {
-//         throw new ForbiddenException();
-//       }
-//       const updatedBlog = findBlogToUpdate.updateBlog(blogsUpdateModel);
-//       const blog = await blogsRepositoryFromQR.save(updatedBlog);
-//       updatedBlog.getUncommittedEvents().forEach((e) => {
-//         this.eventBus.publish(e);
-//       });
+//     if (!findBlogToUpdate) {
+//       throw new ForbiddenException();
+//     }
+//     const updatedBlog = findBlogToUpdate.updateBlog(blogsUpdateModel);
+//     const blog = await this.blogsRepository.saveBlog(updatedBlog);
+//     updatedBlog.getUncommittedEvents().forEach((e) => {
+//       this.eventBus.publish(e);
+//     });
 
-//       if (!blog) return false;
-//       await queryRunner.commitTransaction();
-//       return true;
-//     };
-//     const onError = (e) => {
-//       console.log({ e: e });
-//       throw new Error('Blog update transaction failed');
-//     };
+//     if (!blog) return false;
 
-//     const res = await this.blogsRepository.handleTransaction(onCommit, onError);
-//     return res;
+//     return true;
 //   }
 // }
+
+@CommandHandler(UpdateBlogCommand)
+export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
+  constructor(
+    private blogsRepository: BlogsRepository,
+    private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly eventBus: EventBus,
+    @InjectDataSource() private readonly dataSource: DataSource,
+  ) {}
+  async execute(command: UpdateBlogCommand): Promise<boolean> {
+    const onCommit = async (queryRunner: QueryRunner) => {
+      const blogsRepositoryFromQR = queryRunner.manager.getRepository(Blogs);
+
+      const { currentUserId, blogsUpdateModel, id } = command;
+      const findBlogToUpdate = await blogsRepositoryFromQR
+        .createQueryBuilder('blog')
+        .select([
+          'blog.id',
+          'blog.name',
+          'blog.description',
+          'blog.websiteUrl',
+          'blog.userId',
+          'blog.createdAt',
+          'blog.isMembership',
+        ])
+        .where(`blog.id = :id AND blog.userId = :currentUserId`, {
+          id,
+          currentUserId,
+        })
+        .getOne();
+      if (!findBlogToUpdate) {
+        throw new ForbiddenException();
+      }
+      const updatedBlog = findBlogToUpdate.updateBlog(blogsUpdateModel);
+      const blog = await blogsRepositoryFromQR.save(updatedBlog);
+      updatedBlog.getUncommittedEvents().forEach((e) => {
+        this.eventBus.publish(e);
+      });
+
+      if (!blog) return false;
+      await queryRunner.commitTransaction();
+      return true;
+    };
+    const onError = (e) => {
+      console.log({ e: e });
+      throw new Error('Blog update transaction failed');
+    };
+
+    const res = await this.blogsRepository.handleTransaction(onCommit, onError);
+    return res;
+  }
+}
